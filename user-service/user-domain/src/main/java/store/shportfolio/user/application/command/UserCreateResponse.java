@@ -45,6 +45,7 @@ public class UserCreateResponse {
         public UserCreateResponse build() {
             return new UserCreateResponse(userId, username, email);
         }
+
     }
     public static UserCreateResponse.Builder builder() {
         return new UserCreateResponse.Builder();

@@ -103,4 +103,6 @@ public class User extends AggregateRoot<UserId> {
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
+
+
 }

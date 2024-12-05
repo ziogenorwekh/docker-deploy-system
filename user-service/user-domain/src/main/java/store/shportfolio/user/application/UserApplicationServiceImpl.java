@@ -10,8 +10,8 @@ import store.shportfolio.user.application.mapper.UserDataMapper;
 import store.shportfolio.user.application.ports.output.repository.UserRepository;
 import store.shportfolio.user.domain.UserDomainService;
 import store.shportfolio.user.domain.entity.User;
+import store.shportfolio.user.domain.event.UserDeleteEvent;
 
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -23,6 +23,8 @@ public class UserApplicationServiceImpl implements UserApplicationService {
     private final UserDomainService userDomainService;
     private final UserDataMapper userDataMapper;
     private final JwtHandler jwtHandler;
+
+
     public UserApplicationServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder,
                                       UserDomainService userDomainService, UserDataMapper userDataMapper,
                                       JwtHandler jwtHandler) {
@@ -76,7 +78,12 @@ public class UserApplicationServiceImpl implements UserApplicationService {
     }
 
     @Override
-    public void deleteUser(UserDeleteCommand userDeleteCommand) {
-
+    public UserDeleteEvent deleteUser(UserDeleteCommand userDeleteCommand) {
+        User user = userRepository.findById(userDeleteCommand.getUserId()).orElseThrow(() -> {
+            throw new UserNotFoundException(String.format("User with id %s not found", userDeleteCommand.getUserId()));
+        });
+        UserDeleteEvent userDeleteEvent = userDomainService.deleteUser(user);
+        userRepository.remove(user.getId().getValue());
+        return userDeleteEvent;
     }
 }

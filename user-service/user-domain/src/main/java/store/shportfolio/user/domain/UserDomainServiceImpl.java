@@ -1,6 +1,5 @@
 package store.shportfolio.user.domain;
 
-import store.shportfolio.common.domain.valueobject.UserId;
 import store.shportfolio.user.domain.entity.User;
 import store.shportfolio.user.domain.event.UserDeleteEvent;
 

@@ -2,6 +2,7 @@ package store.shportfolio.user.application;
 
 import jakarta.validation.Valid;
 import store.shportfolio.user.application.command.*;
+import store.shportfolio.user.domain.event.UserDeleteEvent;
 
 public interface UserApplicationService {
 
@@ -11,6 +12,6 @@ public interface UserApplicationService {
 
     void updateUser(@Valid UserUpdateCommand userUpdateCommand);
 
-    void deleteUser(@Valid UserDeleteCommand userDeleteCommand);
+    UserDeleteEvent deleteUser(@Valid UserDeleteCommand userDeleteCommand);
 
 }

@@ -11,4 +11,6 @@ public interface UserRepository {
     Optional<User> findById(UUID userId);
 
     Optional<User> findByEmail(String email);
+
+    void remove(UUID userId);
 }

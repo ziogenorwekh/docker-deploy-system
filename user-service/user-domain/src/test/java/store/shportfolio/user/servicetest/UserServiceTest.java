@@ -15,6 +15,7 @@ import store.shportfolio.user.application.mapper.UserDataMapper;
 import store.shportfolio.user.application.ports.output.repository.UserRepository;
 import store.shportfolio.user.domain.UserDomainServiceImpl;
 import store.shportfolio.user.domain.entity.User;
+import store.shportfolio.user.domain.event.UserDeleteEvent;
 import store.shportfolio.user.domain.exception.DomainException;
 
 import java.util.Optional;
@@ -173,5 +174,31 @@ public class UserServiceTest {
 
         // then
         Assertions.assertEquals("Password does not match", domainException.getMessage());
+    }
+
+    @Test
+    @DisplayName("delete user test")
+    public void deleteUser() {
+
+        // given
+        String email = "test@test.com";
+        String username = "test";
+        String password = "testPwd";
+        String encryptedPassword = passwordEncoder.encode(password);
+
+        UserDeleteCommand userDeleteCommand = new UserDeleteCommand(userId);
+
+        User user = User.createUser(userId, email, username, encryptedPassword);
+        Mockito.when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+
+        // when
+        UserDeleteEvent userDeleteEvent = userApplicationService.deleteUser(userDeleteCommand);
+
+        // then
+        Mockito.verify(userRepository,Mockito.times(1)).findById(userId);
+        Mockito.verify(userRepository,Mockito.times(1)).remove(userId);
+
+        Assertions.assertNotNull(userDeleteEvent);
+        Assertions.assertEquals(userDeleteEvent.getEntity().getId().getValue(), userId);
     }
 }
