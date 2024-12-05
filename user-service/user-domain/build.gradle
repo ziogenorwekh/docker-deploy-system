@@ -1,0 +1,33 @@
+plugins {
+    id 'java'
+}
+
+group = 'store.shportfolio'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation project(':common:common-domain')
+    testImplementation platform('org.junit:junit-bom:5.10.0')
+
+// https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-validation
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation', version: '3.4.0'
+
+// https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-security
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-security', version: '3.4.0'
+
+// https://mvnrepository.com/artifact/org.mockito/mockito-core
+//    testImplementation group: 'org.mockito', name: 'mockito-core', version: '5.12.0'
+// https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-test
+    testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: '3.4.0'
+
+    testImplementation 'org.springframework.security:spring-security-test:5.7.9'
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+}
+
+test {
+    useJUnitPlatform()
+}

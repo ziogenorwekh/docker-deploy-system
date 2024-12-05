@@ -1,0 +1,27 @@
+package store.shportfolio.common.domain.valueobject;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+
+public class Username {
+
+    private final String value;
+
+    private static final String USERNAME_PATTERN = "^[a-zA-Z0-9]+$";
+
+    public Username(String value) {
+        this.value = value;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public static boolean isValidUsername(String username) {
+        Pattern pattern = Pattern.compile(USERNAME_PATTERN);
+        Matcher matcher = pattern.matcher(username);
+        return matcher.matches();  // 조건에 맞으면 true 반환
+    }
+
+}
