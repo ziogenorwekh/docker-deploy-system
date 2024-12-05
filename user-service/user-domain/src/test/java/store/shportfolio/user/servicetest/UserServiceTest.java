@@ -4,20 +4,18 @@ import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import store.shportfolio.user.application.JwtHandler;
-import store.shportfolio.user.application.UserApplicationService;
 import store.shportfolio.user.application.UserApplicationServiceImpl;
 import store.shportfolio.user.application.command.*;
+import store.shportfolio.user.application.exception.UserEmailDuplicatedException;
 import store.shportfolio.user.application.mapper.UserDataMapper;
 import store.shportfolio.user.application.ports.output.repository.UserRepository;
 import store.shportfolio.user.domain.UserDomainServiceImpl;
 import store.shportfolio.user.domain.entity.User;
-import store.shportfolio.user.domain.valueobject.Password;
+import store.shportfolio.user.domain.exception.DomainException;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -32,15 +30,15 @@ public class UserServiceTest {
     private UserRepository userRepository;
 
     @Mock
-    private PasswordEncoder passwordEncoder;
-
-    @Mock
     private JwtHandler jwtHandler;
+
+    private PasswordEncoder passwordEncoder;
 
     private final UUID userId = UUID.randomUUID();
 
     @BeforeEach
     void setUp() {
+        passwordEncoder = new BCryptPasswordEncoder();
         userApplicationService = new UserApplicationServiceImpl(
                 userRepository,
                 passwordEncoder,
@@ -50,27 +48,55 @@ public class UserServiceTest {
     }
 
     @Test
-    @DisplayName("create user test")
+    @DisplayName("create (user && duplicated user) test")
     public void createUser() {
         // given
+
+        // normal
+
         String email = "test@test.com";
         String username = "test";
         String password = "testPwd";
         UserCreateCommand userCreateCommand = new UserCreateCommand(email, username, password);
-        UserCreateResponse userCreateResponse = new UserCreateResponse(userId, username, email);
-        User user = User.createUser(userId, email, username, password);
-        Mockito.when(userRepository.save(Mockito.any(User.class)))
-                .thenReturn(user); // userRepository Mock 설정
+        userCreateCommand.setToken("Token");
+        String encodedPassword = passwordEncoder.encode(userCreateCommand.getPassword());
+        User user = User.createUser(userId, email, username, encodedPassword);
+
+        Mockito.when(userRepository.findByEmail(email)).thenReturn(Optional.empty());
+        Mockito.when(jwtHandler.getEmailByToken("Token"))
+                .thenReturn(email);
+        Mockito.when(userRepository.save(Mockito.any(User.class))).thenReturn(user);
+        // abnormal
+
+        String duplicatedEmail = "duplicated@test.com";
+        String duplicatedPassword = passwordEncoder.encode("duplicated");
+        UserCreateCommand duplicatedUserCreateCommand =
+                new UserCreateCommand(duplicatedEmail, "duplicated", duplicatedPassword);
+        duplicatedUserCreateCommand.setToken("duplicatedToken");
+        User duplicatedUser = User.createUser(UUID.randomUUID(),
+                duplicatedEmail, "duplicated", duplicatedPassword);
+
+        Mockito.when(userRepository.findByEmail(duplicatedEmail))
+                .thenReturn(Optional.of(duplicatedUser));
+        Mockito.when(jwtHandler.getEmailByToken("duplicatedToken"))
+                .thenReturn(duplicatedEmail);
 
         // when
         UserCreateResponse createdUser = userApplicationService.createUser(userCreateCommand);
 
         // then
+        UserEmailDuplicatedException userEmailDuplicatedException = Assertions.
+                assertThrows(UserEmailDuplicatedException.class,
+                        () -> userApplicationService.createUser(duplicatedUserCreateCommand));
+
+        Assertions.assertEquals("User with email duplicated@test.com already exists",
+                userEmailDuplicatedException.getMessage());
         Assertions.assertNotNull(createdUser);
         Assertions.assertEquals(email, createdUser.getEmail());
         Assertions.assertEquals(username, createdUser.getUsername());
 
-        Mockito.verify(userRepository, Mockito.times(1)).save(Mockito.any(User.class)); // userRepository의 save 메서드 호출 확인
+        Mockito.verify(userRepository, Mockito.times(2)).findByEmail(Mockito.any(String.class));
+        Mockito.verify(userRepository, Mockito.times(1)).save(Mockito.any(User.class));
     }
 
     @Test
@@ -79,11 +105,10 @@ public class UserServiceTest {
         // given
         String email = "test@test.com";
         String username = "test";
-        User user = User.createUser(userId, email, username, "testPwd");
+        String encryptedPassword = passwordEncoder.encode("password");
+        User user = User.createUser(userId, email, username, encryptedPassword);
 
         Mockito.when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-//        Mockito.when(userDataMapper.toUserTrackResponse(Mockito.any(User.class)))
-//                .thenReturn(new UserTrackResponse(userId, username, email, user.getCreatedAt()));
         // when
         UserTrackResponse userTrackResponse = userApplicationService.trackQueryUser(new UserTrackQuery(userId));
 
@@ -94,25 +119,59 @@ public class UserServiceTest {
     }
 
     @Test
-    @DisplayName("user update test")
-    public void updateUser() {
+    @DisplayName("user normal update test")
+    public void updateUserPassword() {
         // given
         String username = "test";
         String email = "test@test.com";
         String password = "testPwd";
-
+        String encryptedPassword = passwordEncoder.encode(password);
         String currentPassword = "testPwd";
         String newPassword = "newPwd";
-        String wrongPassword = "wrongPwd";
+        String encryptedNewPassword = passwordEncoder.encode(newPassword);
+
         UserUpdateCommand userUpdateCommand = new UserUpdateCommand(userId, currentPassword, newPassword);
-        UserUpdateCommand worngUserUpdateCommand = new UserUpdateCommand(userId, wrongPassword, newPassword);
-        User user = User.createUser(userId, email, username, password);
+
+        User user = User.createUser(userId, email, username, encryptedPassword);
+        User updatedUser = User.createUser(userId, email, username, encryptedNewPassword);
+
+        Mockito.when(userRepository.findById(userId))
+                .thenReturn(Optional.of(user));
+        Mockito.when(userRepository.save(Mockito.any(User.class))).
+                thenReturn(updatedUser);
 
         // when
-
         userApplicationService.updateUser(userUpdateCommand);
-        userApplicationService.updateUser(worngUserUpdateCommand);
         // then
 
+        Mockito.verify(userRepository, Mockito.times(1)).findById(userId);
+        Mockito.verify(userRepository, Mockito.times(1)).save(Mockito.any(User.class));
+    }
+
+    @Test
+    @DisplayName("update password but, not match current password")
+    public void updateWrongCurrentPassword() {
+
+        // given
+        String username = "test";
+        String email = "test@test.com";
+        String password = "testPwd";
+        String encryptedPassword = passwordEncoder.encode(password);
+
+        String currentPassword = "wrongPassword";
+        String newPassword = "newPwd";
+
+        UserUpdateCommand userUpdateCommand = new UserUpdateCommand(userId, currentPassword, newPassword);
+
+        User user = User.createUser(userId, email, username, encryptedPassword);
+
+        Mockito.when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+
+        // when
+        DomainException domainException = Assertions.
+                assertThrows(DomainException.class, () -> userApplicationService.updateUser(userUpdateCommand));
+
+        // then
+        Assertions.assertEquals("Password does not match", domainException.getMessage());
     }
 }

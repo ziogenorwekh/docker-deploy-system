@@ -23,6 +23,9 @@ public class UserCreateCommand {
     @Pattern(regexp = ".*[A-Za-z]+.*", message = "NewPassword must contain at least one letter.")
     private final String password;
 
+
+    private String token;
+
     public UserCreateCommand(String email, String username, String password) {
         this.email = email;
         this.username = username;
@@ -39,5 +42,13 @@ public class UserCreateCommand {
 
     public String getEmail() {
         return email;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+    public String getToken() {
+        return token;
     }
 }

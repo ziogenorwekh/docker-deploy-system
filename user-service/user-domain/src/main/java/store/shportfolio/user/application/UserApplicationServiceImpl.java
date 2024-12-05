@@ -4,11 +4,15 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 import store.shportfolio.user.application.command.*;
+import store.shportfolio.user.application.exception.UserEmailDuplicatedException;
 import store.shportfolio.user.application.exception.UserNotFoundException;
 import store.shportfolio.user.application.mapper.UserDataMapper;
 import store.shportfolio.user.application.ports.output.repository.UserRepository;
 import store.shportfolio.user.domain.UserDomainService;
 import store.shportfolio.user.domain.entity.User;
+
+import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @Validated
@@ -39,13 +43,36 @@ public class UserApplicationServiceImpl implements UserApplicationService {
 
     @Override
     public UserCreateResponse createUser(UserCreateCommand userCreateCommand) {
+        String token = userCreateCommand.getToken();
+        String authenticatedEmail = jwtHandler.getEmailByToken(token);
 
-        return null;
+        userRepository.findByEmail(authenticatedEmail).ifPresent(user -> {
+            throw new UserEmailDuplicatedException(
+                    String.format("User with email %s already exists", user.getEmail().getValue()));
+        });
+
+        String encryptedPassword = passwordEncoder.encode(userCreateCommand.getPassword());
+        UUID userId = UUID.randomUUID();
+
+        User createdUser = userDomainService.createUser(userId, userCreateCommand.getEmail(),
+                userCreateCommand.getUsername(), encryptedPassword);
+
+        User savedUser = userRepository.save(createdUser);
+
+        return userDataMapper.toUserCreateResponse(savedUser);
     }
 
     @Override
     public void updateUser(UserUpdateCommand userUpdateCommand) {
+        User user = userRepository.findById(userUpdateCommand.getUserId()).orElseThrow(() ->
+                new UserNotFoundException(String.format("User with id %s not found", userUpdateCommand.getUserId())));
 
+        String encryptedNewPassword = passwordEncoder.encode(userUpdateCommand.getNewPassword());
+
+        User updatedUser = userDomainService.updateUser(user,
+                userUpdateCommand.getCurrentPassword(), encryptedNewPassword);
+
+        userRepository.save(updatedUser);
     }
 
     @Override

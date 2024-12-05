@@ -15,8 +15,9 @@ public class UserDomainServiceImpl implements UserDomainService {
     }
 
     @Override
-    public void updateUser(User user, String currentPassword, String newPassword) {
+    public User updateUser(User user, String currentPassword, String newPassword) {
         user.updatePassword(currentPassword, newPassword);
+        return user;
     }
 
     @Override

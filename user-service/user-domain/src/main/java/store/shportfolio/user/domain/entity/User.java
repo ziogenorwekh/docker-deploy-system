@@ -34,23 +34,29 @@ public class User extends AggregateRoot<UserId> {
     public static User createUser(UUID newUserId, String email, String newUsername, String newPassword) {
         isValidateEmail(email);
         isValidateUsername(newUsername);
+        Password password = new Password(newPassword);
+        isValidatePassword(password);
 
         UserId userId = new UserId(newUserId);
-        Email newEmail = new Email(newUsername);
+        Email newEmail = new Email(email);
         Username username = new Username(newUsername);
-        Password password = new Password(newPassword);
+
         LocalDateTime createdAt = LocalDateTime.now();
         AccountStatus newAccountStatus = AccountStatus.ENABLED;
         return new User(userId, newEmail, username, password, newAccountStatus, createdAt);
     }
 
-    public void updatePassword(String currentPassword,String newPassword) {
+    /**
+     * @param currentPassword is raw password
+     * @param newPassword is encrypted password
+     */
+    public void updatePassword(String currentPassword, String newPassword) {
         if (!password.matches(currentPassword)) {
             throw new DomainException("Password does not match");
         }
         Password password = new Password(newPassword);
-        if(!password.isEncrypted()) {
-           throw new DomainException("Password must be encrypted");
+        if (!password.isEncrypted()) {
+            throw new DomainException("Password must be encrypted");
         }
         this.password = password;
     }
@@ -69,6 +75,12 @@ public class User extends AggregateRoot<UserId> {
     private static void isValidateUsername(String username) {
         if (!Username.isValidUsername(username)) {
             throw new DomainException("Username is not valid");
+        }
+    }
+
+    private static void isValidatePassword(Password password) {
+        if (!password.isEncrypted()) {
+            throw new DomainException("Password must be encrypted");
         }
     }
 
