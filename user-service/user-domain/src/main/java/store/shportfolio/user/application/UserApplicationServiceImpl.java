@@ -48,6 +48,9 @@ public class UserApplicationServiceImpl implements UserApplicationService {
         String token = userCreateCommand.getToken();
         String authenticatedEmail = jwtHandler.getEmailByToken(token);
 
+        // 마지막으로 확인할 것은 토큰이 expire 될 경우.
+
+
         userRepository.findByEmail(authenticatedEmail).ifPresent(user -> {
             throw new UserEmailDuplicatedException(
                     String.format("User with email %s already exists", user.getEmail().getValue()));
