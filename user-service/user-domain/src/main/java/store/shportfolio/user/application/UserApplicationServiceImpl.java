@@ -1,11 +1,14 @@
 package store.shportfolio.user.application;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
+import store.shportfolio.common.domain.valueobject.Token;
 import store.shportfolio.user.application.command.*;
 import store.shportfolio.user.application.exception.UserEmailDuplicatedException;
 import store.shportfolio.user.application.exception.UserNotFoundException;
+import store.shportfolio.user.application.jwt.JwtHandler;
 import store.shportfolio.user.application.mapper.UserDataMapper;
 import store.shportfolio.user.application.ports.output.repository.UserRepository;
 import store.shportfolio.user.domain.UserDomainService;
@@ -13,7 +16,7 @@ import store.shportfolio.user.domain.entity.User;
 import store.shportfolio.user.domain.event.UserDeleteEvent;
 
 import java.util.UUID;
-
+@Slf4j
 @Service
 @Validated
 public class UserApplicationServiceImpl implements UserApplicationService {
@@ -35,21 +38,18 @@ public class UserApplicationServiceImpl implements UserApplicationService {
         this.jwtHandler = jwtHandler;
     }
 
-
     @Override
     public UserTrackResponse trackQueryUser(UserTrackQuery userTrackQuery) {
         User user = userRepository.findById(userTrackQuery.getUserId()).orElseThrow(() -> new UserNotFoundException(
                 String.format("User with id %s not found", userTrackQuery.getUserId())));
+        log.info("tracking user -> {}",user.getEmail().getValue());
         return userDataMapper.toUserTrackResponse(user);
     }
 
     @Override
     public UserCreateResponse createUser(UserCreateCommand userCreateCommand) {
         String token = userCreateCommand.getToken();
-        String authenticatedEmail = jwtHandler.getEmailByToken(token);
-
-        // 마지막으로 확인할 것은 토큰이 expire 될 경우.
-
+        String authenticatedEmail = jwtHandler.getEmailFromToken(new Token(token));
 
         userRepository.findByEmail(authenticatedEmail).ifPresent(user -> {
             throw new UserEmailDuplicatedException(
@@ -63,7 +63,7 @@ public class UserApplicationServiceImpl implements UserApplicationService {
                 userCreateCommand.getUsername(), encryptedPassword);
 
         User savedUser = userRepository.save(createdUser);
-
+        log.info("successful save user -> {}",savedUser.getEmail().getValue());
         return userDataMapper.toUserCreateResponse(savedUser);
     }
 
@@ -78,6 +78,7 @@ public class UserApplicationServiceImpl implements UserApplicationService {
                 userUpdateCommand.getCurrentPassword(), encryptedNewPassword);
 
         userRepository.save(updatedUser);
+        log.info("successful update user -> {}",updatedUser.getEmail().getValue());
     }
 
     @Override
@@ -87,6 +88,7 @@ public class UserApplicationServiceImpl implements UserApplicationService {
         });
         UserDeleteEvent userDeleteEvent = userDomainService.deleteUser(user);
         userRepository.remove(user.getId().getValue());
+        log.info("successful delete user -> {}",userDeleteCommand.getUserId());
         return userDeleteEvent;
     }
 }

@@ -7,7 +7,8 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import store.shportfolio.user.application.JwtHandler;
+import store.shportfolio.common.domain.valueobject.Token;
+import store.shportfolio.user.application.jwt.JwtHandler;
 import store.shportfolio.user.application.UserApplicationServiceImpl;
 import store.shportfolio.user.application.command.*;
 import store.shportfolio.user.application.exception.UserEmailDuplicatedException;
@@ -64,7 +65,7 @@ public class UserServiceTest {
         User user = User.createUser(userId, email, username, encodedPassword);
 
         Mockito.when(userRepository.findByEmail(email)).thenReturn(Optional.empty());
-        Mockito.when(jwtHandler.getEmailByToken("Token"))
+        Mockito.when(jwtHandler.getEmailFromToken(new Token("Token")))
                 .thenReturn(email);
         Mockito.when(userRepository.save(Mockito.any(User.class))).thenReturn(user);
         // abnormal
@@ -79,7 +80,7 @@ public class UserServiceTest {
 
         Mockito.when(userRepository.findByEmail(duplicatedEmail))
                 .thenReturn(Optional.of(duplicatedUser));
-        Mockito.when(jwtHandler.getEmailByToken("duplicatedToken"))
+        Mockito.when(jwtHandler.getEmailFromToken(new Token("duplicatedToken")))
                 .thenReturn(duplicatedEmail);
 
         // when

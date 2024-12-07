@@ -1,5 +1,7 @@
 package store.shportfolio.common.domain.valueobject;
 
+import java.util.Objects;
+
 public class ServerPort {
 
     private final int port;
@@ -14,5 +16,17 @@ public class ServerPort {
 
     public int getPort() {
         return port;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        ServerPort that = (ServerPort) o;
+        return port == that.port;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(port);
     }
 }

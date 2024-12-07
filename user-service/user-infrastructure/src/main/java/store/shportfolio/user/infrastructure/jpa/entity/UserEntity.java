@@ -5,6 +5,7 @@ import store.shportfolio.user.domain.valueobject.AccountStatus;
 
 import java.time.LocalDateTime;
 
+
 @Entity
 @Table(name = "USER_ENTITY")
 public class UserEntity {

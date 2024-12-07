@@ -9,6 +9,7 @@ import store.shportfolio.user.domain.valueobject.AccountStatus;
 import store.shportfolio.user.domain.valueobject.Password;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 import java.util.UUID;
 
 public class User extends AggregateRoot<UserId> {
@@ -103,6 +104,5 @@ public class User extends AggregateRoot<UserId> {
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
-
 
 }

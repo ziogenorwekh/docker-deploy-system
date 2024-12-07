@@ -1,5 +1,6 @@
 package store.shportfolio.common.domain.valueobject;
 
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -24,4 +25,15 @@ public class Username {
         return matcher.matches();  // 조건에 맞으면 true 반환
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Username username = (Username) o;
+        return Objects.equals(value, username.value);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(value);
+    }
 }

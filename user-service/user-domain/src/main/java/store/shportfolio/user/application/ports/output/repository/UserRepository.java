@@ -1,5 +1,6 @@
 package store.shportfolio.user.application.ports.output.repository;
 
+import org.springframework.stereotype.Repository;
 import store.shportfolio.user.domain.entity.User;
 
 import java.util.Optional;

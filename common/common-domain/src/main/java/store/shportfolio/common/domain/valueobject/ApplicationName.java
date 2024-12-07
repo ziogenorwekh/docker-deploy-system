@@ -1,5 +1,6 @@
 package store.shportfolio.common.domain.valueobject;
 
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -20,5 +21,18 @@ public class ApplicationName {
 
     public String getApplicationName() {
         return applicationName;
+    }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        ApplicationName that = (ApplicationName) o;
+        return Objects.equals(applicationName, that.applicationName);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(applicationName);
     }
 }
