@@ -47,9 +47,22 @@ public class User extends AggregateRoot<UserId> {
         return new User(userId, newEmail, username, password, newAccountStatus, createdAt);
     }
 
+    public static User createGoogleUser(String googleUserId, String email, String newUsername) {
+        isValidateEmail(email);
+        isValidateUsername(newUsername);
+        UserId userId = new UserId(googleUserId);
+        Email newEmail = new Email(email);
+        Username username = new Username(newUsername);
+        Password password = new Password("");
+        LocalDateTime createdAt = LocalDateTime.now();
+        AccountStatus newAccountStatus = AccountStatus.ENABLED;
+
+        return new User(userId, newEmail, username, password, newAccountStatus, createdAt);
+    }
+
     /**
      * @param currentPassword is raw password
-     * @param newPassword is encrypted password
+     * @param newPassword     is encrypted password
      */
     public void updatePassword(String currentPassword, String newPassword) {
         if (!password.matches(currentPassword)) {

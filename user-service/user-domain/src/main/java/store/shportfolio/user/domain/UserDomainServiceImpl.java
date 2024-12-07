@@ -17,6 +17,12 @@ public class UserDomainServiceImpl implements UserDomainService {
     }
 
     @Override
+    public User createGoogleUser(String googleId, String email, String username) {
+        log.info("Creating user with google id: {} , email: {}", googleId, email);
+        return User.createGoogleUser(googleId, email, username);
+    }
+
+    @Override
     public User updateUser(User user, String currentPassword, String newPassword) {
         log.info("Updating user with email {}", user.getEmail());
         user.updatePassword(currentPassword, newPassword);
@@ -35,5 +41,4 @@ public class UserDomainServiceImpl implements UserDomainService {
         user.disableAccount();
         return new UserDeleteEvent(user);
     }
-
 }

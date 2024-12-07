@@ -10,13 +10,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
-import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
-import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Component;
 import store.shportfolio.common.domain.valueobject.Token;
-import store.shportfolio.common.domain.valueobject.UserId;
 import store.shportfolio.user.application.command.*;
 import store.shportfolio.user.application.exception.UserNotFoundException;
 import store.shportfolio.user.application.jwt.JwtHandler;
@@ -26,11 +21,9 @@ import store.shportfolio.user.application.ports.output.repository.UserRepository
 import store.shportfolio.user.application.security.UserDetailsImpl;
 import store.shportfolio.user.domain.entity.User;
 
-import java.util.UUID;
-
 @Slf4j
 @Component
-public class UserAuthenticationService extends DefaultOAuth2UserService implements UserDetailsService{
+public class UserAuthenticationService implements UserDetailsService{
 
     private final UserRepository userRepository;
     private final JwtHandler jwtHandler;
@@ -47,17 +40,6 @@ public class UserAuthenticationService extends DefaultOAuth2UserService implemen
         this.authenticationManager = authenticationManager;
         this.userDataMapper = userDataMapper;
         this.mailSender = mailSender;
-    }
-
-    @Override
-    public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
-        OAuth2User oAuth2User = super.loadUser(userRequest);
-        String googleUserId = oAuth2User.getAttribute("sub");
-        String username = oAuth2User.getAttribute("name");
-        String email = oAuth2User.getAttribute("email");
-
-//        jwtHandler.createLoginToken()
-        return super.loadUser(userRequest);
     }
 
     @Override
@@ -91,16 +73,6 @@ public class UserAuthenticationService extends DefaultOAuth2UserService implemen
         }
     }
 
-    public LoginResponse aOauthLogin(OAuthLoginCommand oAuthLoginCommand) {
-
-        // aOauth business logic
-
-        //
-
-        LoginResponse loginResponse = new LoginResponse("googleId", "googleEmail", "my server's token");
-        return loginResponse;
-    }
-
     public User getUserByToken(Token token) {
         String userId = jwtHandler.getUserIdByToken(token);
 
@@ -122,8 +94,7 @@ public class UserAuthenticationService extends DefaultOAuth2UserService implemen
             throw new BadCredentialsException("Email verification failed");
         }
         log.info("successful verified email -> {}", emailVerificationCommand.getEmail());
-        Token signupTemporaryToken = jwtHandler
+        return jwtHandler
                 .createSignupTemporaryToken(emailVerificationCommand.getEmail());
-        return signupTemporaryToken;
     }
 }

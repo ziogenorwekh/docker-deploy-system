@@ -28,7 +28,7 @@ public class UserDataMapper {
     }
 
     public LoginResponse toLoginResponse(UserDetailsImpl userDetails, String token) {
-        return LoginResponse.builder().userId(userDetails.getId().toString())
+        return LoginResponse.builder().userId(userDetails.getId())
                 .email(userDetails.getEmail())
                 .token(token).build();
     }
