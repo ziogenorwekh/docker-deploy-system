@@ -4,17 +4,17 @@ import java.util.UUID;
 
 public class UserCreateResponse {
 
-    private final UUID userId;
+    private final String userId;
     private final String username;
     private final String email;
 
-    public UserCreateResponse(UUID userId, String username, String email) {
+    public UserCreateResponse(String userId, String username, String email) {
         this.userId = userId;
         this.username = username;
         this.email = email;
     }
 
-    public UUID getUserId() {
+    public String getUserId() {
         return userId;
     }
 
@@ -27,10 +27,10 @@ public class UserCreateResponse {
     }
 
     public static class Builder {
-        private UUID userId;
+        private String userId;
         private String username;
         private String email;
-        public Builder userId(UUID userId) {
+        public Builder userId(String userId) {
             this.userId = userId;
             return this;
         }

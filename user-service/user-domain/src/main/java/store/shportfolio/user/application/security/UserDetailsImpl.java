@@ -26,7 +26,7 @@ public class UserDetailsImpl implements UserDetails {
         return authorities;
     }
 
-    public UUID getId() {
+    public String getId() {
         return user.getId().getValue();
     }
 

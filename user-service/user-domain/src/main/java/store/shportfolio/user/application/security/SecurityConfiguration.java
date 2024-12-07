@@ -12,6 +12,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.SecurityFilterChain;
 import store.shportfolio.user.application.UserApplicationServiceImpl;
 import store.shportfolio.user.application.UserAuthenticationService;
@@ -29,8 +30,12 @@ public class SecurityConfiguration {
         http.formLogin(AbstractHttpConfigurer::disable);
         http.httpBasic(AbstractHttpConfigurer::disable);
         http.authorizeHttpRequests(authorizeRequests -> {
-            authorizeRequests.requestMatchers("/oauth2/**", "/api/auth/**").permitAll();
+            authorizeRequests.requestMatchers("/oauth2/authorization/google", "/api/auth/**").permitAll();
             authorizeRequests.anyRequest().authenticated();
+        });
+
+        http.oauth2Login(httpSecurityOAuth2LoginConfigurer -> {
+            httpSecurityOAuth2LoginConfigurer.loginPage("/login");
         });
         return http.build();
     }

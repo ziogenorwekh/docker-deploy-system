@@ -11,22 +11,22 @@ import java.time.LocalDateTime;
 public class UserEntity {
 
     @Id
-    @Column(nullable = false,unique = true)
+    @Column(nullable = false, unique = true)
     private String userId;
 
-    @Column(nullable = false,name = "username", unique = true, updatable = false)
+    @Column(nullable = false, name = "username")
     private String username;
 
-    @Column(nullable = false,name = "password")
+    @Column(name = "password")
     private String password;
 
-    @Column(nullable = false,name = "email", unique = true, updatable = false)
+    @Column(nullable = false, name = "email", unique = true, updatable = false)
     private String email;
 
     @Column(name = "createdAt")
     private LocalDateTime createdAt;
 
-    @Column(name = "accountStatus")
+    @Column(name = "accountStatus", nullable = false)
     @Enumerated(EnumType.STRING)
     private AccountStatus accountStatus;
 
@@ -75,30 +75,37 @@ public class UserEntity {
         private String email;
         private LocalDateTime createdAt;
         private AccountStatus accountStatus;
+
         public Builder userId(String userId) {
             this.userId = userId;
             return this;
         }
+
         public Builder username(String username) {
             this.username = username;
             return this;
         }
+
         public Builder password(String password) {
             this.password = password;
             return this;
         }
+
         public Builder email(String email) {
             this.email = email;
             return this;
         }
+
         public Builder createdAt(LocalDateTime createdAt) {
             this.createdAt = createdAt;
             return this;
         }
+
         public Builder accountStatus(AccountStatus accountStatus) {
             this.accountStatus = accountStatus;
             return this;
         }
+
         public UserEntity build() {
             return new UserEntity(userId, username, password, email, createdAt, accountStatus);
         }

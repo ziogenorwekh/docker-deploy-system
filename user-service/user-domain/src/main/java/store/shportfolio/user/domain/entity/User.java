@@ -32,7 +32,7 @@ public class User extends AggregateRoot<UserId> {
     }
 
 
-    public static User createUser(UUID newUserId, String email, String newUsername, String newPassword) {
+    public static User createUser(String newUserId, String email, String newUsername, String newPassword) {
         isValidateEmail(email);
         isValidateUsername(newUsername);
         Password password = new Password(newPassword);

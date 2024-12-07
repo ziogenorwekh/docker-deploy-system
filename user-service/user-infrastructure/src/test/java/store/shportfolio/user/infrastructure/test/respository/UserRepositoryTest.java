@@ -24,7 +24,7 @@ public class UserRepositoryTest {
     @Autowired
     private UserRepositoryImpl userRepository;
 
-    private final UUID userId = UUID.randomUUID();
+    private final String userId = UUID.randomUUID().toString();
     private final String email = "test@test.com";
     private final String username = "test";
     private final String password = "$2a$10$wHvChXuLtBh/nn9tDLCdweLidg.A9KHEjRyzxURscADm9O8anp2sO";

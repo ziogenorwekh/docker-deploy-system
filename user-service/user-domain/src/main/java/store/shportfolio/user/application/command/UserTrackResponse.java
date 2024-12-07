@@ -1,24 +1,24 @@
 package store.shportfolio.user.application.command;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
+import java.lang.String;
 
 public class UserTrackResponse {
 
-    private final UUID userId;
+    private final String userId;
     private final String username;
     private final String email;
     private final LocalDateTime createdAt;
 
 
-    public UserTrackResponse(UUID userId, String username, String email, LocalDateTime createdAt) {
+    public UserTrackResponse(String userId, String username, String email, LocalDateTime createdAt) {
         this.userId = userId;
         this.username = username;
         this.email = email;
         this.createdAt = createdAt;
     }
 
-    public UUID getUserId() {
+    public String getUserId() {
         return userId;
     }
 
@@ -36,13 +36,13 @@ public class UserTrackResponse {
 
     public static class Builder {
 
-        private UUID userId;
+        private String userId;
         private String username;
         private String email;
         private LocalDateTime createdAt;
 
         // 빌더 메서드
-        public Builder userId(UUID userId) {
+        public Builder userId(String userId) {
             this.userId = userId;
             return this;
         }

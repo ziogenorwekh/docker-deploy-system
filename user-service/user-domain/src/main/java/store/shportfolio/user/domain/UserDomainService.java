@@ -8,7 +8,7 @@ import java.util.UUID;
 
 public interface UserDomainService {
 
-    User createUser(UUID userId, String email, String newUsername, String newPassword);
+    User createUser(String userId, String email, String newUsername, String newPassword);
     User updateUser(User user, String currentPassword, String newPassword);
     void disableUser(User user);
     UserDeleteEvent deleteUser(User user);

@@ -1,20 +1,19 @@
 package store.shportfolio.user.application.command;
 
-import java.util.UUID;
 
 public class UserUpdateCommand {
 
-    private final UUID userId;
+    private final String userId;
     private final String currentPassword;
     private final String newPassword;
 
-    public UserUpdateCommand(UUID userId, String currentPassword, String newPassword) {
+    public UserUpdateCommand(String userId, String currentPassword, String newPassword) {
         this.userId = userId;
         this.currentPassword = currentPassword;
         this.newPassword = newPassword;
     }
 
-    public UUID getUserId() {
+    public String getUserId() {
         return userId;
     }
 

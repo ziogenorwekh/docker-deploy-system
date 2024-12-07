@@ -1,16 +1,15 @@
 package store.shportfolio.user.application.command;
 
-import java.util.UUID;
 
 public class UserTrackQuery {
 
-    private final UUID userId;
+    private final String userId;
 
-    public UserTrackQuery(UUID userId) {
+    public UserTrackQuery(String userId) {
         this.userId = userId;
     }
 
-    public UUID getUserId() {
+    public String getUserId() {
         return userId;
     }
 }

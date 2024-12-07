@@ -57,7 +57,7 @@ public class UserApplicationServiceImpl implements UserApplicationService {
         });
 
         String encryptedPassword = passwordEncoder.encode(userCreateCommand.getPassword());
-        UUID userId = UUID.randomUUID();
+        String userId = UUID.randomUUID().toString();
 
         User createdUser = userDomainService.createUser(userId, userCreateCommand.getEmail(),
                 userCreateCommand.getUsername(), encryptedPassword);

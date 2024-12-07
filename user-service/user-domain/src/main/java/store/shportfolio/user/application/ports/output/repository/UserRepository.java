@@ -9,11 +9,12 @@ import java.util.UUID;
 public interface UserRepository {
 
     User save(User user);
-    Optional<User> findById(UUID userId);
+    Optional<User> findById(String userId);
+
 
     Optional<User> findByEmail(String email);
 
-    void remove(UUID userId);
+    void remove(String userId);
 
     Optional<User> findByUsername(String username);
 }

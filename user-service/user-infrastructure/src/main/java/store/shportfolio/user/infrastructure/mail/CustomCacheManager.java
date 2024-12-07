@@ -35,4 +35,8 @@ public class CustomCacheManager {
             return Optional.empty();
         }
     }
+
+    public void clear() {
+        cacheManager.getCache("verificationCodes").clear();
+    }
 }

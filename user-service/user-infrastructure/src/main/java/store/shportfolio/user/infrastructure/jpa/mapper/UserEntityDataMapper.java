@@ -26,7 +26,7 @@ public class UserEntityDataMapper {
     }
 
     public User userEntityToUser(UserEntity userEntity) {
-        return new User(new UserId(UUID.fromString(userEntity.getUserId())),
+        return new User(new UserId(userEntity.getUserId()),
                 new Email(userEntity.getEmail()),new Username(userEntity.getUsername()),
                 new Password(userEntity.getPassword()),userEntity.getAccountStatus(),userEntity.getCreatedAt());
     }

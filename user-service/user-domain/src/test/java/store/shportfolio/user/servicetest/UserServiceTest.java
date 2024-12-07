@@ -36,7 +36,7 @@ public class UserServiceTest {
 
     private PasswordEncoder passwordEncoder;
 
-    private final UUID userId = UUID.randomUUID();
+    private final String userId = UUID.randomUUID().toString();
 
     @BeforeEach
     void setUp() {
@@ -75,7 +75,7 @@ public class UserServiceTest {
         UserCreateCommand duplicatedUserCreateCommand =
                 new UserCreateCommand(duplicatedEmail, "duplicated", duplicatedPassword);
         duplicatedUserCreateCommand.setToken("duplicatedToken");
-        User duplicatedUser = User.createUser(UUID.randomUUID(),
+        User duplicatedUser = User.createUser(UUID.randomUUID().toString(),
                 duplicatedEmail, "duplicated", duplicatedPassword);
 
         Mockito.when(userRepository.findByEmail(duplicatedEmail))

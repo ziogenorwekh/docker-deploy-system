@@ -16,6 +16,8 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import store.shportfolio.common.domain.valueobject.Email;
 import store.shportfolio.common.domain.valueobject.Token;
 import store.shportfolio.common.domain.valueobject.UserId;
@@ -106,7 +108,7 @@ public class UserAuthenticationServiceTest {
     public void loginTest() {
 
         // given
-        UUID userId = UUID.randomUUID();
+        String userId = UUID.randomUUID().toString();
         String username = "test";
         String password = "123456";
         User registeredUser = new User(new UserId(userId), new Email(email), new Username(username),
@@ -143,7 +145,7 @@ public class UserAuthenticationServiceTest {
     @DisplayName("get user by token")
     public void getUserByTokenTest() {
 
-        UUID userId = UUID.randomUUID();
+        String userId = UUID.randomUUID().toString();
         String username = "test";
         String password = "123456";
 
@@ -155,7 +157,6 @@ public class UserAuthenticationServiceTest {
         Token loginToken = jwtHandler.createLoginToken(email, userId);
         // when
         User user = userAuthenticationService.getUserByToken(loginToken);
-
         // then
         Mockito.verify(userRepository,Mockito.times(1)).findById(userId);
         Assertions.assertNotNull(user);

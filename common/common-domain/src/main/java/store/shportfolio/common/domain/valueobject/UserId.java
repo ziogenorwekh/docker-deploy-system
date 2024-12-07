@@ -1,10 +1,9 @@
 package store.shportfolio.common.domain.valueobject;
 
-import java.util.UUID;
 
-public class UserId extends BaseId<UUID> {
+public class UserId extends BaseId<String> {
 
-    public UserId(UUID userId) {
+    public UserId(String userId) {
         super(userId);
     }
 }

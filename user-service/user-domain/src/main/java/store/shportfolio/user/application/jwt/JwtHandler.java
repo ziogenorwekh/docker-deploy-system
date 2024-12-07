@@ -37,7 +37,7 @@ public class JwtHandler {
         return new Token(emailToken);
     }
 
-    public Token createLoginToken(String email, UUID userId) {
+    public Token createLoginToken(String email, String userId) {
         String tokenExpirationTime = env.getProperty("server.token.login.expiration");
         String secret = env.getProperty("server.token.secret");
         ZoneId zoneId = ZoneId.of("Asia/Seoul");
@@ -45,7 +45,7 @@ public class JwtHandler {
         ZonedDateTime expirationTime = now.
                 plusMinutes(Long.parseLong(Objects
                         .requireNonNull(tokenExpirationTime)));
-        String loginToken = JWT.create().withIssuer(userId.toString())
+        String loginToken = JWT.create().withIssuer(userId)
                 .withSubject(email).withExpiresAt(expirationTime.toInstant())
                 .sign(Algorithm.HMAC256(secret));
         log.info("Successfully created the login token -> {}", email);
@@ -57,9 +57,9 @@ public class JwtHandler {
         return JWT.require(Algorithm.HMAC256(secret)).build().verify(token.getValue()).getIssuer();
     }
 
-    public UUID getUserIdByToken(Token token) {
+    public String getUserIdByToken(Token token) {
         String secret = env.getProperty("server.token.secret");
         String userId = JWT.require(Algorithm.HMAC256(secret)).build().verify(token.getValue()).getIssuer();
-        return UUID.fromString(userId);
+        return userId;
     }
 }

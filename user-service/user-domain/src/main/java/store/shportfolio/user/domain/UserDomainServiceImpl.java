@@ -11,7 +11,7 @@ import java.util.UUID;
 public class UserDomainServiceImpl implements UserDomainService {
 
     @Override
-    public User createUser(UUID userId, String email, String newUsername, String newPassword) {
+    public User createUser(String userId, String email, String newUsername, String newPassword) {
         log.info("Creating user with email {}", email);
         return User.createUser(userId, email, newUsername, newPassword);
     }

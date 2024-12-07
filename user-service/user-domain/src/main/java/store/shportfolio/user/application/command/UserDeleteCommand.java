@@ -4,13 +4,13 @@ import java.util.UUID;
 
 public class UserDeleteCommand {
 
-    private final UUID userId;
+    private final String userId;
 
-    public UserDeleteCommand(UUID userId) {
+    public UserDeleteCommand(String userId) {
         this.userId = userId;
     }
 
-    public UUID getUserId() {
+    public String getUserId() {
         return userId;
     }
 }

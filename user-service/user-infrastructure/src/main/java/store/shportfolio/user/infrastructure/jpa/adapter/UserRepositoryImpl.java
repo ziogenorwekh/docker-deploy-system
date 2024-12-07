@@ -31,10 +31,11 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public Optional<User> findById(UUID userId) {
+    public Optional<User> findById(String userId) {
         return userJpaRepository.findById(userId.toString())
                 .map(userEntityDataMapper::userEntityToUser);
     }
+
 
     @Override
     public Optional<User> findByEmail(String email) {
@@ -42,8 +43,8 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public void remove(UUID userId) {
-        userJpaRepository.deleteByUserId(userId.toString());
+    public void remove(String userId) {
+        userJpaRepository.deleteByUserId(userId);
     }
 
     @Override
