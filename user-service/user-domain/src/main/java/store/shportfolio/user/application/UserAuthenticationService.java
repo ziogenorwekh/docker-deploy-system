@@ -23,7 +23,7 @@ import store.shportfolio.user.domain.entity.User;
 
 @Slf4j
 @Component
-public class UserAuthenticationService implements UserDetailsService{
+public class UserAuthenticationService implements UserDetailsService {
 
     private final UserRepository userRepository;
     private final JwtHandler jwtHandler;
@@ -61,14 +61,14 @@ public class UserAuthenticationService implements UserDetailsService{
             log.info("login access user -> {}", userDetails.getEmail());
             Token jwtToken = jwtHandler.createLoginToken(userDetails.getEmail(), userDetails.getId());
             return userDataMapper.toLoginResponse(userDetails, jwtToken.getValue());
-        }  catch (BadCredentialsException e) {
-            log.error("BadCredentialsException -> {}",e.getMessage());
+        } catch (BadCredentialsException e) {
+            log.error("BadCredentialsException -> {}", e.getMessage());
             throw new BadCredentialsException("Login failed", e);
         } catch (DisabledException e) {
-            log.error("DisabledException -> {}",e.getMessage());
+            log.error("DisabledException -> {}", e.getMessage());
             throw new DisabledException("The account is disabled", e);
         } catch (Exception e) {
-            log.error("Exception -> {}",e.getMessage());
+            log.error("Exception -> {}", e.getMessage());
             throw new RuntimeException("An unexpected error occurred", e);
         }
     }

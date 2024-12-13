@@ -41,7 +41,6 @@ public class UserTrackResponse {
         private String email;
         private LocalDateTime createdAt;
 
-        // 빌더 메서드
         public Builder userId(String userId) {
             this.userId = userId;
             return this;
@@ -62,13 +61,11 @@ public class UserTrackResponse {
             return this;
         }
 
-        // 빌더 메서드를 이용해 객체 생성
         public UserTrackResponse build() {
             return new UserTrackResponse(userId, username, email, createdAt);
         }
     }
 
-    // 빌더 패턴을 사용할 수 있도록 static 메서드 추가
     public static UserTrackResponse.Builder builder() {
         return new Builder();
     }

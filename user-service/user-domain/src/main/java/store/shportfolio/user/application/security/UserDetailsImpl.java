@@ -8,8 +8,6 @@ import store.shportfolio.user.domain.valueobject.AccountStatus;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Objects;
-import java.util.UUID;
 
 public class UserDetailsImpl implements UserDetails {
 

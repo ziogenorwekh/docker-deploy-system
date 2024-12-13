@@ -1,7 +1,7 @@
 package store.shportfolio.user.application.command;
 
 public class OAuthLoginCommand {
-    private final String token;
+    private String token;
 
     public OAuthLoginCommand(String token) {
         this.token = token;
@@ -9,5 +9,19 @@ public class OAuthLoginCommand {
 
     public String getToken() {
         return token;
+    }
+
+    public static class Builder {
+        private String token;
+        public Builder token(String token) {
+            this.token = token;
+            return this;
+        }
+        public OAuthLoginCommand build() {
+            return new OAuthLoginCommand(token);
+        }
+    }
+    public static OAuthLoginCommand.Builder builder() {
+        return new OAuthLoginCommand.Builder();
     }
 }
