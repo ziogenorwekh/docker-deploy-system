@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import store.shportfolio.user.infrastructure.jpa.adapter.UserRepositoryImpl;
 import store.shportfolio.user.infrastructure.jpa.entity.UserEntity;
-import store.shportfolio.user.infrastructure.jpa.mapper.UserEntityDataMapper;
+import store.shportfolio.user.infrastructure.jpa.mapper.UserEntityDataAccessMapper;
 import store.shportfolio.user.infrastructure.jpa.repository.UserJpaRepository;
 
 @EntityScan(basePackageClasses = UserEntity.class)
@@ -20,7 +20,7 @@ public class TestJpaConfig {
     }
 
     @Bean
-    public UserEntityDataMapper userEntityDataMapper() {
-        return new UserEntityDataMapper();
+    public UserEntityDataAccessMapper userEntityDataMapper() {
+        return new UserEntityDataAccessMapper();
     }
 }

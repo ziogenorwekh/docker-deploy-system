@@ -8,8 +8,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
@@ -17,13 +15,14 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import store.shportfolio.user.application.UserApplicationService;
+import store.shportfolio.user.application.api.UserResources;
 import store.shportfolio.user.application.command.*;
-import store.shportfolio.user.openfeign.DatabaseServiceClient;
-import store.shportfolio.user.openfeign.DeployServiceClient;
+import store.shportfolio.user.application.openfeign.DatabaseServiceClient;
+import store.shportfolio.user.application.openfeign.DeployServiceClient;
 
 import java.time.LocalDateTime;
 
-@ContextConfiguration(classes = UserResourcesConfig.class)
+@ContextConfiguration(classes = UserResourcesTestConfig.class)
 @WebMvcTest(UserResources.class)
 public class UserResourcesTest {
 
@@ -70,8 +69,7 @@ public class UserResourcesTest {
         Mockito.when(userApplicationService.createUser(Mockito.any(UserCreateCommand.class)))
                 .thenReturn(userCreateResponse);
 
-        mockMvc
-                .perform(MockMvcRequestBuilders.post("/api/users")
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/users")
                         .header("Authorization", token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(userCreateCommand)))

@@ -1,0 +1,15 @@
+package store.shportfolio.database.application;
+
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import store.shportfolio.common.domain.valueobject.UserGlobal;
+
+@FeignClient(name = "user-service", url = "${gateway.url}")
+public interface UserServiceClient {
+
+    @RequestMapping(path = "/api/auth/user/info", method = RequestMethod.GET,
+            produces = "application/json")
+    UserGlobal getUserInfo(@RequestHeader("Authorization") String token);
+}

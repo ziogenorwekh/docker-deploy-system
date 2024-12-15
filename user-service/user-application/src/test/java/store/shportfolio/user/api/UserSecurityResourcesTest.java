@@ -15,6 +15,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import store.shportfolio.common.domain.valueobject.Token;
 import store.shportfolio.user.application.UserAuthenticationService;
+import store.shportfolio.user.application.api.UserSecurityResources;
 import store.shportfolio.user.application.command.EmailSendCommand;
 import store.shportfolio.user.application.command.EmailVerificationCommand;
 import store.shportfolio.user.application.command.LoginCommand;
@@ -22,7 +23,7 @@ import store.shportfolio.user.application.command.LoginResponse;
 
 import java.util.UUID;
 
-@ContextConfiguration(classes = UserResourcesConfig.class)
+@ContextConfiguration(classes = UserResourcesTestConfig.class)
 @WebMvcTest(UserSecurityResources.class)
 public class UserSecurityResourcesTest {
 

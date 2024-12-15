@@ -1,5 +1,6 @@
 package store.shportfolio.user.application.security;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
@@ -7,6 +8,7 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Component;
+import store.shportfolio.user.application.exception.UserEmailDuplicatedException;
 import store.shportfolio.user.application.ports.output.repository.UserRepository;
 import store.shportfolio.user.domain.UserDomainService;
 import store.shportfolio.user.domain.entity.User;
@@ -14,6 +16,7 @@ import store.shportfolio.user.domain.entity.User;
 import java.util.Collections;
 import java.util.Map;
 
+@Slf4j
 @Component
 public class UserDefaultOAuth2UserService extends DefaultOAuth2UserService {
 
@@ -28,15 +31,16 @@ public class UserDefaultOAuth2UserService extends DefaultOAuth2UserService {
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
         OAuth2User oAuth2User = super.loadUser(userRequest);
-
         Map<String, Object> attributes = oAuth2User.getAttributes();
         String name = (String) attributes.get("name");
         String email = (String) attributes.get("email");
         String googleId = (String) attributes.get("sub");
-
+        log.info("email: {}, googleId: {}", email, googleId);
         if (userRepository.findByEmail(email).isEmpty()) {
             User googleUser = userDomainService.createGoogleUser(googleId, email, name);
             userRepository.save(googleUser);
+        } else {
+            throw new UserEmailDuplicatedException(String.format("Already registered %s please login web", email));
         }
 
         return new DefaultOAuth2User(

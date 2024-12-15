@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Configuration;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-@EnableCaching
+
 @Configuration
 public class CacheConfig {
 
@@ -22,10 +22,5 @@ public class CacheConfig {
                 .expireAfterWrite(5, TimeUnit.MINUTES) // 캐시 저장 후 5분 동안 유효
                 .maximumSize(100)); // 최대 100개의 캐시 항목 유지
         return cacheManager;
-    }
-
-    @Bean
-    public CustomCacheManager customCacheManager() {
-        return new CustomCacheManager(cacheManager());
     }
 }

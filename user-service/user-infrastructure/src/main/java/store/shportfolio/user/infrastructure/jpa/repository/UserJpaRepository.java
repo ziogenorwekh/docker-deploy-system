@@ -6,6 +6,7 @@ import store.shportfolio.user.infrastructure.jpa.entity.UserEntity;
 
 import java.util.Optional;
 
+
 public interface UserJpaRepository extends JpaRepository<UserEntity, String> {
 
     Optional<UserEntity> findByUsername(String username);

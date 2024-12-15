@@ -25,6 +25,13 @@ public class Username {
         return matcher.matches();  // 조건에 맞으면 true 반환
     }
 
+    public static String removeWhitespace(String username) {
+        if (username == null) {
+            throw new IllegalArgumentException("Username cannot be null");
+        }
+        return username.replaceAll("\\s+", ""); // 모든 공백 제거
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;

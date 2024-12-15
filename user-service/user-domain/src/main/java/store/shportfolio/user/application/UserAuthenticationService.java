@@ -2,6 +2,7 @@ package store.shportfolio.user.application;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
@@ -23,7 +24,7 @@ import store.shportfolio.user.domain.entity.User;
 
 @Slf4j
 @Component
-public class UserAuthenticationService implements UserDetailsService {
+public class UserAuthenticationService {
 
     private final UserRepository userRepository;
     private final JwtHandler jwtHandler;
@@ -42,12 +43,6 @@ public class UserAuthenticationService implements UserDetailsService {
         this.mailSender = mailSender;
     }
 
-    @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        return userRepository.findByEmail(email)
-                .map(UserDetailsImpl::new)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
-    }
 
     public LoginResponse login(LoginCommand loginCommand) {
         UsernamePasswordAuthenticationToken token;

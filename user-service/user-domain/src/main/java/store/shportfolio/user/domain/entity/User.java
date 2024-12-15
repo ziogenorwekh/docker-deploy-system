@@ -31,6 +31,17 @@ public class User extends AggregateRoot<UserId> {
         super.setId(userId);
     }
 
+    public User(String userId, String email,
+                String username, String password,
+                AccountStatus accountStatus, LocalDateTime createdAt) {
+        this.email = new Email(email);
+        this.username = new Username(username);
+        this.password = new Password(password);
+        this.accountStatus = accountStatus;
+        this.createdAt = createdAt;
+        super.setId(new UserId(userId));
+    }
+
 
     public static User createUser(String newUserId, String email, String newUsername, String newPassword) {
         isValidateEmail(email);
@@ -48,11 +59,11 @@ public class User extends AggregateRoot<UserId> {
     }
 
     public static User createGoogleUser(String googleUserId, String email, String newUsername) {
-        isValidateEmail(email);
-        isValidateUsername(newUsername);
+        String removeWhitespace = Username.removeWhitespace(newUsername);
+
         UserId userId = new UserId(googleUserId);
         Email newEmail = new Email(email);
-        Username username = new Username(newUsername);
+        Username username = new Username(removeWhitespace);
         Password password = new Password("");
         LocalDateTime createdAt = LocalDateTime.now();
         AccountStatus newAccountStatus = AccountStatus.ENABLED;

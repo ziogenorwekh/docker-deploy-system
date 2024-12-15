@@ -13,9 +13,26 @@ repositories {
 
 dependencies {
     testImplementation platform('org.junit:junit-bom:5.10.0')
+
+    implementation project(':user-service:user-domain')
+    implementation project(':user-service:user-infrastructure')
+    implementation project(':user-service:user-application')
+    implementation project(':common:common-domain')
+    // https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-starter-netflix-eureka-client
+    implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-eureka-client', version: '4.0.0'
+    implementation 'org.springframework.boot:spring-boot-starter'
+
     testImplementation 'org.junit.jupiter:junit-jupiter'
+
 }
 
 test {
     useJUnitPlatform()
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'store.shportfolio.user.container.UserApplication' // 메인 클래스의 완전한 패키지 이름
+    }
+    enabled = true
 }
