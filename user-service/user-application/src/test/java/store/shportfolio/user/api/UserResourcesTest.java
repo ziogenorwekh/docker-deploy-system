@@ -51,11 +51,11 @@ public class UserResourcesTest {
 
     @BeforeEach
     public void setup() {
+        objectMapper = new ObjectMapper();
         userResources = new UserResources(userApplicationService,databaseServiceClient,deployServiceClient);
         mockMvc = MockMvcBuilders
                 .standaloneSetup(userResources)
                 .build();
-        objectMapper = new ObjectMapper();
     }
 
 

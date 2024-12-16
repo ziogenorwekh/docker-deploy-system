@@ -2,6 +2,7 @@ package store.shportfolio.database.application;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 import store.shportfolio.common.domain.valueobject.UserGlobal;
 import store.shportfolio.database.application.command.DatabaseCreateCommand;
 import store.shportfolio.database.application.command.DatabaseCreateResponse;
@@ -16,6 +17,7 @@ import store.shportfolio.database.domain.entity.Database;
 
 @Slf4j
 @Service
+@Validated
 public class DatabaseApplicationServiceImpl implements DatabaseApplicationService {
 
     private final DatabaseRepository databaseRepository;

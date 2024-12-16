@@ -1,5 +1,7 @@
 plugins {
     id 'java'
+    id 'org.springframework.boot' version '3.0.9'
+    id 'io.spring.dependency-management' version '1.1.6'
 }
 
 group = 'store.shportfolio'
@@ -10,10 +12,27 @@ repositories {
 }
 
 dependencies {
+
+
+    implementation project(':database-service:database-domain')
+    implementation project(':database-service:database-application')
+    implementation project(':database-service:database-infrastructure')
+    implementation project(':common:common-domain')
+    // https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-starter-netflix-eureka-client
+    implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-eureka-client', version: '4.0.0'
+    implementation 'org.springframework.cloud:spring-cloud-starter'
+
     testImplementation platform('org.junit:junit-bom:5.10.0')
     testImplementation 'org.junit.jupiter:junit-jupiter'
 }
 
 test {
     useJUnitPlatform()
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'store.shportfolio.database.container.DatabaseApplication' // 메인 클래스의 완전한 패키지 이름
+    }
+    enabled = true
 }

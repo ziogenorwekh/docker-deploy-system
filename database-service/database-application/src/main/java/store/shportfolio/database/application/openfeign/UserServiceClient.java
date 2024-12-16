@@ -1,4 +1,4 @@
-package store.shportfolio.database.application;
+package store.shportfolio.database.application.openfeign;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestHeader;

@@ -1,5 +1,7 @@
 package store.shportfolio.common.domain.valueobject;
 
+import java.util.Objects;
+
 public class UserGlobal {
 
     private final String userId;
@@ -36,5 +38,18 @@ public class UserGlobal {
 
     public static UserGlobal.Builder builder() {
         return new UserGlobal.Builder();
+    }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        UserGlobal that = (UserGlobal) o;
+        return Objects.equals(userId, that.userId) && Objects.equals(username, that.username);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(userId, username);
     }
 }
