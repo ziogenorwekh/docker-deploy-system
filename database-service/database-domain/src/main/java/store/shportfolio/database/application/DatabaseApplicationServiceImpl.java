@@ -2,6 +2,7 @@ package store.shportfolio.database.application;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import store.shportfolio.common.domain.valueobject.UserGlobal;
 import store.shportfolio.database.application.command.DatabaseCreateCommand;
@@ -36,6 +37,7 @@ public class DatabaseApplicationServiceImpl implements DatabaseApplicationServic
     }
 
     @Override
+    @Transactional
     public DatabaseCreateResponse createDatabase(DatabaseCreateCommand databaseCreateCommand, UserGlobal userGlobal) {
 
         Database database = databaseDomainService.createDatabase(userGlobal, databaseCreateCommand);
@@ -49,6 +51,7 @@ public class DatabaseApplicationServiceImpl implements DatabaseApplicationServic
     }
 
     @Override
+    @Transactional(readOnly = true)
     public DatabaseTrackResponse trackQuery(DatabaseTrackQuery trackQuery) {
         Database database = databaseRepository.findByUserId(trackQuery.getUserId()).orElseThrow(() -> {
             throw new DatabaseNotFoundException("User not register user's database");
@@ -57,6 +60,7 @@ public class DatabaseApplicationServiceImpl implements DatabaseApplicationServic
     }
 
     @Override
+    @Transactional
     public void deleteDatabase(UserGlobal userGlobal) {
         Database database = databaseRepository.findByUserId(userGlobal.getUserId()).orElseThrow(() -> {
             throw new DatabaseNotFoundException("User not register user's database");

@@ -4,29 +4,29 @@ import java.util.Objects;
 
 public class ServerPort {
 
-    private final int port;
+    private final int value;
 
-    public ServerPort(int port) {
-        this.port = port;
+    public ServerPort(int value) {
+        this.value = value;
     }
 
     public boolean isValid() {
-        return port >= 10000 && port <= 65535;
+        return value >= 10000 && value <= 65535;
     }
 
-    public int getPort() {
-        return port;
+    public int getValue() {
+        return value;
     }
 
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         ServerPort that = (ServerPort) o;
-        return port == that.port;
+        return value == that.value;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(port);
+        return Objects.hashCode(value);
     }
 }

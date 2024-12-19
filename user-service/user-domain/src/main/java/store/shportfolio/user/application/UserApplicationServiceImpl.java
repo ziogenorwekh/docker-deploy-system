@@ -3,6 +3,7 @@ package store.shportfolio.user.application;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import store.shportfolio.common.domain.valueobject.Token;
 import store.shportfolio.user.application.command.*;
@@ -39,6 +40,7 @@ public class UserApplicationServiceImpl implements UserApplicationService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public UserTrackResponse trackQueryUser(UserTrackQuery userTrackQuery) {
         User user = userRepository.findById(userTrackQuery.getUserId()).orElseThrow(() -> new UserNotFoundException(
                 String.format("User with id %s not found", userTrackQuery.getUserId())));
@@ -47,6 +49,7 @@ public class UserApplicationServiceImpl implements UserApplicationService {
     }
 
     @Override
+    @Transactional
     public UserCreateResponse createUser(UserCreateCommand userCreateCommand) {
         String token = userCreateCommand.getToken();
         String authenticatedEmail = jwtHandler.getEmailFromToken(new Token(token));
@@ -68,6 +71,7 @@ public class UserApplicationServiceImpl implements UserApplicationService {
     }
 
     @Override
+    @Transactional
     public void updateUser(UserUpdateCommand userUpdateCommand) {
         User user = userRepository.findById(userUpdateCommand.getUserId()).orElseThrow(() ->
                 new UserNotFoundException(String.format("User with id %s not found", userUpdateCommand.getUserId())));
@@ -82,6 +86,7 @@ public class UserApplicationServiceImpl implements UserApplicationService {
     }
 
     @Override
+    @Transactional
     public UserDeleteEvent deleteUser(UserDeleteCommand userDeleteCommand) {
         User user = userRepository.findById(userDeleteCommand.getUserId()).orElseThrow(() -> {
             throw new UserNotFoundException(String.format("User with id %s not found", userDeleteCommand.getUserId()));
