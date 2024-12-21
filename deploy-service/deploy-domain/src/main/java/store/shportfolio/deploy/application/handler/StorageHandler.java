@@ -11,7 +11,10 @@ import store.shportfolio.deploy.domain.entity.Storage;
 import store.shportfolio.deploy.domain.entity.WebApp;
 import store.shportfolio.deploy.domain.valueobject.ApplicationStatus;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.UUID;
 
 @Slf4j
 @Component
@@ -34,7 +37,8 @@ public class StorageHandler {
 
     public Storage uploadS3(WebApp webApp, MultipartFile file) throws IOException {
         Storage storage = webApp.getStorage();
-        StorageInfo storageInfo = s3Bucket.uploadS3(file);
+        File multipartFileToFile = this.convertMultipartFileToFile(file);
+        StorageInfo storageInfo = s3Bucket.uploadS3(multipartFileToFile);
         deployDomainService.saveStorageInfo(storage, storageInfo.getStorageName(), storageInfo.getFildUrl());
         deployDomainService.updateStorage(webApp, storage);
         Storage saved = storageRepository.save(storage);
@@ -44,5 +48,17 @@ public class StorageHandler {
 
     public void deleteStorage(WebApp webApp) {
         storageRepository.remove(webApp.getStorage());
+    }
+
+    private File convertMultipartFileToFile(MultipartFile multipartFile) throws IOException {
+        String filename = String.format("%s-%s", UUID.randomUUID(), multipartFile.getOriginalFilename());
+        File convertedFile = new File(filename);
+
+        if (convertedFile.createNewFile()) {
+            FileOutputStream fileOutputStream = new FileOutputStream(convertedFile);
+            fileOutputStream.write(multipartFile.getBytes());
+            fileOutputStream.close();
+        }
+        return convertedFile;
     }
 }

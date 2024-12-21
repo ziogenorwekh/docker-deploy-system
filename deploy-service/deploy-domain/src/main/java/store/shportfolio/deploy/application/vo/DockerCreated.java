@@ -10,13 +10,14 @@ import java.util.UUID;
 @Builder
 public class DockerCreated {
 
-    private final UUID applicationId;
     private final String dockerContainerId;
     private final DockerContainerStatus dockerContainerStatus;
+    private final String error;
 
-    public DockerCreated(UUID applicationId, String dockerContainerId, DockerContainerStatus dockerContainerStatus) {
-        this.applicationId = applicationId;
+    public DockerCreated(String dockerContainerId,
+                         DockerContainerStatus dockerContainerStatus, String error) {
         this.dockerContainerId = dockerContainerId;
         this.dockerContainerStatus = dockerContainerStatus;
+        this.error = error;
     }
 }

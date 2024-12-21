@@ -39,11 +39,12 @@ public class DockerContainerHandler {
     // need additional logic
     public DockerContainer createDockerImageAndRun(WebApp webApp) {
         DockerContainer dockerContainer = webApp.getDockerContainer();
+        String storageUrl = webApp.getStorage().getStorageUrl();
         if (!(dockerContainer.getDockerContainerStatus() == DockerContainerStatus.INITIALIZED)) {
             throw new ContainerAccessException("Docker container is not initialized");
         }
         log.info("docker container must be INITIALIZED -> {}", dockerContainer.getDockerContainerStatus());
-        DockerCreated dockerCreated = dockerConnector.createContainer(dockerContainer);
+        DockerCreated dockerCreated = dockerConnector.createContainer(webApp, storageUrl);
         deployDomainService.successfulCreateDockerContainer(dockerContainer, dockerCreated);
         DockerContainer saved = dockerContainerRepository.save(dockerContainer);
         log.info("docker container must be STARTED -> {}", saved.getDockerContainerStatus());

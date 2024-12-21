@@ -68,6 +68,14 @@ public class WebAppHandler {
                 new ApplicationNotFoundException(String.format("WebApp with applicationId %s not found", applicationId)));
     }
 
+    public void isExistApplicationName(String applicationName) {
+        webAppRepository.findByApplicationName(applicationName)
+                .ifPresent(webApp -> {
+                    throw new ApplicationNotFoundException(String
+                            .format("WebApp with applicationName %s already exist", applicationName));
+                });
+    }
+
     public void deleteWebApp(WebApp webApp) {
         webAppRepository.deleteByApplicationId(webApp.getId().getValue());
     }

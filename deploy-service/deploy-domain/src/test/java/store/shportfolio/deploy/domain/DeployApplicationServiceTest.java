@@ -33,7 +33,13 @@ import store.shportfolio.deploy.domain.valueobject.ApplicationStatus;
 import store.shportfolio.deploy.domain.valueobject.DockerContainerId;
 import store.shportfolio.deploy.domain.valueobject.DockerContainerStatus;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -66,6 +72,8 @@ public class DeployApplicationServiceTest {
     @Mock
     private WebAppRepository webAppRepository;
 
+    private List<String> createdFiles = new ArrayList<>();
+
     @Mock
     private S3Bucket s3Bucket;
 
@@ -82,6 +90,17 @@ public class DeployApplicationServiceTest {
         deployApplicationService = new DeployApplicationServiceImpl(
                 dockerContainerHandler, storageHandler, webAppHandler, deployDataMapper
         );
+    }
+
+    @AfterEach
+    public void cleanUp() throws IOException {
+        // 임시 파일들을 정리하는 로직
+        for (String filePath : createdFiles) {
+            File file = new File(filePath);
+            if (file.exists()) {
+                Files.delete(Paths.get(filePath));
+            }
+        }
     }
 
 
@@ -346,7 +365,7 @@ public class DeployApplicationServiceTest {
                 .build();
         MultipartFile file = new MockMultipartFile("file", "test.jar", "application/octet-stream", new byte[0]);
 
-        Mockito.when(s3Bucket.uploadS3(file)).thenReturn(storageInfo);
+        Mockito.when(s3Bucket.uploadS3(Mockito.any())).thenReturn(storageInfo);
         Mockito.when(storageRepository.save(Mockito.any(Storage.class))).thenReturn(storage);
 
         // when
@@ -363,20 +382,26 @@ public class DeployApplicationServiceTest {
     public void testCreateDockerContainer() {
         // given
         ApplicationId applicationId = new ApplicationId(UUID.randomUUID());
+        String fileUrl = "http://s3.aws.com/test.jar";
         DockerContainer dockerContainer = DockerContainer.builder()
                 .applicationId(applicationId)
                 .endPointUrl("")
                 .dockerContainerStatus(DockerContainerStatus.INITIALIZED)
                 .dockerContainerId(new DockerContainerId(""))
                 .build();
+        Storage storage = Storage.builder()
+                .applicationId(applicationId)
+                .storageUrl(fileUrl)
+                .build();
         WebApp webApp = WebApp.builder()
                 .applicationId(applicationId)
                 .dockerContainer(dockerContainer)
+                .storage(storage)
                 .build();
-        DockerCreated dockerCreated = new DockerCreated(applicationId.getValue(), "dockerContainerId",
-                DockerContainerStatus.STARTED);
+        DockerCreated dockerCreated = new DockerCreated( "dockerContainerId",
+                DockerContainerStatus.STARTED,"");
 
-        Mockito.when(dockerConnector.createContainer(dockerContainer)).thenReturn(dockerCreated);
+        Mockito.when(dockerConnector.createContainer(webApp, fileUrl)).thenReturn(dockerCreated);
         Mockito.when(containerRepository.save(Mockito.any(DockerContainer.class))).thenReturn(dockerContainer);
 
         // when
@@ -384,7 +409,7 @@ public class DeployApplicationServiceTest {
 
         // then
         Assertions.assertEquals(DockerContainerStatus.STARTED, result.getDockerContainerStatus());
-        Mockito.verify(dockerConnector).createContainer(dockerContainer);
+        Mockito.verify(dockerConnector).createContainer(webApp, fileUrl);
         Mockito.verify(containerRepository).save(dockerContainer);
     }
 
@@ -400,6 +425,7 @@ public class DeployApplicationServiceTest {
                 "application/octet-stream", new byte[0]);
         WebAppFileCreateCommand webAppFileCreateCommand = new WebAppFileCreateCommand(applicationId.getValue().toString(), file);
 
+        createdFiles.add(applicationId.getValue().toString() + "-test.jar"); // 예시로 추가 (파일 경로에 맞게 수정)
         // WebApp 초기 상태 설정
         Storage storage = Storage.builder()
                 .applicationId(applicationId)
@@ -436,7 +462,6 @@ public class DeployApplicationServiceTest {
                 .build();
         updatedStorage.savedStorage(fileUrl, storageName);
         DockerCreated dockerCreated = DockerCreated.builder()
-                .applicationId(applicationId.getValue())
                 .dockerContainerId("dockerContainerId")
                 .dockerContainerStatus(DockerContainerStatus.STARTED)
                 .build();
@@ -450,11 +475,11 @@ public class DeployApplicationServiceTest {
         // Repository 및 Connector Mock 설정
         Mockito.when(webAppRepository.findByApplicationId(applicationId.getValue()))
                 .thenReturn(Optional.of(webApp));
-        Mockito.when(s3Bucket.uploadS3(file))
+        Mockito.when(s3Bucket.uploadS3(Mockito.any(File.class)))
                 .thenReturn(storageInfo);
         Mockito.when(storageRepository.save(Mockito.any(Storage.class)))
                 .thenReturn(updatedStorage);
-        Mockito.when(dockerConnector.createContainer(Mockito.any(DockerContainer.class)))
+        Mockito.when(dockerConnector.createContainer(Mockito.any(WebApp.class), Mockito.eq(fileUrl)))
                 .thenReturn(dockerCreated);
         Mockito.when(containerRepository.save(Mockito.any(DockerContainer.class)))
                 .thenReturn(updatedDockerContainer);
@@ -464,10 +489,22 @@ public class DeployApplicationServiceTest {
 
         // then
         Mockito.verify(storageRepository).save(storage);
-        Mockito.verify(dockerConnector).createContainer(Mockito.any());
+        Mockito.verify(dockerConnector).createContainer(Mockito.any(), Mockito.eq(fileUrl));
         Mockito.verify(containerRepository).save(Mockito.any());
         Mockito.verify(webAppRepository, Mockito.times(2)).save(webApp);
 
         Assertions.assertEquals(ApplicationStatus.COMPLETE, webApp.getApplicationStatus());
+    }
+
+    private File convertMultipartFileToFile(MultipartFile multipartFile) throws IOException {
+        String filename = String.format("%s-%s", UUID.randomUUID(), multipartFile.getOriginalFilename());
+        File convertedFile = new File(filename);
+
+        if (convertedFile.createNewFile()) {
+            FileOutputStream fileOutputStream = new FileOutputStream(convertedFile);
+            fileOutputStream.write(multipartFile.getBytes());
+            fileOutputStream.close();
+        }
+        return convertedFile;
     }
 }

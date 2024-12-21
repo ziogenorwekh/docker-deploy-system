@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import store.shportfolio.common.domain.valueobject.UserGlobal;
 import store.shportfolio.deploy.application.command.*;
-import store.shportfolio.deploy.application.exception.DockerException;
+import store.shportfolio.deploy.application.exception.DockerContainerException;
 import store.shportfolio.deploy.application.exception.S3UploadFailedException;
 import store.shportfolio.deploy.application.exception.WebAppUserNotMatchException;
 import store.shportfolio.deploy.application.handler.DockerContainerHandler;
@@ -46,6 +46,8 @@ public class DeployApplicationServiceImpl implements DeployApplicationService {
     @Transactional
     public WebAppCreateResponse createWebApp(UserGlobal userGlobal, WebAppCreateCommand webAppCreateCommand) {
 
+        webAppHandler.isExistApplicationName(webAppCreateCommand.getApplicationName());
+
         WebApp webApp = webAppHandler.createWebApp(userGlobal, webAppCreateCommand);
 
         Storage storage = storageHandler.createAndSaveStorage(webApp);
@@ -73,11 +75,10 @@ public class DeployApplicationServiceImpl implements DeployApplicationService {
                     , dockerContainer.getDockerContainerStatus());
             webAppHandler.completeContainerizing(webApp, dockerContainer);
             log.info("containerizing completed -> {}", webApp.getApplicationStatus());
-
             log.info("finally webApp must be updated DockerContainer is Id -> {}, is Endpoint -> {}. " +
                             "storage is fileUrl {}, is name -> {}", dockerContainer.getDockerContainerId().getValue(),
                     dockerContainer.getEndPointUrl(), storage.getStorageUrl(), storage.getStorageName());
-        } catch (IOException | DockerException e) {
+        } catch (IOException | DockerContainerException e) {
             webAppHandler.failedApplication(webApp, e.getMessage());
             throw new S3UploadFailedException(e.getMessage());
         }
@@ -94,6 +95,7 @@ public class DeployApplicationServiceImpl implements DeployApplicationService {
     }
 
     @Override
+    @Transactional
     public void startContainer(WebAppTrackQuery webAppTrackQuery, UserGlobal userGlobal) {
         UUID applicationId = webAppTrackQuery.getApplicationId();
         log.info("start webApp id is {}", applicationId);
@@ -103,6 +105,7 @@ public class DeployApplicationServiceImpl implements DeployApplicationService {
     }
 
     @Override
+    @Transactional
     public void stopContainer(WebAppTrackQuery webAppTrackQuery, UserGlobal userGlobal) {
         UUID applicationId = webAppTrackQuery.getApplicationId();
         log.info("stop webApp id is {}", applicationId);
@@ -112,6 +115,7 @@ public class DeployApplicationServiceImpl implements DeployApplicationService {
     }
 
     @Override
+    @Transactional
     public void deleteWebApp(WebAppDeleteCommand webAppDeleteCommand, UserGlobal userGlobal) {
         UUID applicationId = UUID.fromString(webAppDeleteCommand.getApplicationId());
         log.info("delete webApp id is {}", applicationId);

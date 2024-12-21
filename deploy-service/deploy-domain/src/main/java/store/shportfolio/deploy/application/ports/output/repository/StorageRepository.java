@@ -9,7 +9,7 @@ public interface StorageRepository {
 
     Storage save(Storage storage);
 
-    Optional<Storage> findByStorageId(UUID storageId);
+    Optional<Storage> findByApplicationId(UUID applicationId);
 
     void remove(Storage storage);
 }
