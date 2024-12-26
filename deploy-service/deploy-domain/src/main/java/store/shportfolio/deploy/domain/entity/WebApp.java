@@ -41,8 +41,10 @@ public class WebApp extends AggregateRoot<ApplicationId> {
     public static WebApp createWebApp(String userId, String applicationName,
                                int serverPort, int javaVersion) {
         ApplicationName.isValidApplicationName(applicationName);
+        String lowerCase = ApplicationName.toLowerCase(applicationName);
+
         UserId nUserId = new UserId(userId);
-        ApplicationName nApplicationName = new ApplicationName(applicationName);
+        ApplicationName nApplicationName = new ApplicationName(lowerCase);
         ServerPort nServerPort = new ServerPort(serverPort);
         JavaVersion nJavaVersion = new JavaVersion(javaVersion);
         isValid(nServerPort,nJavaVersion);

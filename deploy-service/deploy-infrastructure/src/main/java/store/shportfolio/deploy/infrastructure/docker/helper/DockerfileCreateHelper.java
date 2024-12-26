@@ -18,7 +18,7 @@ public class DockerfileCreateHelper {
     private String filePath;
 
     public File createDockerfile(WebApp webApp, String storageUrl) {
-        String outputFile = String.format("%s/Dockerfile-%s", filePath, webApp.getApplicationName());
+        String outputFile = String.format("%s/Dockerfile-%s", filePath, webApp.getApplicationName().getValue());
         DockerfileCommand dockerfileCommand = new DockerfileCommand(webApp.getJavaVersion().getVersion(), storageUrl
                 , webApp.getApplicationName().getValue(), webApp.getServerPort().getValue());
         File dockerfile = null;

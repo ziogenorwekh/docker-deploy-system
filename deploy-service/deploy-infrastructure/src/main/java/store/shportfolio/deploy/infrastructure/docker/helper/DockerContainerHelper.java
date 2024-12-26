@@ -41,8 +41,9 @@ public class DockerContainerHelper {
             portBindings.bind(tcpPort, Ports.Binding.bindPort(exposedPort));
 
             // 컨테이너 생성
+            String containerName = webApp.getApplicationName().getValue();
             CreateContainerResponse containerResponse = dockerClient.createContainerCmd(imageId)
-                    .withName(webApp.getApplicationName().getValue())
+                    .withName(containerName)
                     .withExposedPorts(tcpPort)
                     .withPortBindings(portBindings)
                     .exec();

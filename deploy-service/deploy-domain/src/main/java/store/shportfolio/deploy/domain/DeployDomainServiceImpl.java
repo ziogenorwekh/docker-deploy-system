@@ -1,5 +1,6 @@
 package store.shportfolio.deploy.domain;
 
+import org.springframework.stereotype.Service;
 import store.shportfolio.common.domain.valueobject.ApplicationId;
 import store.shportfolio.common.domain.valueobject.UserGlobal;
 import store.shportfolio.deploy.application.command.WebAppCreateCommand;
@@ -8,7 +9,7 @@ import store.shportfolio.deploy.domain.entity.DockerContainer;
 import store.shportfolio.deploy.domain.entity.Storage;
 import store.shportfolio.deploy.domain.entity.WebApp;
 
-
+@Service
 public class DeployDomainServiceImpl implements DeployDomainService {
 
     @Override

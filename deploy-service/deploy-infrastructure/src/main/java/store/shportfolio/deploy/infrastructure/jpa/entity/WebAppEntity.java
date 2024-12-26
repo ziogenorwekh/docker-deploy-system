@@ -23,7 +23,7 @@ public class WebAppEntity {
     @Column(name = "USER_ID",nullable = false)
     private String userId;
 
-    @Column(name = "APPLICATION_NAME",nullable = false)
+    @Column(name = "APPLICATION_NAME",nullable = false,unique = true)
     private String applicationName;
 
     @Column(nullable = false, name = "SERVER_PORT")

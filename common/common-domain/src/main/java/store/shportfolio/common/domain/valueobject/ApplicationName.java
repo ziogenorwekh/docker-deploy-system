@@ -19,6 +19,14 @@ public class ApplicationName {
         return matcher.matches();  // 조건에 맞으면 true 반환
     }
 
+    // 모든 글자를 소문자로 바꾸는 static 메서드
+    public static String toLowerCase(String applicationName) {
+        if (applicationName == null) {
+            return null;
+        }
+        return applicationName.toLowerCase(); // 소문자로 변환하여 반환
+    }
+
     public String getValue() {
         return value;
     }

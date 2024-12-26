@@ -11,18 +11,17 @@ import store.shportfolio.deploy.application.vo.StorageInfo;
 import store.shportfolio.deploy.infrastructure.s3.exception.S3Exception;
 
 import java.io.File;
-import java.io.IOException;
 
 @Slf4j
 @Component
-public class S3BuckImpl implements S3Bucket {
+public class S3BucketImpl implements S3Bucket {
 
     private final AmazonS3 amazonS3;
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
 
-    public S3BuckImpl(AmazonS3 amazonS3) {
+    public S3BucketImpl(AmazonS3 amazonS3) {
         this.amazonS3 = amazonS3;
     }
 

@@ -1,0 +1,49 @@
+package store.shportfolio.deploy.infrastructure.test;
+
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
+import store.shportfolio.deploy.application.vo.DockerCreated;
+import store.shportfolio.deploy.domain.entity.WebApp;
+import store.shportfolio.deploy.domain.valueobject.DockerContainerStatus;
+import store.shportfolio.deploy.infrastructure.docker.DockerConfig;
+import store.shportfolio.deploy.infrastructure.docker.adapter.DockerConnectorImpl;
+import store.shportfolio.deploy.infrastructure.docker.helper.DockerContainerHelper;
+import store.shportfolio.deploy.infrastructure.docker.helper.DockerImageCreateHelper;
+import store.shportfolio.deploy.infrastructure.docker.helper.DockerResourceHelper;
+import store.shportfolio.deploy.infrastructure.docker.helper.DockerfileCreateHelper;
+import store.shportfolio.deploy.infrastructure.s3.adapter.S3BucketImpl;
+import store.shportfolio.deploy.infrastructure.s3.config.S3Config;
+
+@ActiveProfiles("docker")
+@ContextConfiguration(classes = {DockerConfig.class})
+@SpringBootTest(useMainMethod = SpringBootTest.UseMainMethod.NEVER,
+        classes = {DeployDockerTests.class, DockerConnectorImpl.class,
+                DockerContainerHelper.class, DockerfileCreateHelper.class,
+                DockerImageCreateHelper.class, DockerResourceHelper.class,
+        })
+public class DeployDockerTests {
+
+    @Autowired
+    private DockerConnectorImpl dockerConnector;
+
+
+    @Test
+    @DisplayName("create docker container test")
+    public void testCreateDockerContainer() {
+        WebApp webApp = WebApp.createWebApp("userId", "testApplication", 8888, 17);
+        String fileUrl = "caused timeout";
+
+        DockerCreated container = dockerConnector.createContainer(webApp, fileUrl);
+
+        Assertions.assertNotNull(container);
+        System.out.println("container.getError() = " + container.getError());
+        Assertions.assertEquals(DockerContainerStatus.STARTED, container.getDockerContainerStatus());
+        Assertions.assertFalse(container.getDockerContainerId().isBlank());
+    }
+
+}

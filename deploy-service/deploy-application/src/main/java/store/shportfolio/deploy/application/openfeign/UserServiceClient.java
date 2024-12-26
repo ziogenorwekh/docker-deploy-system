@@ -1,4 +1,4 @@
-package store.shportfolio.deploy.application.feignclient;
+package store.shportfolio.deploy.application.openfeign;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestHeader;

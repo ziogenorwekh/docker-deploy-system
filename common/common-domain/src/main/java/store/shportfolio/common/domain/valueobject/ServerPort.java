@@ -11,7 +11,7 @@ public class ServerPort {
     }
 
     public boolean isValid() {
-        return value >= 10000 && value <= 65535;
+        return value >= 8000 && value <= 65535;
     }
 
     public int getValue() {

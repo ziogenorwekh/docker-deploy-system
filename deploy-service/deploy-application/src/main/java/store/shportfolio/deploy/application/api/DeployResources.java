@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import store.shportfolio.common.domain.valueobject.UserGlobal;
 import store.shportfolio.deploy.application.DeployApplicationService;
 import store.shportfolio.deploy.application.command.*;
-import store.shportfolio.deploy.application.feignclient.UserServiceClient;
+import store.shportfolio.deploy.application.openfeign.UserServiceClient;
 
 import java.util.UUID;
 
