@@ -3,6 +3,7 @@ package store.shportfolio.deploy.application.command;
 import lombok.*;
 import store.shportfolio.deploy.domain.valueobject.ApplicationStatus;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Getter
@@ -18,4 +19,5 @@ public class WebAppTrackResponse {
     private String userId;
     private String errorMessages;
     private String endPointUrl;
+    private LocalDateTime createdAt;
 }

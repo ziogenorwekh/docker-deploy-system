@@ -15,66 +15,69 @@ import java.util.UUID;
 @Component
 public class DeployDataAccessMapper {
 
-
+    // DockerContainerEntity를 DockerContainer로 변환
     public DockerContainerEntity dockerContainerToDockerContainerEntity(DockerContainer dockerContainer) {
         return DockerContainerEntity
                 .builder()
-                .webAppEntity(WebAppEntity.builder().applicationId(dockerContainer.getId()
-                        .getValue().toString()).build())
-                .dockerContainerId(dockerContainer.getDockerContainerId().getValue())
-                .dockerContainerStatus(dockerContainer.getDockerContainerStatus())
-                .applicationId(dockerContainer.getId().getValue().toString())
-                .endPointUrl(dockerContainer.getEndPointUrl())
+                .dockerContainerId(dockerContainer.getDockerContainerId().getValue() != null ?
+                        dockerContainer.getDockerContainerId().getValue() : null)
+                .dockerContainerStatus(dockerContainer.getDockerContainerStatus() != null ? dockerContainer.getDockerContainerStatus() : null)
+                .applicationId(dockerContainer.getId().getValue().toString() != null ? dockerContainer.getId().getValue().toString() : null)
+                .endPointUrl(dockerContainer.getEndPointUrl() != null ? dockerContainer.getEndPointUrl() : null)
                 .build();
     }
 
+    // DockerContainerEntity를 DockerContainer로 변환
     public DockerContainer dockerContainerEntityToDockerContainer(DockerContainerEntity dockerContainerEntity) {
-        return DockerContainer.builder()
-                .dockerContainerStatus(dockerContainerEntity.getDockerContainerStatus())
-                .applicationId(new ApplicationId(UUID.fromString(dockerContainerEntity.getApplicationId())))
-                .endPointUrl(dockerContainerEntity.getEndPointUrl())
-                .dockerContainerId(new DockerContainerId(dockerContainerEntity.getDockerContainerId()))
-                .build();
 
+        return DockerContainer.builder()
+                .dockerContainerStatus(dockerContainerEntity.getDockerContainerStatus() != null ?
+                        dockerContainerEntity.getDockerContainerStatus() : null) // null일 수 있음
+                .applicationId(new ApplicationId(UUID.fromString(dockerContainerEntity.getApplicationId())))
+                .endPointUrl(dockerContainerEntity.getEndPointUrl() != null ?
+                        dockerContainerEntity.getEndPointUrl() : null)
+                .dockerContainerId(dockerContainerEntity.getDockerContainerId() != null ?
+                        new DockerContainerId(dockerContainerEntity.getDockerContainerId()) : null)
+                .build();
     }
 
+    // StorageEntity를 Storage로 변환
     public StorageEntity storageEntityToStorage(Storage storage) {
         return StorageEntity.builder()
                 .applicationId(storage.getId().getValue().toString())
-                .storageName(storage.getStorageName())
-                .storageUrl(storage.getStorageUrl())
-                .webAppEntity(WebAppEntity.builder().applicationId(storage.getId().getValue().toString()).build())
+                .storageName(storage.getStorageName() != null ? storage.getStorageName() : null)
+                .storageUrl(storage.getStorageUrl() != null ? storage.getStorageUrl() : null)
                 .build();
     }
 
+    // StorageEntity를 Storage로 변환
     public Storage storageEntityToStorageEntity(StorageEntity storageEntity) {
         return Storage
                 .builder()
-                .storageName(storageEntity.getStorageName())
-                .storageUrl(storageEntity.getStorageUrl())
+                .storageName(storageEntity.getStorageName() != null ? storageEntity.getStorageName() : null)
+                .storageUrl(storageEntity.getStorageUrl() != null ? storageEntity.getStorageUrl() : null)
                 .applicationId(new ApplicationId(UUID.fromString(storageEntity.getApplicationId())))
                 .build();
     }
 
-    public WebAppEntity webAppEntityToWebAppEntity(WebApp webApp,DockerContainerEntity dockerContainerEntity,
-                                                   StorageEntity storageEntity) {
+    // WebApp을 WebAppEntity로 변환
+    public WebAppEntity webAppEntityToWebAppEntity(WebApp webApp) {
         return WebAppEntity.builder()
                 .applicationId(webApp.getId().getValue().toString())
                 .applicationName(webApp.getApplicationName().getValue())
                 .userId(webApp.getId().getValue().toString())
                 .error(webApp.getErrorMessages())
                 .applicationStatus(webApp.getApplicationStatus())
-                .dockerContainerEntity(dockerContainerEntity)
-                .storageEntity(storageEntity)
                 .javaVersion(webApp.getJavaVersion().getVersion())
                 .serverPort(webApp.getServerPort().getValue())
+                .createdAt(webApp.getCreatedAt())
                 .build();
     }
 
+    // WebAppEntity를 WebApp으로 변환
     public WebApp webAppEntityToWebAppEntity(WebAppEntity webAppEntity) {
+
         return WebApp.builder()
-                .dockerContainer(this.dockerContainerEntityToDockerContainer(webAppEntity.getDockerContainerEntity()))
-                .storage(this.storageEntityToStorageEntity(webAppEntity.getStorageEntity()))
                 .javaVersion(new JavaVersion(webAppEntity.getJavaVersion()))
                 .serverPort(new ServerPort(webAppEntity.getServerPort()))
                 .errorMessages(webAppEntity.getError())
@@ -82,6 +85,7 @@ public class DeployDataAccessMapper {
                 .applicationName(new ApplicationName(webAppEntity.getApplicationName()))
                 .applicationId(new ApplicationId(UUID.fromString(webAppEntity.getApplicationId())))
                 .applicationStatus(webAppEntity.getApplicationStatus())
+                .createdAt(webAppEntity.getCreatedAt())
                 .build();
     }
 }

@@ -4,29 +4,26 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import store.shportfolio.deploy.domain.valueobject.ApplicationStatus;
+
+import java.time.LocalDateTime;
 
 @Getter
 @Entity
+@ToString
+@Table(name = "WEBAPP_ENTITY")
 @NoArgsConstructor
 public class WebAppEntity {
 
     @Id
-    @Column(unique = true, nullable = false)
+    @Column(name = "APPLICATION_ID",unique = true, nullable = false)
     private String applicationId;
 
-    @Column(nullable = false)
+    @Column(name = "USER_ID",nullable = false)
     private String userId;
 
-    @OneToOne(mappedBy = "dockerContainerEntity", cascade = CascadeType.ALL,
-            orphanRemoval = true, fetch = FetchType.EAGER)
-    private DockerContainerEntity dockerContainerEntity;
-
-    @OneToOne(mappedBy = "storageEntity",
-            cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private StorageEntity storageEntity;
-
-    @Column(nullable = false)
+    @Column(name = "APPLICATION_NAME",nullable = false)
     private String applicationName;
 
     @Column(nullable = false, name = "SERVER_PORT")
@@ -36,24 +33,27 @@ public class WebAppEntity {
     private int javaVersion;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "APPLICATION_STATUS")
     private ApplicationStatus applicationStatus;
 
     @Lob
     @Column(name = "ERROR_MESSAGE")
     private String error;
 
+    @Column(name = "CREATED_AT")
+    private LocalDateTime createdAt;
+
     @Builder
-    public WebAppEntity(String applicationId, String userId, DockerContainerEntity dockerContainerEntity,
-                        StorageEntity storageEntity, String applicationName,
-                        int serverPort, int javaVersion, ApplicationStatus applicationStatus, String error) {
+    public WebAppEntity(String applicationId, String userId, String applicationName,
+                        int serverPort, int javaVersion, ApplicationStatus applicationStatus,
+                        String error, LocalDateTime createdAt) {
         this.applicationId = applicationId;
         this.userId = userId;
-        this.dockerContainerEntity = dockerContainerEntity;
-        this.storageEntity = storageEntity;
         this.applicationName = applicationName;
         this.serverPort = serverPort;
         this.javaVersion = javaVersion;
         this.applicationStatus = applicationStatus;
         this.error = error;
+        this.createdAt = createdAt;
     }
 }

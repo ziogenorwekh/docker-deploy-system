@@ -26,7 +26,6 @@ public class S3BuckImpl implements S3Bucket {
         this.amazonS3 = amazonS3;
     }
 
-
     @Override
     public StorageInfo uploadS3(File file) {
 

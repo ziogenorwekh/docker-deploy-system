@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import store.shportfolio.deploy.application.exception.ApplicationNotFoundException;
 import store.shportfolio.deploy.application.exception.ContainerAccessException;
+import store.shportfolio.deploy.application.exception.DockerNotFoundException;
 import store.shportfolio.deploy.application.ports.output.docker.DockerConnector;
 import store.shportfolio.deploy.application.ports.output.repository.DockerContainerRepository;
 import store.shportfolio.deploy.application.vo.DockerCreated;
@@ -13,6 +14,8 @@ import store.shportfolio.deploy.domain.DeployDomainService;
 import store.shportfolio.deploy.domain.entity.DockerContainer;
 import store.shportfolio.deploy.domain.entity.WebApp;
 import store.shportfolio.deploy.domain.valueobject.DockerContainerStatus;
+
+import java.util.UUID;
 
 @Slf4j
 @Component
@@ -31,22 +34,33 @@ public class DockerContainerHandler {
         this.deployDomainService = deployDomainService;
     }
 
-    public DockerContainer createAndSaveDockerContainer(WebApp webApp) {
-        DockerContainer dockerContainer = deployDomainService.createDockerContainer(webApp.getId());
-        return dockerContainerRepository.save(dockerContainer);
+    public DockerContainer createDockerContainer(WebApp webApp) {
+        return deployDomainService.createDockerContainer(webApp.getId());
+    }
+
+    public void saveDockerContainer(DockerContainer dockerContainer) {
+        dockerContainerRepository.save(dockerContainer);
+    }
+
+    public DockerContainer getDockerContainer(UUID applicationId) {
+        return dockerContainerRepository.findByApplicationId(applicationId).orElseThrow(()->
+                new DockerNotFoundException("docker not found by id: " + applicationId));
     }
 
     // need additional logic
-    public DockerContainer createDockerImageAndRun(WebApp webApp) {
-        DockerContainer dockerContainer = webApp.getDockerContainer();
-        String storageUrl = webApp.getStorage().getStorageUrl();
+    public DockerContainer createDockerImageAndRun(WebApp webApp,String storageUrl) {
+        DockerContainer dockerContainer = this.getDockerContainer(webApp.getId().getValue());
+
         if (!(dockerContainer.getDockerContainerStatus() == DockerContainerStatus.INITIALIZED)) {
             throw new ContainerAccessException("Docker container is not initialized");
         }
+
         log.info("docker container must be INITIALIZED -> {}", dockerContainer.getDockerContainerStatus());
+
         DockerCreated dockerCreated = dockerConnector.createContainer(webApp, storageUrl);
         deployDomainService.successfulCreateDockerContainer(dockerContainer, dockerCreated);
         DockerContainer saved = dockerContainerRepository.save(dockerContainer);
+
         log.info("docker container must be STARTED -> {}", saved.getDockerContainerStatus());
         return saved;
     }
@@ -56,15 +70,14 @@ public class DockerContainerHandler {
         return dockerConnector.trackLogs(dockerContainer.getDockerContainerId().getValue());
     }
 
-    public DockerContainer startContainer(WebApp webApp) {
+    public DockerContainer startContainer(DockerContainer dockerContainer) {
 
-        DockerContainer dockerContainer = webApp.getDockerContainer();
         if (dockerContainer.getDockerContainerStatus() == DockerContainerStatus.STARTED) {
             throw new ContainerAccessException("Container already started");
         }
 
         if (dockerConnector.startContainer(dockerContainer.getDockerContainerId().getValue())) {
-            deployDomainService.startDockerContainer(webApp, dockerContainer);
+            deployDomainService.startDockerContainer(dockerContainer);
             return dockerContainerRepository.save(dockerContainer);
         } else {
             throw new ContainerAccessException(String.format("Container %s is not stop",
@@ -72,14 +85,13 @@ public class DockerContainerHandler {
         }
     }
 
-    public DockerContainer stopContainer(WebApp webApp) {
-        DockerContainer dockerContainer = webApp.getDockerContainer();
+    public DockerContainer stopContainer(DockerContainer dockerContainer) {
         if (dockerContainer.getDockerContainerStatus() == DockerContainerStatus.STOPPED) {
             throw new ContainerAccessException("Container already stopped");
         }
 
         if (dockerConnector.stopContainer(dockerContainer.getDockerContainerId().getValue())) {
-            deployDomainService.stopDockerContainer(webApp, dockerContainer);
+            deployDomainService.stopDockerContainer(dockerContainer);
             return dockerContainerRepository.save(dockerContainer);
         } else {
             throw new ContainerAccessException(String.format("Container %s is not running",
@@ -88,15 +100,11 @@ public class DockerContainerHandler {
     }
 
 
-    public ResourceUsage getContainerUsage(WebApp webApp) {
-        DockerContainer dockerContainer = dockerContainerRepository.findByApplicationId(
-                webApp.getId().getValue()).orElseThrow(() -> {
-            throw new ApplicationNotFoundException(String.format("Container %s not found", webApp.getId().getValue()));
-        });
+    public ResourceUsage getContainerUsage(DockerContainer dockerContainer) {
         return dockerConnector.getResourceUsage(dockerContainer.getDockerContainerId().getValue());
     }
 
-    public void deleteDockerContainer(WebApp webApp) {
-        dockerContainerRepository.remove(webApp.getDockerContainer());
+    public void deleteDockerContainer(UUID applicationId) {
+        dockerContainerRepository.removeByApplicationId(applicationId);
     }
 }

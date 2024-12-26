@@ -154,50 +154,19 @@ public class DeployApplicationServiceTest {
     public void testStartContainer() {
 
         // given
-
         ApplicationId applicationId = new ApplicationId(UUID.randomUUID());
         DockerContainer dockerContainer = DockerContainer.builder()
-                .dockerContainerId(new DockerContainerId("dockerContainerId"))
-                .dockerContainerStatus(DockerContainerStatus.STARTED)
-                .endPointUrl("http://localhost:8080")
-                .applicationId(applicationId)
-                .build();
-        DockerContainer beforeDockerContainer = DockerContainer.builder()
                 .dockerContainerId(new DockerContainerId("dockerContainerId"))
                 .dockerContainerStatus(DockerContainerStatus.STOPPED)
                 .endPointUrl("http://localhost:8080")
                 .applicationId(applicationId)
                 .build();
-        WebApp beforeWebApp = WebApp.builder()
-                .storage(null)
-                .dockerContainer(beforeDockerContainer)
-                .applicationName(new ApplicationName("applicationName"))
-                .userId(new UserId(userId.toString()))
-                .applicationStatus(ApplicationStatus.COMPLETE)
-                .javaVersion(new JavaVersion(17))
-                .serverPort(new ServerPort(10020))
-                .errorMessages("")
-                .build();
-        WebApp webApp = WebApp.builder()
-                .storage(null)
-                .dockerContainer(dockerContainer)
-                .applicationName(new ApplicationName("applicationName"))
-                .userId(new UserId(userId.toString()))
-                .applicationStatus(ApplicationStatus.COMPLETE)
-                .javaVersion(new JavaVersion(17))
-                .serverPort(new ServerPort(10020))
-                .errorMessages("")
-                .build();
 
+        Mockito.when(containerRepository.findByApplicationId(Mockito.eq(applicationId.getValue())))
+                .thenReturn(Optional.of(dockerContainer));
         Mockito.when(dockerConnector.startContainer(Mockito.any())).thenReturn(true);
         Mockito.when(containerRepository.save(Mockito.any(DockerContainer.class)))
                 .thenReturn(dockerContainer);
-        Mockito.when(webAppRepository.save(Mockito.any(WebApp.class)))
-                .thenReturn(webApp);
-        Mockito.when(webAppRepository.findByApplicationId(applicationId.getValue()))
-                .thenReturn(Optional.of(beforeWebApp));
-
-
         // when, then
 
         deployApplicationService.startContainer(new WebAppTrackQuery(applicationId.getValue()),
@@ -212,51 +181,30 @@ public class DeployApplicationServiceTest {
         ApplicationId applicationId = new ApplicationId(UUID.randomUUID());
         DockerContainer dockerContainer = DockerContainer.builder()
                 .dockerContainerId(new DockerContainerId("dockerContainerId"))
-                .dockerContainerStatus(DockerContainerStatus.STOPPED)
-                .endPointUrl("http://localhost:8080")
-                .applicationId(applicationId)
-                .build();
-        DockerContainer beforeDockerContainer = DockerContainer.builder()
-                .dockerContainerId(new DockerContainerId("dockerContainerId"))
                 .dockerContainerStatus(DockerContainerStatus.STARTED)
                 .endPointUrl("http://localhost:8080")
                 .applicationId(applicationId)
                 .build();
-        WebApp beforeWebApp = WebApp.builder()
-                .storage(null)
-                .dockerContainer(beforeDockerContainer)
-                .applicationName(new ApplicationName("applicationName"))
-                .userId(new UserId(userId.toString()))
-                .applicationStatus(ApplicationStatus.COMPLETE)
-                .javaVersion(new JavaVersion(17))
-                .serverPort(new ServerPort(10020))
-                .errorMessages("")
-                .build();
-        WebApp webApp = WebApp.builder()
-                .storage(null)
-                .dockerContainer(dockerContainer)
-                .applicationName(new ApplicationName("applicationName"))
-                .userId(new UserId(userId.toString()))
-                .applicationStatus(ApplicationStatus.COMPLETE)
-                .javaVersion(new JavaVersion(17))
-                .serverPort(new ServerPort(10020))
-                .errorMessages("")
+        DockerContainer stopped = DockerContainer.builder()
+                .dockerContainerId(new DockerContainerId("dockerContainerId"))
+                .dockerContainerStatus(DockerContainerStatus.STOPPED)
+                .endPointUrl("http://localhost:8080")
+                .applicationId(applicationId)
                 .build();
 
         Mockito.when(dockerConnector.stopContainer(Mockito.any())).thenReturn(true);
         Mockito.when(containerRepository.save(Mockito.any(DockerContainer.class)))
-                .thenReturn(dockerContainer);
-        Mockito.when(webAppRepository.save(Mockito.any(WebApp.class)))
-                .thenReturn(webApp);
-        Mockito.when(webAppRepository.findByApplicationId(applicationId.getValue()))
-                .thenReturn(Optional.of(beforeWebApp));
+                .thenReturn(stopped);
+        Mockito.when(containerRepository.findByApplicationId(Mockito.eq(applicationId.getValue())))
+                .thenReturn(Optional.of(dockerContainer));
 
-
-        // when, then
-
+        // when
         deployApplicationService.stopContainer(new WebAppTrackQuery(applicationId.getValue()),
                 new UserGlobal(userId.toString(), username));
-
+        // then
+        Mockito.verify(containerRepository, Mockito.times(1)).save(Mockito.any(DockerContainer.class));
+        Mockito.verify(containerRepository, Mockito.times(1))
+                .findByApplicationId(Mockito.eq(applicationId.getValue()));
     }
 
     @Test
@@ -278,8 +226,6 @@ public class DeployApplicationServiceTest {
                 .build();
         WebApp webApp = WebApp.builder()
                 .applicationId(applicationId)
-                .storage(null)
-                .dockerContainer(dockerContainer)
                 .applicationName(new ApplicationName("applicationName"))
                 .userId(new UserId(userId.toString()))
                 .applicationStatus(ApplicationStatus.COMPLETE)
@@ -328,8 +274,6 @@ public class DeployApplicationServiceTest {
                 .build();
         WebApp webApp = WebApp.builder()
                 .applicationId(applicationId)
-                .storage(null)
-                .dockerContainer(dockerContainer)
                 .applicationName(new ApplicationName("applicationName"))
                 .userId(new UserId(userId.toString()))
                 .applicationStatus(ApplicationStatus.COMPLETE)
@@ -340,6 +284,8 @@ public class DeployApplicationServiceTest {
 
         Mockito.when(webAppRepository.findByApplicationId(applicationId.getValue()))
                 .thenReturn(Optional.of(webApp));
+        Mockito.when(containerRepository.findByApplicationId(applicationId.getValue()))
+                .thenReturn(Optional.of(dockerContainer));
 
         // when
         WebAppTrackResponse webAppTrackResponse = deployApplicationService.trackQueryWebApp(webAppTrackQuery, userGlobal);
@@ -361,15 +307,15 @@ public class DeployApplicationServiceTest {
                 .fildUrl("test.jar").build();
         WebApp webApp = WebApp.builder()
                 .applicationId(applicationId)
-                .storage(storage)
                 .build();
         MultipartFile file = new MockMultipartFile("file", "test.jar", "application/octet-stream", new byte[0]);
 
         Mockito.when(s3Bucket.uploadS3(Mockito.any())).thenReturn(storageInfo);
         Mockito.when(storageRepository.save(Mockito.any(Storage.class))).thenReturn(storage);
-
+        Mockito.when(storageRepository.findByApplicationId(applicationId.getValue()))
+                .thenReturn(Optional.of(storage));
         // when
-        Storage result = storageHandler.uploadS3(webApp, file);
+        Storage result = storageHandler.uploadS3(webApp.getId().getValue(), file);
 
         // then
         Assertions.assertEquals(storageInfo.getFildUrl(), result.getStorageUrl());
@@ -395,17 +341,16 @@ public class DeployApplicationServiceTest {
                 .build();
         WebApp webApp = WebApp.builder()
                 .applicationId(applicationId)
-                .dockerContainer(dockerContainer)
-                .storage(storage)
                 .build();
         DockerCreated dockerCreated = new DockerCreated( "dockerContainerId",
                 DockerContainerStatus.STARTED,"");
 
         Mockito.when(dockerConnector.createContainer(webApp, fileUrl)).thenReturn(dockerCreated);
         Mockito.when(containerRepository.save(Mockito.any(DockerContainer.class))).thenReturn(dockerContainer);
-
+        Mockito.when(containerRepository.findByApplicationId(applicationId.getValue()))
+                .thenReturn(Optional.of(dockerContainer));
         // when
-        DockerContainer result = dockerContainerHandler.createDockerImageAndRun(webApp);
+        DockerContainer result = dockerContainerHandler.createDockerImageAndRun(webApp,storage.getStorageUrl());
 
         // then
         Assertions.assertEquals(DockerContainerStatus.STARTED, result.getDockerContainerStatus());
@@ -423,25 +368,13 @@ public class DeployApplicationServiceTest {
         // Mock MultipartFile 생성
         MultipartFile file = new MockMultipartFile("file", "test.jar",
                 "application/octet-stream", new byte[0]);
-        WebAppFileCreateCommand webAppFileCreateCommand = new WebAppFileCreateCommand(applicationId.getValue().toString(), file);
+        WebAppFileCreateCommand webAppFileCreateCommand =
+                new WebAppFileCreateCommand(applicationId.getValue().toString(), file);
 
         createdFiles.add(applicationId.getValue().toString() + "-test.jar"); // 예시로 추가 (파일 경로에 맞게 수정)
         // WebApp 초기 상태 설정
-        Storage storage = Storage.builder()
-                .applicationId(applicationId)
-                .storageName("")
-                .storageUrl("")
-                .build();
-        DockerContainer dockerContainer = DockerContainer.builder()
-                .dockerContainerId(new DockerContainerId(""))
-                .dockerContainerStatus(DockerContainerStatus.INITIALIZED)
-                .endPointUrl("")
-                .applicationId(applicationId)
-                .build();
         WebApp webApp = WebApp.builder()
                 .applicationId(applicationId)
-                .storage(storage)
-                .dockerContainer(dockerContainer)
                 .applicationName(new ApplicationName("applicationName"))
                 .userId(new UserId(userId.toString()))
                 .applicationStatus(ApplicationStatus.CREATED)
@@ -453,45 +386,53 @@ public class DeployApplicationServiceTest {
         // Mock 결과값 정의
         String storageName = "test-storage";
         String fileUrl = "http://s3.aws.com/test.jar";
-        StorageInfo storageInfo = StorageInfo.builder()
+        Storage storage = Storage.builder()
+                .applicationId(applicationId)
+                .storageUrl(fileUrl)
                 .storageName(storageName)
-                .fildUrl(fileUrl)
                 .build();
-        Storage updatedStorage = Storage.builder()
+        Storage beforeUploadS3Storage = Storage.builder()
                 .applicationId(applicationId)
+                .storageUrl("")
+                .storageName("")
                 .build();
-        updatedStorage.savedStorage(fileUrl, storageName);
-        DockerCreated dockerCreated = DockerCreated.builder()
-                .dockerContainerId("dockerContainerId")
-                .dockerContainerStatus(DockerContainerStatus.STARTED)
+        DockerContainer beforeStartDockerContainer = DockerContainer.builder()
+                .dockerContainerStatus(DockerContainerStatus.INITIALIZED)
+                .applicationId(applicationId)
+                .endPointUrl("")
+                .dockerContainerId(new DockerContainerId(""))
                 .build();
-        DockerContainer updatedDockerContainer = DockerContainer.builder()
-                .dockerContainerId(new DockerContainerId("dockerContainerId"))
+        DockerContainer dockerContainer = DockerContainer.builder()
                 .dockerContainerStatus(DockerContainerStatus.STARTED)
+                .applicationId(applicationId)
                 .endPointUrl("http://localhost:8080")
-                .applicationId(applicationId)
+                .dockerContainerId(new DockerContainerId("dockerContainerId"))
                 .build();
-
         // Repository 및 Connector Mock 설정
         Mockito.when(webAppRepository.findByApplicationId(applicationId.getValue()))
                 .thenReturn(Optional.of(webApp));
-        Mockito.when(s3Bucket.uploadS3(Mockito.any(File.class)))
-                .thenReturn(storageInfo);
-        Mockito.when(storageRepository.save(Mockito.any(Storage.class)))
-                .thenReturn(updatedStorage);
-        Mockito.when(dockerConnector.createContainer(Mockito.any(WebApp.class), Mockito.eq(fileUrl)))
-                .thenReturn(dockerCreated);
-        Mockito.when(containerRepository.save(Mockito.any(DockerContainer.class)))
-                .thenReturn(updatedDockerContainer);
+        Mockito.when(storageRepository.findByApplicationId(applicationId.getValue()))
+                        .thenReturn(Optional.of(beforeUploadS3Storage));
+        Mockito.when(s3Bucket.uploadS3(Mockito.any())).
+                thenReturn(StorageInfo.builder()
+                        .fildUrl(fileUrl).storageName(storageName).build());
+
+        Mockito.when(storageRepository.save(Mockito.any(Storage.class))).thenReturn(storage);
+
+        Mockito.when(containerRepository.findByApplicationId(applicationId.getValue())
+        ).thenReturn(Optional.of(beforeStartDockerContainer));
+
+        Mockito.when(dockerConnector.createContainer(webApp, storage.getStorageUrl()))
+                .thenReturn(DockerCreated.builder()
+                        .dockerContainerStatus(DockerContainerStatus.STARTED).
+                        dockerContainerId("dockerContainerId").build());
+        Mockito.when(containerRepository.save(Mockito.eq(beforeStartDockerContainer)))
+                .thenReturn(dockerContainer);
 
         // when
         deployApplicationService.saveJarFile(webAppFileCreateCommand, userGlobal);
 
         // then
-        Mockito.verify(storageRepository).save(storage);
-        Mockito.verify(dockerConnector).createContainer(Mockito.any(), Mockito.eq(fileUrl));
-        Mockito.verify(containerRepository).save(Mockito.any());
-        Mockito.verify(webAppRepository, Mockito.times(2)).save(webApp);
 
         Assertions.assertEquals(ApplicationStatus.COMPLETE, webApp.getApplicationStatus());
     }

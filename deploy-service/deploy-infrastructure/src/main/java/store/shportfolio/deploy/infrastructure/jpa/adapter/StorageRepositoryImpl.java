@@ -3,6 +3,7 @@ package store.shportfolio.deploy.infrastructure.jpa.adapter;
 import org.springframework.stereotype.Repository;
 import store.shportfolio.deploy.application.ports.output.repository.StorageRepository;
 import store.shportfolio.deploy.domain.entity.Storage;
+import store.shportfolio.deploy.domain.entity.WebApp;
 import store.shportfolio.deploy.infrastructure.jpa.entity.StorageEntity;
 import store.shportfolio.deploy.infrastructure.jpa.mapper.DeployDataAccessMapper;
 import store.shportfolio.deploy.infrastructure.jpa.repository.StorageJpaRepository;
@@ -40,5 +41,10 @@ public class StorageRepositoryImpl implements StorageRepository {
     public void remove(Storage storage) {
         storageJpaRepository.findByApplicationId(storage.getId().getValue().toString())
                 .ifPresent(storageJpaRepository::delete);
+    }
+
+    @Override
+    public void removeByApplicationId(UUID applicationId) {
+        storageJpaRepository.removeByApplicationId(applicationId.toString());
     }
 }

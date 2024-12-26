@@ -18,19 +18,21 @@ public class DeployDataMapper {
                 .javaVersion(webApp.getJavaVersion().getVersion())
                 .serverPort(webApp.getServerPort().getValue())
                 .applicationStatus(webApp.getApplicationStatus())
+                .createdAt(webApp.getCreatedAt())
                 .build();
     }
 
-    public WebAppTrackResponse webAppToWebAppTrackResponse(WebApp webApp) {
+    public WebAppTrackResponse webAppToWebAppTrackResponse(WebApp webApp, String endpointUrl) {
         return WebAppTrackResponse.builder()
                 .applicationId(webApp.getId().getValue())
                 .applicationName(webApp.getApplicationName().getValue())
                 .javaVersion(webApp.getJavaVersion().getVersion())
                 .serverPort(webApp.getServerPort().getValue())
                 .applicationStatus(webApp.getApplicationStatus())
-                .endPointUrl(webApp.getDockerContainer().getEndPointUrl())
+                .endPointUrl(endpointUrl)
                 .errorMessages(webApp.getErrorMessages())
                 .userId(webApp.getUserId().getValue())
+                .createdAt(webApp.getCreatedAt())
                 .build();
     }
 

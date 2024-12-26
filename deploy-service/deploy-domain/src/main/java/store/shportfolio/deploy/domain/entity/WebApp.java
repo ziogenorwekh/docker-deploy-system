@@ -2,41 +2,40 @@ package store.shportfolio.deploy.domain.entity;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.ToString;
 import store.shportfolio.common.domain.entitiy.AggregateRoot;
 import store.shportfolio.common.domain.valueobject.*;
 import store.shportfolio.deploy.domain.exception.DomainException;
 import store.shportfolio.deploy.domain.valueobject.ApplicationStatus;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Getter
+@ToString
 public class WebApp extends AggregateRoot<ApplicationId> {
 
     private final UserId userId;
-    private DockerContainer dockerContainer;
-    private Storage storage;
     private final ApplicationName applicationName;
     private final ServerPort serverPort;
     private final JavaVersion javaVersion;
     private ApplicationStatus applicationStatus;
     private String errorMessages;
+    private final LocalDateTime createdAt;
 
     @Builder
     public WebApp(ApplicationId applicationId, UserId userId,
-                  Storage storage,
-                  DockerContainer dockerContainer,
                   ApplicationName applicationName,
                   ServerPort serverPort, JavaVersion javaVersion,
-                  ApplicationStatus applicationStatus, String errorMessages) {
+                  ApplicationStatus applicationStatus, String errorMessages, LocalDateTime createdAt) {
         super.setId(applicationId);
         this.userId = userId;
-        this.storage = storage;
-        this.dockerContainer = dockerContainer;
         this.applicationName = applicationName;
         this.serverPort = serverPort;
         this.javaVersion = javaVersion;
         this.applicationStatus = applicationStatus;
         this.errorMessages = errorMessages;
+        this.createdAt = createdAt;
     }
 
     public static WebApp createWebApp(String userId, String applicationName,
@@ -56,15 +55,8 @@ public class WebApp extends AggregateRoot<ApplicationId> {
                 .javaVersion(nJavaVersion)
                 .applicationStatus(ApplicationStatus.CREATED)
                 .serverPort(nServerPort)
+                .createdAt(LocalDateTime.now())
                 .build();
-    }
-
-    public void addDockerContainer(DockerContainer dockerContainer) {
-        this.dockerContainer = dockerContainer;
-    }
-
-    public void addStorage(Storage storage) {
-        this.storage = storage;
     }
 
     public void updateCreatedToContainerizing() {

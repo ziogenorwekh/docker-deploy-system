@@ -50,13 +50,19 @@ public class DeployApplicationServiceImpl implements DeployApplicationService {
 
         WebApp webApp = webAppHandler.createWebApp(userGlobal, webAppCreateCommand);
 
-        Storage storage = storageHandler.createAndSaveStorage(webApp);
+        Storage storage = storageHandler.createStorage(webApp);
         DockerContainer dockerContainer = dockerContainerHandler
-                .createAndSaveDockerContainer(webApp);
-        WebApp saved = webAppHandler.saveWebApp(webApp, dockerContainer, storage);
+                .createDockerContainer(webApp);
+
+
+        WebApp saved = webAppHandler.saveWebApp(webApp);
+        storageHandler.saveStorage(storage);
+        dockerContainerHandler.saveDockerContainer(dockerContainer);
         log.info("WebApp created: {}", saved.getApplicationName());
+
         return deployDataMapper.webAppToWebAppCreateResponse(saved);
     }
+
 
     @Async
     @Override
@@ -65,15 +71,20 @@ public class DeployApplicationServiceImpl implements DeployApplicationService {
         UUID applicationId = UUID.fromString(webAppFileCreateCommand.getApplicationId());
         WebApp webApp = this.getWebApp(userGlobal, applicationId);
         try {
-            Storage storage = storageHandler.uploadS3(webApp, webAppFileCreateCommand.getFile());
+            Storage storage = storageHandler.uploadS3(webApp.getId().getValue(), webAppFileCreateCommand.getFile());
             log.info("storage saved data url is {}, filename is {}", storage.getStorageUrl(), storage.getStorageName());
-            webAppHandler.startContainerizing(webApp, storage);
+
+            webAppHandler.startContainerizing(webApp);
             log.info("containerizing started -> {}", webApp.getApplicationStatus());
-            DockerContainer dockerContainer = dockerContainerHandler.createDockerImageAndRun(webApp);
+
+            DockerContainer dockerContainer = dockerContainerHandler.createDockerImageAndRun(webApp,
+                    storage.getStorageUrl());
             log.info("docker container created Id -> {}", dockerContainer.getDockerContainerId().getValue());
             log.info("docker container endpoint is {}, container status is {}", dockerContainer.getEndPointUrl()
                     , dockerContainer.getDockerContainerStatus());
-            webAppHandler.completeContainerizing(webApp, dockerContainer);
+
+            webAppHandler.completeContainerizing(webApp);
+
             log.info("containerizing completed -> {}", webApp.getApplicationStatus());
             log.info("finally webApp must be updated DockerContainer is Id -> {}, is Endpoint -> {}. " +
                             "storage is fileUrl {}, is name -> {}", dockerContainer.getDockerContainerId().getValue(),
@@ -84,46 +95,46 @@ public class DeployApplicationServiceImpl implements DeployApplicationService {
         }
     }
 
+
     @Override
     @Transactional(readOnly = true)
     public WebAppTrackResponse trackQueryWebApp(WebAppTrackQuery webAppTrackQuery, UserGlobal userGlobal) {
         UUID applicationId = webAppTrackQuery.getApplicationId();
         log.info("query webApp id is {}", applicationId);
         WebApp webApp = this.getWebApp(userGlobal, applicationId);
+        DockerContainer dockerContainer = dockerContainerHandler.getDockerContainer(applicationId);
 
-        return deployDataMapper.webAppToWebAppTrackResponse(webApp);
+        return deployDataMapper.webAppToWebAppTrackResponse(webApp,dockerContainer.getEndPointUrl());
     }
 
     @Override
     @Transactional
     public void startContainer(WebAppTrackQuery webAppTrackQuery, UserGlobal userGlobal) {
         UUID applicationId = webAppTrackQuery.getApplicationId();
-        log.info("start webApp id is {}", applicationId);
-        WebApp webApp = this.getWebApp(userGlobal, applicationId);
-        DockerContainer dockerContainer = dockerContainerHandler.startContainer(webApp);
-        webAppHandler.saveWebApp(webApp, dockerContainer);
+        webAppHandler.isMatchUser(userGlobal.getUserId(), applicationId);
+        DockerContainer dockerContainer = dockerContainerHandler.getDockerContainer(applicationId);
+        dockerContainerHandler.startContainer(dockerContainer);
     }
 
     @Override
     @Transactional
     public void stopContainer(WebAppTrackQuery webAppTrackQuery, UserGlobal userGlobal) {
         UUID applicationId = webAppTrackQuery.getApplicationId();
-        log.info("stop webApp id is {}", applicationId);
-        WebApp webApp = this.getWebApp(userGlobal, applicationId);
-        DockerContainer dockerContainer = dockerContainerHandler.stopContainer(webApp);
-        webAppHandler.saveWebApp(webApp, dockerContainer);
+        webAppHandler.isMatchUser(userGlobal.getUserId(), applicationId);
+        DockerContainer dockerContainer = dockerContainerHandler.getDockerContainer(applicationId);
+        dockerContainerHandler.stopContainer(dockerContainer);
     }
 
     @Override
     @Transactional
     public void deleteWebApp(WebAppDeleteCommand webAppDeleteCommand, UserGlobal userGlobal) {
-        UUID applicationId = UUID.fromString(webAppDeleteCommand.getApplicationId());
+        UUID applicationId = webAppDeleteCommand.getApplicationId();
         log.info("delete webApp id is {}", applicationId);
         WebApp webApp = this.getWebApp(userGlobal, applicationId);
 
-        storageHandler.deleteStorage(webApp);
-        dockerContainerHandler.deleteDockerContainer(webApp);
         webAppHandler.deleteWebApp(webApp);
+        storageHandler.deleteStorage(webApp.getId().getValue());
+        dockerContainerHandler.deleteDockerContainer(webApp.getId().getValue());
     }
 
     @Override
@@ -132,8 +143,9 @@ public class DeployApplicationServiceImpl implements DeployApplicationService {
         UUID applicationId = webAppTrackQuery.getApplicationId();
         log.info("query webApp id is {}", applicationId);
         WebApp webApp = this.getWebApp(userGlobal, applicationId);
-        ResourceUsage resourceUsage = dockerContainerHandler.getContainerUsage(webApp);
-        String containerLogs = dockerContainerHandler.getContainerLogs(webApp.getDockerContainer());
+        DockerContainer dockerContainer = dockerContainerHandler.getDockerContainer(applicationId);
+        ResourceUsage resourceUsage = dockerContainerHandler.getContainerUsage(dockerContainer);
+        String containerLogs = dockerContainerHandler.getContainerLogs(dockerContainer);
         return deployDataMapper.webAppToWebAppContainerResponse(webApp, resourceUsage, containerLogs);
     }
 
@@ -145,4 +157,5 @@ public class DeployApplicationServiceImpl implements DeployApplicationService {
         }
         return webApp;
     }
+
 }

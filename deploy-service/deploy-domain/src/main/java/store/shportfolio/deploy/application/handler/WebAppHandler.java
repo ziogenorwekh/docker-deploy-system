@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import store.shportfolio.common.domain.valueobject.UserGlobal;
 import store.shportfolio.deploy.application.command.WebAppCreateCommand;
 import store.shportfolio.deploy.application.exception.ApplicationNotFoundException;
+import store.shportfolio.deploy.application.exception.WebAppUserNotMatchException;
 import store.shportfolio.deploy.application.ports.output.repository.WebAppRepository;
 import store.shportfolio.deploy.domain.DeployDomainService;
 import store.shportfolio.deploy.domain.entity.DockerContainer;
@@ -31,36 +32,32 @@ public class WebAppHandler {
         return deployDomainService.createWebApp(userGlobal, webAppCreateCommand);
     }
 
-    public void startContainerizing(WebApp webApp, Storage storage) {
+    public void startContainerizing(WebApp webApp) {
         deployDomainService.createdToContainerizing(webApp);
-        this.saveWebApp(webApp, storage);
+        this.saveWebApp(webApp);
     }
 
-    public void completeContainerizing(WebApp webApp, DockerContainer dockerContainer) {
+    public void completeContainerizing(WebApp webApp) {
         deployDomainService.containerizingToComplete(webApp);
-        this.saveWebApp(webApp, dockerContainer);
+        this.saveWebApp(webApp);
     }
 
     public void failedApplication(WebApp webApp, String errorMessage) {
         deployDomainService.failedCreateApplication(webApp, errorMessage);
-        this.saveWebApp(webApp,webApp.getDockerContainer(),webApp.getStorage());
+        this.saveWebApp(webApp);
     }
 
-
-    public WebApp saveWebApp(WebApp webApp, DockerContainer dockerContainer, Storage storage) {
-        deployDomainService.updateDockerContainer(webApp, dockerContainer);
-        deployDomainService.updateStorage(webApp, storage);
+    public WebApp saveWebApp(WebApp webApp) {
         return webAppRepository.save(webApp);
     }
 
-    public void saveWebApp(WebApp webApp, DockerContainer dockerContainer) {
-        deployDomainService.updateDockerContainer(webApp, dockerContainer);
-        webAppRepository.save(webApp);
-    }
-
-    public void saveWebApp(WebApp webApp, Storage storage) {
-        deployDomainService.updateStorage(webApp, storage);
-        webAppRepository.save(webApp);
+    public void isMatchUser(String userId, UUID applicationId) {
+        webAppRepository.findByApplicationId(applicationId)
+                .ifPresent(webApp -> {
+                    if (!webApp.getUserId().getValue().equals(userId)) {
+                        throw new WebAppUserNotMatchException("User id mismatch");
+                    }
+                });
     }
 
     public WebApp getWebApp(UUID applicationId) {

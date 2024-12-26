@@ -48,29 +48,17 @@ public class DeployDomainServiceImpl implements DeployDomainService {
     }
 
     @Override
-    public void updateDockerContainer(WebApp webApp, DockerContainer dockerContainer) {
-        webApp.addDockerContainer(dockerContainer);
-    }
-
-    @Override
-    public void updateStorage(WebApp webApp, Storage storage) {
-        webApp.addStorage(storage);
-    }
-
-    @Override
     public void saveStorageInfo(Storage storage, String storageUrl,String storageName) {
         storage.savedStorage(storageUrl, storageName);
     }
 
     @Override
-    public void startDockerContainer(WebApp webApp, DockerContainer dockerContainer) {
+    public void startDockerContainer(DockerContainer dockerContainer) {
         dockerContainer.startDockerContainer();
-        webApp.addDockerContainer(dockerContainer);
     }
 
     @Override
-    public void stopDockerContainer(WebApp webApp, DockerContainer dockerContainer) {
+    public void stopDockerContainer(DockerContainer dockerContainer) {
         dockerContainer.stopDockerContainer();
-        webApp.addDockerContainer(dockerContainer);
     }
 }

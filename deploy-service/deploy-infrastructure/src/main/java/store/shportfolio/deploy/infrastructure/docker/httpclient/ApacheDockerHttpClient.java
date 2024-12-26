@@ -1,6 +1,5 @@
 package store.shportfolio.deploy.infrastructure.docker.httpclient;
 
-import com.github.dockerjava.httpclient5.ApacheDockerHttpClientImpl;
 import com.github.dockerjava.transport.SSLConfig;
 
 import java.net.URI;

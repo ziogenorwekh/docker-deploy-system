@@ -1,9 +1,6 @@
 package store.shportfolio.deploy.application.command;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.web.multipart.MultipartFile;
 
 @Getter
@@ -11,6 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 @AllArgsConstructor
 public class WebAppFileCreateCommand {
 
+    @Setter(AccessLevel.PUBLIC)
     private String applicationId;
     private MultipartFile file;
 }

@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import store.shportfolio.deploy.application.ports.output.repository.DockerContainerRepository;
 import store.shportfolio.deploy.domain.entity.DockerContainer;
+import store.shportfolio.deploy.domain.entity.WebApp;
 import store.shportfolio.deploy.infrastructure.jpa.entity.DockerContainerEntity;
 import store.shportfolio.deploy.infrastructure.jpa.mapper.DeployDataAccessMapper;
 import store.shportfolio.deploy.infrastructure.jpa.repository.DockerContainerJpaRepository;
@@ -25,6 +26,7 @@ public class DockerContainerRepositoryImpl implements DockerContainerRepository 
 
     @Override
     public DockerContainer save(DockerContainer dockerContainer) {
+
         DockerContainerEntity dockerContainerEntity = deployDataAccessMapper.
                 dockerContainerToDockerContainerEntity(dockerContainer);
         DockerContainerEntity saved = dockerContainerJpaRepository.save(dockerContainerEntity);
@@ -48,5 +50,10 @@ public class DockerContainerRepositoryImpl implements DockerContainerRepository 
     public void remove(DockerContainer dockerContainer) {
         dockerContainerJpaRepository.findByApplicationId(dockerContainer.getId().getValue().toString())
                 .ifPresent(dockerContainerJpaRepository::delete);
+    }
+
+    @Override
+    public void removeByApplicationId(UUID applicationId) {
+        dockerContainerJpaRepository.removeByApplicationId(applicationId.toString());
     }
 }

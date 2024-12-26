@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import store.shportfolio.deploy.domain.valueobject.ApplicationStatus;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Builder
@@ -18,4 +19,5 @@ public class WebAppCreateResponse {
     private int javaVersion;
     private int serverPort;
     private ApplicationStatus applicationStatus;
+    private LocalDateTime createdAt;
 }

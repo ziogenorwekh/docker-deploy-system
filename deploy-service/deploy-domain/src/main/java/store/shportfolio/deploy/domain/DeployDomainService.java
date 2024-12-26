@@ -14,7 +14,6 @@ public interface DeployDomainService {
 
     DockerContainer createDockerContainer(ApplicationId applicationId);
 
-
     void successfulCreateDockerContainer(DockerContainer dockerContainer, DockerCreated dockerCreated);
 
     Storage createStorage(ApplicationId applicationId);
@@ -25,13 +24,9 @@ public interface DeployDomainService {
 
     void failedCreateApplication(WebApp webApp,String error);
 
-    void updateDockerContainer(WebApp webApp, DockerContainer dockerContainer);
-
-    void updateStorage(WebApp webApp, Storage storage);
-
     void saveStorageInfo(Storage storage, String storageName, String storageUrl);
 
-    void startDockerContainer(WebApp webApp, DockerContainer dockerContainer);
+    void startDockerContainer(DockerContainer dockerContainer);
 
-    void stopDockerContainer(WebApp webApp, DockerContainer dockerContainer);
+    void stopDockerContainer(DockerContainer dockerContainer);
 }

@@ -1,5 +1,6 @@
 package store.shportfolio.deploy.infrastructure.jpa.adapter;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import store.shportfolio.deploy.application.ports.output.repository.WebAppRepository;
@@ -8,11 +9,14 @@ import store.shportfolio.deploy.infrastructure.jpa.entity.DockerContainerEntity;
 import store.shportfolio.deploy.infrastructure.jpa.entity.StorageEntity;
 import store.shportfolio.deploy.infrastructure.jpa.entity.WebAppEntity;
 import store.shportfolio.deploy.infrastructure.jpa.mapper.DeployDataAccessMapper;
+import store.shportfolio.deploy.infrastructure.jpa.repository.DockerContainerJpaRepository;
+import store.shportfolio.deploy.infrastructure.jpa.repository.StorageJpaRepository;
 import store.shportfolio.deploy.infrastructure.jpa.repository.WebAppJpaRepository;
 
 import java.util.Optional;
 import java.util.UUID;
 
+@Slf4j
 @Repository
 public class WebAppRepositoryImpl implements WebAppRepository {
 
@@ -20,18 +24,19 @@ public class WebAppRepositoryImpl implements WebAppRepository {
     private final WebAppJpaRepository webAppJpaRepository;
 
     @Autowired
-    public WebAppRepositoryImpl(DeployDataAccessMapper deployDataAccessMapper, WebAppJpaRepository webAppJpaRepository) {
+    public WebAppRepositoryImpl(DeployDataAccessMapper deployDataAccessMapper,
+                                WebAppJpaRepository webAppJpaRepository) {
         this.deployDataAccessMapper = deployDataAccessMapper;
         this.webAppJpaRepository = webAppJpaRepository;
     }
 
     @Override
     public WebApp save(WebApp webApp) {
-        StorageEntity storageEntity = deployDataAccessMapper.storageEntityToStorage(webApp.getStorage());
-        DockerContainerEntity dockerContainerEntity = deployDataAccessMapper
-                .dockerContainerToDockerContainerEntity(webApp.getDockerContainer());
-        WebAppEntity saved = deployDataAccessMapper
-                .webAppEntityToWebAppEntity(webApp, dockerContainerEntity, storageEntity);
+        log.debug("WebApp: {}", webApp);
+        WebAppEntity webAppEntity = deployDataAccessMapper
+                .webAppEntityToWebAppEntity(webApp);
+        WebAppEntity saved = webAppJpaRepository.save(webAppEntity);
+        log.debug("result -> {}", saved.toString());
         return deployDataAccessMapper.webAppEntityToWebAppEntity(saved);
     }
 
