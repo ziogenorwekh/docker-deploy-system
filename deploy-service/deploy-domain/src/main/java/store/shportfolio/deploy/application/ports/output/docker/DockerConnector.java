@@ -17,6 +17,6 @@ public interface DockerConnector {
 
     Boolean stopContainer(String dockerContainerId);
 
-    void dropContainer(String dockerContainerId);
+    void dropContainer(String dockerContainerId, String imageId);
 
 }

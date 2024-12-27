@@ -8,7 +8,7 @@ import java.io.IOException;
 
 public interface S3Bucket {
 
-    StorageInfo uploadS3(File file) throws IOException;
+    StorageInfo uploadS3(File file);
 
-    void deleteS3(String storageName) throws IOException;
+    void deleteS3(String storageName);
 }

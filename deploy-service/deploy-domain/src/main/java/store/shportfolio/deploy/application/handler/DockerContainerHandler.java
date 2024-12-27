@@ -43,12 +43,12 @@ public class DockerContainerHandler {
     }
 
     public DockerContainer getDockerContainer(UUID applicationId) {
-        return dockerContainerRepository.findByApplicationId(applicationId).orElseThrow(()->
+        return dockerContainerRepository.findByApplicationId(applicationId).orElseThrow(() ->
                 new DockerNotFoundException("docker not found by id: " + applicationId));
     }
 
     // need additional logic
-    public DockerContainer createDockerImageAndRun(WebApp webApp,String storageUrl) {
+    public DockerContainer createDockerImageAndRun(WebApp webApp, String storageUrl) {
         DockerContainer dockerContainer = this.getDockerContainer(webApp.getId().getValue());
 
         if (!(dockerContainer.getDockerContainerStatus() == DockerContainerStatus.INITIALIZED)) {
@@ -67,6 +67,9 @@ public class DockerContainerHandler {
 
 
     public String getContainerLogs(DockerContainer dockerContainer) {
+        if (dockerContainer.getDockerContainerStatus() != DockerContainerStatus.STARTED) {
+            throw new ContainerAccessException("Container is not started yet");
+        }
         return dockerConnector.trackLogs(dockerContainer.getDockerContainerId().getValue());
     }
 
@@ -101,10 +104,17 @@ public class DockerContainerHandler {
 
 
     public ResourceUsage getContainerUsage(DockerContainer dockerContainer) {
+        if (dockerContainer.getDockerContainerStatus() != DockerContainerStatus.STARTED) {
+            throw new ContainerAccessException("Container is not started yet");
+        }
         return dockerConnector.getResourceUsage(dockerContainer.getDockerContainerId().getValue());
     }
 
     public void deleteDockerContainer(UUID applicationId) {
+        DockerContainer dockerContainer = this.getDockerContainer(applicationId);
+        dockerConnector.dropContainer(dockerContainer.getDockerContainerId().getValue(),
+                dockerContainer.getImageId());
+
         dockerContainerRepository.removeByApplicationId(applicationId);
     }
 }

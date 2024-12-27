@@ -343,7 +343,7 @@ public class DeployApplicationServiceTest {
                 .applicationId(applicationId)
                 .build();
         DockerCreated dockerCreated = new DockerCreated( "dockerContainerId",
-                DockerContainerStatus.STARTED,"");
+                DockerContainerStatus.STARTED,"","");
 
         Mockito.when(dockerConnector.createContainer(webApp, fileUrl)).thenReturn(dockerCreated);
         Mockito.when(containerRepository.save(Mockito.any(DockerContainer.class))).thenReturn(dockerContainer);

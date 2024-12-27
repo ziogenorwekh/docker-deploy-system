@@ -51,6 +51,9 @@ public class StorageHandler {
     }
 
     public void deleteStorage(UUID applicationId) {
+        Storage storage = storageRepository.findByApplicationId(applicationId).orElseThrow(() ->
+                new StorageNotFoundException("storage not found by id: " + applicationId));
+        s3Bucket.deleteS3(storage.getStorageName());
         storageRepository.removeByApplicationId(applicationId);
     }
 

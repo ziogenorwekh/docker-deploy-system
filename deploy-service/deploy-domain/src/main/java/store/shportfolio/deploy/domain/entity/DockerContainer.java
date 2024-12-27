@@ -17,13 +17,15 @@ public class DockerContainer extends BaseEntity<ApplicationId> {
     private DockerContainerId dockerContainerId;
     private String endPointUrl;
     private DockerContainerStatus dockerContainerStatus;
+    private String imageId;
 
     @Builder
     public DockerContainer(
-                           ApplicationId applicationId,
-                           DockerContainerId dockerContainerId,
-                           String endPointUrl,
-                           DockerContainerStatus dockerContainerStatus) {
+            ApplicationId applicationId,
+            DockerContainerId dockerContainerId,
+            String endPointUrl,
+            DockerContainerStatus dockerContainerStatus, String imageId) {
+        this.imageId = imageId;
         super.setId(applicationId);
         this.dockerContainerId = dockerContainerId;
         this.endPointUrl = endPointUrl;
@@ -36,12 +38,14 @@ public class DockerContainer extends BaseEntity<ApplicationId> {
                 .dockerContainerId(new DockerContainerId(""))
                 .dockerContainerStatus(DockerContainerStatus.INITIALIZED)
                 .endPointUrl("")
+                .imageId("")
                 .build();
     }
 
     public void initializedDockerContainer(DockerCreated dockerCreated) {
         this.dockerContainerId = new DockerContainerId(dockerCreated.getDockerContainerId());
         this.dockerContainerStatus = dockerCreated.getDockerContainerStatus();
+        this.imageId = dockerCreated.getDockerImageId();
     }
 
     public void startDockerContainer() {

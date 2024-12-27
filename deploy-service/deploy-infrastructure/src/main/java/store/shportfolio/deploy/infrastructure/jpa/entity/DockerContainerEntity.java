@@ -26,6 +26,9 @@ public class DockerContainerEntity {
     @Column(name = "DOCKERCONTAINER_ID")
     private String dockerContainerId;
 
+    @Column(name = "IMAGE_ID")
+    private String imageId;
+
     @Column(name = "ENDPOINT_URL", nullable = false)
     private String endPointUrl;
 
@@ -34,10 +37,11 @@ public class DockerContainerEntity {
     private DockerContainerStatus dockerContainerStatus;
 
     @Builder
-    public DockerContainerEntity(String applicationId, String dockerContainerId,
+    public DockerContainerEntity(String applicationId, String dockerContainerId, String imageId,
                                  String endPointUrl, DockerContainerStatus dockerContainerStatus) {
         this.applicationId = applicationId;
         this.dockerContainerId = dockerContainerId;
+        this.imageId = imageId;
         this.endPointUrl = endPointUrl;
         this.dockerContainerStatus = dockerContainerStatus;
     }

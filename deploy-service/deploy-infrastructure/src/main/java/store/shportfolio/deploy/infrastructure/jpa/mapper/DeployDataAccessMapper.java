@@ -21,6 +21,7 @@ public class DeployDataAccessMapper {
                 .builder()
                 .dockerContainerId(dockerContainer.getDockerContainerId().getValue() != null ?
                         dockerContainer.getDockerContainerId().getValue() : null)
+                .imageId(dockerContainer.getImageId() != null ? dockerContainer.getImageId() : null)
                 .dockerContainerStatus(dockerContainer.getDockerContainerStatus() != null ? dockerContainer.getDockerContainerStatus() : null)
                 .applicationId(dockerContainer.getId().getValue().toString() != null ? dockerContainer.getId().getValue().toString() : null)
                 .endPointUrl(dockerContainer.getEndPointUrl() != null ? dockerContainer.getEndPointUrl() : null)
@@ -32,7 +33,8 @@ public class DeployDataAccessMapper {
 
         return DockerContainer.builder()
                 .dockerContainerStatus(dockerContainerEntity.getDockerContainerStatus() != null ?
-                        dockerContainerEntity.getDockerContainerStatus() : null) // null일 수 있음
+                        dockerContainerEntity.getDockerContainerStatus() : null)
+                .imageId(dockerContainerEntity.getImageId()) // null일 수 있음
                 .applicationId(new ApplicationId(UUID.fromString(dockerContainerEntity.getApplicationId())))
                 .endPointUrl(dockerContainerEntity.getEndPointUrl() != null ?
                         dockerContainerEntity.getEndPointUrl() : null)

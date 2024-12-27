@@ -23,6 +23,7 @@ CREATE TABLE DOCKERCONTAINER_ENTITY (
                                         ID BIGINT AUTO_INCREMENT PRIMARY KEY,
                                         APPLICATION_ID VARCHAR(255) NOT NULL,
                                         DOCKERCONTAINER_ID VARCHAR(255),
+                                        IMAGE_ID VARCHAR(255),
                                         ENDPOINT_URL VARCHAR(255) NOT NULL,
                                         DOCKERCONTAINER_STATUS VARCHAR(255)
 );

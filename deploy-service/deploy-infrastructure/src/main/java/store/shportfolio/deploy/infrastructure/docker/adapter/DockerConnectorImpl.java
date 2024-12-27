@@ -39,10 +39,12 @@ public class DockerConnectorImpl implements DockerConnector {
             File dockerfile = dockerfileCreateHelper.createDockerfile(webApp, storageUrl);
             String imageId = dockerImageCreateHelper.createImage(webApp, dockerfile);
             String dockerId = dockerContainerHelper.runContainer(imageId, webApp);
+            dockerfileCreateHelper.deleteLocalDockerfile(dockerfile);
             return DockerCreated
                     .builder()
                     .dockerContainerStatus(DockerContainerStatus.STARTED)
                     .error("")
+                    .dockerImageId(imageId)
                     .dockerContainerId(dockerId)
                     .build();
         } catch (Exception e) {
@@ -50,6 +52,7 @@ public class DockerConnectorImpl implements DockerConnector {
                     .builder()
                     .dockerContainerStatus(DockerContainerStatus.ERROR)
                     .dockerContainerId("")
+                    .dockerImageId("")
                     .error(e.getMessage())
                     .build();
         }
@@ -72,11 +75,11 @@ public class DockerConnectorImpl implements DockerConnector {
 
     @Override
     public Boolean stopContainer(String dockerContainerId) {
-     return dockerContainerHelper.stopContainer(dockerContainerId);
+        return dockerContainerHelper.stopContainer(dockerContainerId);
     }
 
     @Override
-    public void dropContainer(String dockerContainerId) {
-
+    public void dropContainer(String dockerContainerId, String imageId) {
+        dockerContainerHelper.dropContainerAndRemoveImage(dockerContainerId, imageId);
     }
 }

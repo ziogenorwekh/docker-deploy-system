@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import store.shportfolio.common.domain.valueobject.UserGlobal;
 import store.shportfolio.deploy.application.command.*;
+import store.shportfolio.deploy.application.exception.ContainerAccessException;
 import store.shportfolio.deploy.application.exception.DockerContainerException;
 import store.shportfolio.deploy.application.exception.S3UploadFailedException;
 import store.shportfolio.deploy.application.exception.WebAppUserNotMatchException;
@@ -19,6 +20,7 @@ import store.shportfolio.deploy.application.vo.ResourceUsage;
 import store.shportfolio.deploy.domain.entity.DockerContainer;
 import store.shportfolio.deploy.domain.entity.Storage;
 import store.shportfolio.deploy.domain.entity.WebApp;
+import store.shportfolio.deploy.domain.valueobject.DockerContainerStatus;
 
 import java.io.IOException;
 import java.util.UUID;
