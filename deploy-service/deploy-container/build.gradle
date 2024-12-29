@@ -12,6 +12,7 @@ repositories {
 }
 
 dependencies {
+    testImplementation platform('org.junit:junit-bom:5.10.0')
     implementation project(':common:common-domain')
     implementation project(':deploy-service:deploy-domain')
     implementation project(':deploy-service:deploy-application')
@@ -21,7 +22,6 @@ dependencies {
     implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-eureka-client', version: '4.0.0'
     implementation 'org.springframework.cloud:spring-cloud-starter'
 
-    testImplementation platform('org.junit:junit-bom:5.10.0')
     testImplementation 'org.junit.jupiter:junit-jupiter'
 }
 

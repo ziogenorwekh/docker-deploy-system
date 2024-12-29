@@ -13,6 +13,8 @@ dependencies {
     implementation project(':common:common-domain')
     implementation project(':deploy-service:deploy-domain')
 
+    implementation group: 'com.mysql', name: 'mysql-connector-j', version: '8.3.0'
+
 // https://mvnrepository.com/artifact/com.github.docker-java/docker-java
     implementation group: 'com.github.docker-java', name: 'docker-java', version: '3.4.1'
 

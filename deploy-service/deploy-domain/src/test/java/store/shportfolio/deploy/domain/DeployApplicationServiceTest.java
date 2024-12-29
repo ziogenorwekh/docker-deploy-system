@@ -220,7 +220,7 @@ public class DeployApplicationServiceTest {
         UserGlobal userGlobal = new UserGlobal(userId.toString(), username);
         DockerContainer dockerContainer = DockerContainer.builder()
                 .dockerContainerId(new DockerContainerId("dockerContainerId"))
-                .dockerContainerStatus(DockerContainerStatus.STOPPED)
+                .dockerContainerStatus(DockerContainerStatus.STARTED)
                 .endPointUrl("http://localhost:8080")
                 .applicationId(applicationId)
                 .build();
@@ -343,7 +343,7 @@ public class DeployApplicationServiceTest {
                 .applicationId(applicationId)
                 .build();
         DockerCreated dockerCreated = new DockerCreated( "dockerContainerId",
-                DockerContainerStatus.STARTED,"","");
+                DockerContainerStatus.STARTED,"","","");
 
         Mockito.when(dockerConnector.createContainer(webApp, fileUrl)).thenReturn(dockerCreated);
         Mockito.when(containerRepository.save(Mockito.any(DockerContainer.class))).thenReturn(dockerContainer);

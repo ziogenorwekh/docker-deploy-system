@@ -2,6 +2,7 @@ package store.shportfolio.deploy.application.ports.output.repository;
 
 import store.shportfolio.deploy.domain.entity.WebApp;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -21,4 +22,5 @@ public interface WebAppRepository {
 
     Optional<WebApp> findByApplicationName(String applicationName);
 
+    List<WebApp> findAll(String userId);
 }

@@ -14,12 +14,14 @@ public class DockerCreated {
     private final DockerContainerStatus dockerContainerStatus;
     private final String error;
     private final String dockerImageId;
+    private final String endPointUrl;
 
     public DockerCreated(String dockerContainerId,
-                         DockerContainerStatus dockerContainerStatus, String error,String dockerImageId) {
+                         DockerContainerStatus dockerContainerStatus, String error, String dockerImageId, String endPointUrl) {
         this.dockerContainerId = dockerContainerId;
         this.dockerImageId = dockerImageId;
         this.dockerContainerStatus = dockerContainerStatus;
         this.error = error;
+        this.endPointUrl = endPointUrl;
     }
 }

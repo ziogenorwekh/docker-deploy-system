@@ -22,6 +22,8 @@ public interface DeployApplicationService {
 
     void deleteWebApp(@Valid WebAppDeleteCommand webAppDeleteCommand, UserGlobal userGlobal);
 
+    void deleteAllWebApps(UserGlobal userGlobal);
+
     WebAppContainerResponse trackQueryDockerContainerResponse(@Valid WebAppTrackQuery webAppTrackQuery, UserGlobal userGlobal);
 
 }

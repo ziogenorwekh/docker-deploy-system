@@ -13,8 +13,10 @@ import store.shportfolio.deploy.infrastructure.jpa.repository.DockerContainerJpa
 import store.shportfolio.deploy.infrastructure.jpa.repository.StorageJpaRepository;
 import store.shportfolio.deploy.infrastructure.jpa.repository.WebAppJpaRepository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Repository
@@ -66,5 +68,12 @@ public class WebAppRepositoryImpl implements WebAppRepository {
     public Optional<WebApp> findByApplicationName(String applicationName) {
         return webAppJpaRepository.findByApplicationName(applicationName)
                 .map(deployDataAccessMapper::webAppEntityToWebAppEntity);
+    }
+
+    @Override
+    public List<WebApp> findAll(String userId) {
+        List<WebAppEntity> allByUserId = webAppJpaRepository.findAllByUserId(userId);
+        return allByUserId.stream().map(deployDataAccessMapper::webAppEntityToWebAppEntity)
+                .collect(Collectors.toList());
     }
 }

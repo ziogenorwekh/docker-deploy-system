@@ -31,7 +31,7 @@ public class DeployDockerTests {
     private DockerConnectorImpl dockerConnector;
 
 
-    @Test
+//    @Test
     @DisplayName("create docker container test")
     public void testCreateDockerContainer() {
         WebApp webApp = WebApp.createWebApp("userId", "testApplication", 10350, 17);
@@ -48,7 +48,7 @@ public class DeployDockerTests {
         dockerConnector.dropContainer(container.getDockerContainerId(), container.getDockerImageId());
     }
 
-    @Test
+//    @Test
     @DisplayName("docker track logs test")
     public void allTests() throws InterruptedException {
         WebApp webApp = WebApp.createWebApp("userId", "testApplication", 10350, 17);

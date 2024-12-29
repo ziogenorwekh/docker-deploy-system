@@ -46,6 +46,7 @@ public class DockerContainer extends BaseEntity<ApplicationId> {
         this.dockerContainerId = new DockerContainerId(dockerCreated.getDockerContainerId());
         this.dockerContainerStatus = dockerCreated.getDockerContainerStatus();
         this.imageId = dockerCreated.getDockerImageId();
+        this.endPointUrl = dockerCreated.getEndPointUrl();
     }
 
     public void startDockerContainer() {

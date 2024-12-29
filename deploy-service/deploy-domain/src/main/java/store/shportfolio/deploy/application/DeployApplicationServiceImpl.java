@@ -23,6 +23,7 @@ import store.shportfolio.deploy.domain.entity.WebApp;
 import store.shportfolio.deploy.domain.valueobject.DockerContainerStatus;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.UUID;
 
 @Slf4j
@@ -137,6 +138,17 @@ public class DeployApplicationServiceImpl implements DeployApplicationService {
         webAppHandler.deleteWebApp(webApp);
         storageHandler.deleteStorage(webApp.getId().getValue());
         dockerContainerHandler.deleteDockerContainer(webApp.getId().getValue());
+    }
+
+    @Override
+    @Transactional
+    public void deleteAllWebApps(UserGlobal userGlobal) {
+        List<WebApp> webApps = webAppHandler.findAll(userGlobal.getUserId());
+        for (WebApp webApp : webApps) {
+            WebAppDeleteCommand webAppDeleteCommand = WebAppDeleteCommand.builder()
+                    .applicationId(webApp.getId().getValue()).build();
+            this.deleteWebApp(webAppDeleteCommand, userGlobal);
+        }
     }
 
     @Override

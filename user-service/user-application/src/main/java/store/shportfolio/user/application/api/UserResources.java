@@ -56,9 +56,17 @@ public class UserResources {
     public ResponseEntity<Void> deleteUser(@PathVariable String userId) {
         UserDeleteEvent userDeleteEvent = userApplicationService.deleteUser(UserDeleteCommand.builder().userId(userId).build());
         // feign client send userDeleteEvent business logic
-        databaseServiceClient.deleteUserDatabase(userDeleteEvent.getEntity().getId().getValue());
-        deployServiceClient.deleteUserApplication(userDeleteEvent.getEntity().getId().getValue());
+        ResponseEntity<Void> deleteUserDatabase = databaseServiceClient
+                .deleteUserDatabase(userDeleteEvent.getEntity().getId().getValue());
+        ResponseEntity<Void> deleteAllUserApplication = deployServiceClient.
+                deleteAllUserApplication(userDeleteEvent.getEntity().getId().getValue());
+        if (deleteUserDatabase.getStatusCode() == HttpStatus.NO_CONTENT &&
+                deleteAllUserApplication.getStatusCode() == HttpStatus.NO_CONTENT) {
+            return ResponseEntity.noContent().build();
+        }
+        else {
+             return ResponseEntity.status(deleteUserDatabase.getStatusCode()).build();
+        }
         //
-        return ResponseEntity.noContent().build();
     }
 }

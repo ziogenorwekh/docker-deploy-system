@@ -8,7 +8,7 @@ import org.springframework.context.annotation.ComponentScan;
 
 
 @ComponentScan(basePackages = "store.shportfolio.deploy")
-@EntityScan(basePackages = "store.shportfolio.deploy.infrastructure")
+@EntityScan(basePackages = "store.shportfolio.deploy.infrastructure.jpa")
 @EnableDiscoveryClient
 @SpringBootApplication
 public class DeployApplication {

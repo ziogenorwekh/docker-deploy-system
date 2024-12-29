@@ -12,6 +12,7 @@ import store.shportfolio.deploy.domain.entity.DockerContainer;
 import store.shportfolio.deploy.domain.entity.Storage;
 import store.shportfolio.deploy.domain.entity.WebApp;
 
+import java.util.List;
 import java.util.UUID;
 
 @Component
@@ -58,6 +59,10 @@ public class WebAppHandler {
                         throw new WebAppUserNotMatchException("User id mismatch");
                     }
                 });
+    }
+
+    public List<WebApp> findAll(String userId) {
+        return webAppRepository.findAll(userId);
     }
 
     public WebApp getWebApp(UUID applicationId) {

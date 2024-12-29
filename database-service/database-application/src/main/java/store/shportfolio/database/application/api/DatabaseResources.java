@@ -1,10 +1,12 @@
 package store.shportfolio.database.application.api;
 
+import feign.FeignException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import store.shportfolio.common.domain.valueobject.UserGlobal;
 import store.shportfolio.database.application.DatabaseApplicationService;
+import store.shportfolio.database.application.exception.UserNotfoundException;
 import store.shportfolio.database.application.openfeign.UserServiceClient;
 import store.shportfolio.database.application.command.DatabaseCreateCommand;
 import store.shportfolio.database.application.command.DatabaseCreateResponse;
@@ -27,7 +29,7 @@ public class DatabaseResources {
     @RequestMapping(path = "/databases", method = RequestMethod.POST, produces = "application/json")
     public ResponseEntity<DatabaseCreateResponse> createDatabases(
             @RequestBody DatabaseCreateCommand databaseCreateCommand, @RequestHeader("Authorization") String token) {
-        UserGlobal userInfo = userServiceClient.getUserInfo(token);
+        UserGlobal userInfo = this.getUserGlobalByFeignClient(token);
         DatabaseCreateResponse databaseCreateResponse = databaseApplicationService
                 .createDatabase(databaseCreateCommand, userInfo);
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -36,7 +38,7 @@ public class DatabaseResources {
 
     @RequestMapping(path = "/databases", method = RequestMethod.GET, produces = "application/json")
     public ResponseEntity<DatabaseTrackResponse> retrieveDatabases(@RequestHeader("Authorization") String token) {
-        UserGlobal userInfo = userServiceClient.getUserInfo(token);
+        UserGlobal userInfo = this.getUserGlobalByFeignClient(token);
         DatabaseTrackQuery databaseTrackQuery = DatabaseTrackQuery.builder().userId(userInfo.getUserId()).build();
         DatabaseTrackResponse databaseTrackResponse = databaseApplicationService.trackQuery(databaseTrackQuery);
         return ResponseEntity.status(HttpStatus.OK).body(databaseTrackResponse);
@@ -44,9 +46,24 @@ public class DatabaseResources {
 
     @RequestMapping(path = "/databases", method = RequestMethod.DELETE, produces = "application/json")
     public ResponseEntity<Void> deleteDatabases(@RequestHeader("Authorization") String token) {
-        UserGlobal userInfo = userServiceClient.getUserInfo(token);
+        UserGlobal userInfo = this.getUserGlobalByFeignClient(token);
         databaseApplicationService.deleteDatabase(userInfo);
         return ResponseEntity.noContent().build();
     }
 
+
+    private UserGlobal getUserGlobalByFeignClient(String token) {
+        try {
+            ResponseEntity<UserGlobal> userGlobalResponseEntity = userServiceClient.getUserInfo(token);
+            if (userGlobalResponseEntity.getStatusCode().is2xxSuccessful() && userGlobalResponseEntity.getBody() != null) {
+                return userGlobalResponseEntity.getBody();
+            } else {
+                throw new UserNotfoundException("User not found");
+            }
+        } catch (FeignException ex) {
+            throw new UserNotfoundException("FeignClient error: " + ex.getMessage(), ex);
+        } catch (Exception ex) {
+            throw new UserNotfoundException("Unexpected error: " + ex.getMessage(), ex);
+        }
+    }
 }

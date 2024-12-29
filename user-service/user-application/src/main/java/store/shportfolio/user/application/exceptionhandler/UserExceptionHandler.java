@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+import store.shportfolio.user.application.exception.UserDeleteException;
 import store.shportfolio.user.application.exception.UserEmailDuplicatedException;
 import store.shportfolio.user.application.exception.UserNotFoundException;
 import store.shportfolio.user.domain.exception.DomainException;
@@ -90,6 +91,13 @@ public class UserExceptionHandler extends ResponseEntityExceptionHandler {
                 .build();
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(exceptionResponse);
     }
-
-
+    @ExceptionHandler(UserDeleteException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<ExceptionResponse> handleUserDeleteException(UserDeleteException ex) {
+        ExceptionResponse exceptionResponse = ExceptionResponse.builder()
+                .error(ex.getMessage())
+                .timestamp(LocalDateTime.now())
+                .build();
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
+    }
 }

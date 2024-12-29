@@ -25,12 +25,11 @@ public class JwtHandler {
 
     public Token createSignupTemporaryToken(String email) {
         String tokenExpirationTime = env.getProperty("server.token.email.expiration");
+        long expirationMinutes = Long.parseLong(Objects.requireNonNull(tokenExpirationTime));
         String secret = env.getProperty("server.token.secret");
         ZoneId zoneId = ZoneId.of("Asia/Seoul");
         ZonedDateTime now = ZonedDateTime.now(zoneId);
-        ZonedDateTime expirationTime = now.
-                plusMinutes(Long.parseLong(Objects
-                        .requireNonNull(tokenExpirationTime)));
+        ZonedDateTime expirationTime = now.plusMinutes(expirationMinutes);
         String emailToken = JWT.create().withIssuer(email).withExpiresAt(expirationTime.toInstant())
                 .sign(Algorithm.HMAC256(secret));
         log.info("Successfully created the temporary email token -> {}", email);
@@ -39,12 +38,11 @@ public class JwtHandler {
 
     public Token createLoginToken(String email, String userId) {
         String tokenExpirationTime = env.getProperty("server.token.login.expiration");
+        long expirationMinutes = Long.parseLong(Objects.requireNonNull(tokenExpirationTime));
         String secret = env.getProperty("server.token.secret");
         ZoneId zoneId = ZoneId.of("Asia/Seoul");
         ZonedDateTime now = ZonedDateTime.now(zoneId);
-        ZonedDateTime expirationTime = now.
-                plusMinutes(Long.parseLong(Objects
-                        .requireNonNull(tokenExpirationTime)));
+        ZonedDateTime expirationTime = now.plusMinutes(expirationMinutes);
         String loginToken = JWT.create().withIssuer(userId)
                 .withSubject(email).withExpiresAt(expirationTime.toInstant())
                 .sign(Algorithm.HMAC256(secret));

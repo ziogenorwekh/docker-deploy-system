@@ -1,6 +1,7 @@
 package store.shportfolio.deploy.infrastructure.docker.adapter;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import store.shportfolio.deploy.application.ports.output.docker.DockerConnector;
 import store.shportfolio.deploy.application.vo.DockerCreated;
@@ -21,6 +22,8 @@ public class DockerConnectorImpl implements DockerConnector {
     private final DockerImageCreateHelper dockerImageCreateHelper;
     private final DockerContainerHelper dockerContainerHelper;
     private final DockerResourceHelper dockerResourceHelper;
+    @Value("docker.server.endpoint")
+    private String endpointUrl;
 
     @Autowired
     public DockerConnectorImpl(DockerfileCreateHelper dockerfileCreateHelper,
@@ -44,6 +47,7 @@ public class DockerConnectorImpl implements DockerConnector {
                     .builder()
                     .dockerContainerStatus(DockerContainerStatus.STARTED)
                     .error("")
+                    .endPointUrl(String.format("%s:%s", endpointUrl, webApp.getServerPort().getValue()))
                     .dockerImageId(imageId)
                     .dockerContainerId(dockerId)
                     .build();
@@ -52,6 +56,7 @@ public class DockerConnectorImpl implements DockerConnector {
                     .builder()
                     .dockerContainerStatus(DockerContainerStatus.ERROR)
                     .dockerContainerId("")
+                    .endPointUrl("")
                     .dockerImageId("")
                     .error(e.getMessage())
                     .build();
