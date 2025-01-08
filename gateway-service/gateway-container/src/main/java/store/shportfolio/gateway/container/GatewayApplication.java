@@ -7,9 +7,9 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.context.annotation.ComponentScan;
 
 @Slf4j
-@ComponentScan(basePackages = "store.shportfolio.gateway")
 @EnableDiscoveryClient
-@SpringBootApplication
+@ComponentScan(basePackages = "store.shportfolio.gateway")
+@SpringBootApplication(scanBasePackages = "store.shportfolio.gateway")
 public class GatewayApplication {
     public static void main(String[] args) {
         SpringApplication.run(GatewayApplication.class, args);

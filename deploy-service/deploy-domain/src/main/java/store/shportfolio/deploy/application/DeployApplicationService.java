@@ -12,7 +12,7 @@ public interface DeployApplicationService {
     WebAppCreateResponse createWebApp(@Valid UserGlobal userGlobal, @Valid WebAppCreateCommand webAppCreateCommand);
 
     @Async
-    void saveJarFile(WebAppFileCreateCommand webAppFileCreateCommand, UserGlobal userGlobal);
+    void saveJarFileAndCreateContainer(WebAppFileCreateCommand webAppFileCreateCommand, UserGlobal userGlobal);
 
     WebAppTrackResponse trackQueryWebApp(@Valid WebAppTrackQuery webAppTrackQuery, UserGlobal userGlobal);
 

@@ -2,6 +2,7 @@ package store.shportfolio.user.infrastructure.mail.adapter;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.MailSendException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -13,6 +14,7 @@ import store.shportfolio.user.infrastructure.mail.CustomCacheManager;
 import java.util.Optional;
 import java.util.Random;
 
+@Slf4j
 @Component
 public class MailSenderImpl implements MailSender {
 
@@ -27,6 +29,8 @@ public class MailSenderImpl implements MailSender {
     @Override
     public void sendMail(String email) {
         String code = generateRandomCode();
+        log.info("Sending mail to " + email);
+        log.info("Sending code " + code);
         if (!customCacheManager.save(email, code)) {
             throw new AlreadyMailSendException(String.format("%s already sent", email));
         }

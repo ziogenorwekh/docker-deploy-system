@@ -42,7 +42,7 @@ public class DeployResources {
         UserGlobal userInfo = getUserGlobalByFeignClient(token);
         webAppFileCreateCommand.setApplicationId(applicationId.toString());
 
-        deployApplicationService.saveJarFile(webAppFileCreateCommand, userInfo);
+        deployApplicationService.saveJarFileAndCreateContainer(webAppFileCreateCommand, userInfo);
         return ResponseEntity.noContent().build();
     }
 

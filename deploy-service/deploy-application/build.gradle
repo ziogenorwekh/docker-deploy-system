@@ -13,7 +13,7 @@ dependencies {
 
     implementation project(':common:common-domain')
     implementation project(':deploy-service:deploy-domain')
-
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation', version: '3.4.0'
 // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-test
     testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: '3.4.0'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: '3.4.0'

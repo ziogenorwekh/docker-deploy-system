@@ -19,8 +19,8 @@ public class UserCreateCommand {
 
     @NotEmpty(message = "NewPassword must be necessary.")
     @Size(min = 4, message = "Password must be at least than 4 characters.")
-    @Size(max = 10, message = "Password must not exceed 10 characters.")
-    @Pattern(regexp = ".*[A-Za-z]+.*", message = "NewPassword must contain at least one letter.")
+    @Size(max = 15, message = "Password must not exceed 10 characters.")
+    @Pattern(regexp = ".*[A-Za-z]+.*", message = "password must contain at least one letter.")
     private String password;
 
 

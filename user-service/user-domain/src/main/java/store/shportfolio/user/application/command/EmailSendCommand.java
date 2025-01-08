@@ -1,8 +1,13 @@
 package store.shportfolio.user.application.command;
 
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotEmpty;
+
 public class EmailSendCommand {
 
+    @NotEmpty(message = "Email must be necessary.")
+    @Email
     private String email;
 
     public EmailSendCommand() {

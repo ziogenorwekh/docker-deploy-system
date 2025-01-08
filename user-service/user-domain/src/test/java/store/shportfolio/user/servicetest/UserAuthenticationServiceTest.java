@@ -31,6 +31,8 @@ import store.shportfolio.user.application.mapper.UserDataMapper;
 import store.shportfolio.user.application.ports.output.mail.MailSender;
 import store.shportfolio.user.application.ports.output.repository.UserRepository;
 import store.shportfolio.user.application.security.UserDetailsImpl;
+import store.shportfolio.user.domain.UserDomainService;
+import store.shportfolio.user.domain.UserDomainServiceImpl;
 import store.shportfolio.user.domain.entity.User;
 import store.shportfolio.user.domain.valueobject.AccountStatus;
 import store.shportfolio.user.domain.valueobject.Password;
@@ -55,6 +57,8 @@ public class UserAuthenticationServiceTest {
     @Mock
     private MailSender mailSender;
 
+    private UserDomainService userDomainService;
+
     private TestEnvironment env;
 
     private UserDataMapper userDataMapper;
@@ -70,8 +74,10 @@ public class UserAuthenticationServiceTest {
         env = new TestEnvironment();
         userDataMapper = new UserDataMapper();
         jwtHandler = new JwtHandler(env);
+        userDomainService = new UserDomainServiceImpl();
         userAuthenticationService = new UserAuthenticationService(
-                userRepository, jwtHandler, authenticationManager, userDataMapper, mailSender
+                userRepository, userDomainService,
+                jwtHandler, authenticationManager, userDataMapper, mailSender
         );
     }
 

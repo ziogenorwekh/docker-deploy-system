@@ -17,6 +17,7 @@ public class UserResources {
     private final UserApplicationService userApplicationService;
     private final DatabaseServiceClient databaseServiceClient;
     private final DeployServiceClient deployServiceClient;
+
     @Autowired
     public UserResources(UserApplicationService userApplicationService,
                          DatabaseServiceClient databaseServiceClient,

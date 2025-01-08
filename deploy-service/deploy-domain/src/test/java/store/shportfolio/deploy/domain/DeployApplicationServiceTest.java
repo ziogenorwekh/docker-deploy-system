@@ -5,11 +5,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.server.WebHandler;
 import store.shportfolio.common.domain.valueobject.*;
 import store.shportfolio.deploy.application.DeployApplicationService;
 import store.shportfolio.deploy.application.DeployApplicationServiceImpl;
@@ -360,7 +358,7 @@ public class DeployApplicationServiceTest {
 
     @Test
     @DisplayName("Jar 파일 저장 및 컨테이너 생성 전체 테스트")
-    public void testSaveJarFileAndCreateContainer() throws IOException {
+    public void testSaveJarFileAndCreateContainerAndCreateContainer() throws IOException {
         // given
         ApplicationId applicationId = new ApplicationId(UUID.randomUUID());
         UserGlobal userGlobal = new UserGlobal(userId.toString(), username);
@@ -430,7 +428,7 @@ public class DeployApplicationServiceTest {
                 .thenReturn(dockerContainer);
 
         // when
-        deployApplicationService.saveJarFile(webAppFileCreateCommand, userGlobal);
+        deployApplicationService.saveJarFileAndCreateContainer(webAppFileCreateCommand, userGlobal);
 
         // then
 

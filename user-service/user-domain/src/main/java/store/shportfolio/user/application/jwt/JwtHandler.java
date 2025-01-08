@@ -51,13 +51,17 @@ public class JwtHandler {
     }
 
     public String getEmailFromToken(Token token) {
+        log.info("Get email from token -> {}", token.getValue());
+        String tokenValue = token.getValue().substring(7);
         String secret = env.getProperty("server.token.secret");
-        return JWT.require(Algorithm.HMAC256(secret)).build().verify(token.getValue()).getIssuer();
+        return JWT.require(Algorithm.HMAC256(secret)).build().verify(tokenValue).getIssuer();
     }
 
     public String getUserIdByToken(Token token) {
+        log.info("Get email from token -> {}", token.getValue());
+        String tokenValue = token.getValue().substring(7);
         String secret = env.getProperty("server.token.secret");
-        String userId = JWT.require(Algorithm.HMAC256(secret)).build().verify(token.getValue()).getIssuer();
+        String userId = JWT.require(Algorithm.HMAC256(secret)).build().verify(tokenValue).getIssuer();
         return userId;
     }
 }

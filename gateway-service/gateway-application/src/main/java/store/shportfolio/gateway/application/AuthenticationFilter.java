@@ -25,6 +25,10 @@ import java.util.List;
 @Component
 public class AuthenticationFilter extends AbstractGatewayFilterFactory<AuthConfigData> {
 
+    public AuthenticationFilter() {
+        super(AuthConfigData.class);
+    }
+
     @Override
     public GatewayFilter apply(AuthConfigData config) {
         return (exchange, chain) -> {

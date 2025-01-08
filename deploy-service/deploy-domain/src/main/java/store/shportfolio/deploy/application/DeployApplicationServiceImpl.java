@@ -70,7 +70,7 @@ public class DeployApplicationServiceImpl implements DeployApplicationService {
     @Async
     @Override
     @Transactional
-    public void saveJarFile(WebAppFileCreateCommand webAppFileCreateCommand, UserGlobal userGlobal) {
+    public void saveJarFileAndCreateContainer(WebAppFileCreateCommand webAppFileCreateCommand, UserGlobal userGlobal) {
         UUID applicationId = UUID.fromString(webAppFileCreateCommand.getApplicationId());
         WebApp webApp = this.getWebApp(userGlobal, applicationId);
         try {

@@ -6,9 +6,9 @@ import com.amazonaws.services.s3.model.PutObjectRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import store.shportfolio.deploy.application.exception.S3Exception;
 import store.shportfolio.deploy.application.ports.output.s3.S3Bucket;
 import store.shportfolio.deploy.application.vo.StorageInfo;
-import store.shportfolio.deploy.infrastructure.s3.exception.S3Exception;
 
 import java.io.File;
 

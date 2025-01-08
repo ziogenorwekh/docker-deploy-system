@@ -10,13 +10,15 @@ import reactor.core.publisher.Mono;
 import store.shportfolio.gateway.application.config.InMemoryRateLimiter;
 
 @Order(1)
-@Component
+@Component("RateLimitingFilter")
 public class RateLimitingFilter extends AbstractGatewayFilterFactory<Object> {
 
     private final InMemoryRateLimiter rateLimiter;
 
+
     @Autowired
     public RateLimitingFilter(InMemoryRateLimiter rateLimiter) {
+        super(Object.class);
         this.rateLimiter = rateLimiter;
     }
 

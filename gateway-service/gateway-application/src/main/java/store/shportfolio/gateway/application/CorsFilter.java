@@ -14,6 +14,9 @@ import store.shportfolio.gateway.application.config.CorsConfigData;
 @Component
 public class CorsFilter extends AbstractGatewayFilterFactory<CorsConfigData> {
 
+    public CorsFilter() {
+        super(CorsConfigData.class);
+    }
 
     @Override
     public GatewayFilter apply(CorsConfigData config) {

@@ -1,4 +1,4 @@
-package store.shportfolio.user.application.exceptionhandler;
+package store.shportfolio.deploy.application.exceptionhandler;
 
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
@@ -6,26 +6,21 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.DisabledException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
-import store.shportfolio.user.application.exception.*;
-import store.shportfolio.user.domain.exception.DomainException;
+import store.shportfolio.deploy.application.exception.*;
+import store.shportfolio.deploy.domain.exception.DomainException;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 @RestControllerAdvice
-public class UserExceptionHandler extends ResponseEntityExceptionHandler {
+public class DeployExceptionHandler extends ResponseEntityExceptionHandler {
 
 
     @Override
@@ -54,9 +49,6 @@ public class UserExceptionHandler extends ResponseEntityExceptionHandler {
                 .errors(errors)
                 .build());
     }
-
-
-
     @ExceptionHandler(DomainException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<ExceptionResponse> handleDomainException(DomainException ex) {
@@ -68,9 +60,9 @@ public class UserExceptionHandler extends ResponseEntityExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
     }
 
-    @ExceptionHandler(UserNotFoundException.class)
+    @ExceptionHandler(UserNotfoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ResponseEntity<ExceptionResponse> handleUserNotFoundException(UserNotFoundException ex) {
+    public ResponseEntity<ExceptionResponse> handleUserNotFoundException(UserNotfoundException ex) {
         ExceptionResponse exceptionResponse = ExceptionResponse
                 .builder()
                 .error(ex.getMessage())
@@ -79,20 +71,82 @@ public class UserExceptionHandler extends ResponseEntityExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exceptionResponse);
     }
 
-    @ExceptionHandler(UserEmailDuplicatedException.class)
-    @ResponseStatus(HttpStatus.CONFLICT)
-    public ResponseEntity<ExceptionResponse> handleUserEmailDuplicatedException(UserEmailDuplicatedException ex) {
+
+    @ExceptionHandler(ApplicationNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ResponseEntity<ExceptionResponse> handleApplicationNotFoundException(ApplicationNotFoundException ex) {
         ExceptionResponse exceptionResponse = ExceptionResponse
                 .builder()
                 .error(ex.getMessage())
                 .timestamp(LocalDateTime.now())
                 .build();
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(exceptionResponse);
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exceptionResponse);
     }
 
-    @ExceptionHandler(BadCredentialsException.class)
+    @ExceptionHandler(ContainerAccessException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    public ResponseEntity<ExceptionResponse> handleBadCredentialsException(BadCredentialsException ex) {
+    public ResponseEntity<ExceptionResponse> handleContainerAccessException(ContainerAccessException ex) {
+        ExceptionResponse exceptionResponse = ExceptionResponse
+                .builder()
+                .error(ex.getMessage())
+                .timestamp(LocalDateTime.now())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(exceptionResponse);
+    }
+
+    @ExceptionHandler(DockerContainerException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ResponseEntity<ExceptionResponse> handleDockerContainerException(DockerContainerException ex) {
+        ExceptionResponse exceptionResponse = ExceptionResponse
+                .builder()
+                .error(ex.getMessage())
+                .timestamp(LocalDateTime.now())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(exceptionResponse);
+    }
+
+    @ExceptionHandler(DockerNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ResponseEntity<ExceptionResponse> handleDockerNotFoundException(DockerNotFoundException ex) {
+        ExceptionResponse exceptionResponse = ExceptionResponse
+                .builder()
+                .error(ex.getMessage())
+                .timestamp(LocalDateTime.now())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exceptionResponse);
+    }
+
+    @ExceptionHandler(S3UploadFailedException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ResponseEntity<ExceptionResponse> handleS3UploadFailedException(S3UploadFailedException ex) {
+        ExceptionResponse exceptionResponse = ExceptionResponse
+                .builder()
+                .error(ex.getMessage())
+                .timestamp(LocalDateTime.now())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(exceptionResponse);
+    }
+
+    @ExceptionHandler(StorageNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ResponseEntity<ExceptionResponse> handleStorageNotFoundException(StorageNotFoundException ex) {
+        ExceptionResponse exceptionResponse = ExceptionResponse
+                .builder()
+                .error(ex.getMessage())
+                .timestamp(LocalDateTime.now())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exceptionResponse);
+    }
+
+    @ExceptionHandler(WebAppUserNotMatchException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ResponseEntity<ExceptionResponse> handleWebAppUserNotMatchException(WebAppUserNotMatchException ex) {
         ExceptionResponse exceptionResponse = ExceptionResponse
                 .builder()
                 .error(ex.getMessage())
@@ -102,47 +156,15 @@ public class UserExceptionHandler extends ResponseEntityExceptionHandler {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(exceptionResponse);
     }
 
-    @ExceptionHandler(DisabledException.class)
-    @ResponseStatus(HttpStatus.FORBIDDEN)
-    public ResponseEntity<ExceptionResponse> handleDisabledException(DisabledException ex) {
+    @ExceptionHandler(S3Exception.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ResponseEntity<ExceptionResponse> handleS3Exception(S3Exception ex) {
         ExceptionResponse exceptionResponse = ExceptionResponse
                 .builder()
                 .error(ex.getMessage())
                 .timestamp(LocalDateTime.now())
                 .build();
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(exceptionResponse);
-    }
 
-
-    @ExceptionHandler(UserDeleteException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResponseEntity<ExceptionResponse> handleUserDeleteException(UserDeleteException ex) {
-        ExceptionResponse exceptionResponse = ExceptionResponse.builder()
-                .error(ex.getMessage())
-                .timestamp(LocalDateTime.now())
-                .build();
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
-    }
-
-    @ExceptionHandler(GoogleException.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ResponseEntity<ExceptionResponse> handleGoogleException(GoogleException ex) {
-        ExceptionResponse exceptionResponse = ExceptionResponse.builder()
-                .error(ex.getMessage())
-                .timestamp(LocalDateTime.now())
-                .build();
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(exceptionResponse);
-    }
-
-    @ExceptionHandler(LoginException.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ResponseEntity<ExceptionResponse> handleLoginException(LoginException ex) {
-        ExceptionResponse exceptionResponse = ExceptionResponse.builder()
-                .error(ex.getMessage())
-                .timestamp(LocalDateTime.now())
-                .build();
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(exceptionResponse);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(exceptionResponse);
     }
 }
