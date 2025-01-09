@@ -64,7 +64,7 @@ public class DockerContainerHelper {
 
         } catch (DockerException e) {
             log.error("DockerContainerHelper: {}", e.getMessage());
-            throw new DockerContainerException("Error running container", e);
+            throw new DockerContainerException("Error running container");
         }
     }
 
@@ -79,7 +79,7 @@ public class DockerContainerHelper {
             return true;
         } catch (DockerException e) {
             log.error("DockerContainerHelper: {}", e.getMessage());
-            throw new DockerContainerException("Error caused by starting container.", e);
+            throw new DockerContainerException("Error caused by starting container.");
         }
     }
 
@@ -94,7 +94,7 @@ public class DockerContainerHelper {
             return true;
         } catch (DockerException e) {
             log.error("DockerContainerHelper: {}", e.getMessage());
-            throw new DockerContainerException("Error caused by stopping container.", e);
+            throw new DockerContainerException("Error caused by stopping container.");
         }
     }
 
@@ -114,7 +114,7 @@ public class DockerContainerHelper {
                         outputStream.write(item.getPayload());
                     } catch (Exception e) {
                         log.error("DockerContainerHelper: {}", e.getMessage());
-                        throw new DockerContainerException("Error writing log frame", e);
+                        throw new DockerContainerException("Error writing log frame");
                     }
                 }
 
@@ -137,7 +137,7 @@ public class DockerContainerHelper {
 
         } catch (Exception e) {
             log.error("DockerContainerHelper: {}", e.getMessage());
-            throw new DockerContainerException("Error fetching container logs", e);
+            throw new DockerContainerException("Error fetching container logs");
         }
     }
 
@@ -151,7 +151,7 @@ public class DockerContainerHelper {
             dockerClient.removeImageCmd(imageId).exec();
         } catch (Exception e) {
             log.error("DockerContainerHelper: {}", e.getMessage());
-            throw new DockerContainerException("Error fetching container logs", e);
+            throw new DockerContainerException("Error fetching container logs");
         }
     }
 

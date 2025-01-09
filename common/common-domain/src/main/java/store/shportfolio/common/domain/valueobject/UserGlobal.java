@@ -1,24 +1,24 @@
 package store.shportfolio.common.domain.valueobject;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.util.Objects;
 
+@Data
+@NoArgsConstructor
 public class UserGlobal {
 
-    private final String userId;
-    private final String username;
+    private String userId;
+
+    private String username;
 
     public UserGlobal(String userId, String username) {
         this.userId = userId;
         this.username = username;
     }
 
-    public String getUserId() {
-        return userId;
-    }
-
-    public String getUsername() {
-        return username;
-    }
 
     public static class Builder {
         private String userId;

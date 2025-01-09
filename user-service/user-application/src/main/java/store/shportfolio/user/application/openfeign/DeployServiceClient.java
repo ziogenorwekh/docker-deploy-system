@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-@FeignClient(name = "deploy-service")
+@FeignClient(name = "deploy-service",url = "${gateway.deploy-service.url}")
 public interface DeployServiceClient {
 
     @RequestMapping(path = "/api/apps", method = RequestMethod.DELETE,

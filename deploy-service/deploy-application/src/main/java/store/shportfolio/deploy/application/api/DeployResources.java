@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import store.shportfolio.common.domain.valueobject.UserGlobal;
 import store.shportfolio.deploy.application.DeployApplicationService;
 import store.shportfolio.deploy.application.command.*;
@@ -35,13 +36,13 @@ public class DeployResources {
         return ResponseEntity.status(HttpStatus.CREATED).body(webAppCreateResponse);
     }
 
-    @RequestMapping(path = "/apps/{applicationId}", method = RequestMethod.POST, produces = "application/json")
+    @RequestMapping(path = "/apps/{applicationId}", method = RequestMethod.POST)
     public ResponseEntity<Void> saveJarFile(@PathVariable UUID applicationId,
-                                            @RequestBody WebAppFileCreateCommand webAppFileCreateCommand,
+                                            @RequestPart(value = "file") MultipartFile file,
                                             @RequestHeader("Authorization") String token) {
         UserGlobal userInfo = getUserGlobalByFeignClient(token);
-        webAppFileCreateCommand.setApplicationId(applicationId.toString());
-
+        WebAppFileCreateCommand webAppFileCreateCommand = WebAppFileCreateCommand.builder()
+                .applicationId(applicationId.toString()).file(file).build();
         deployApplicationService.saveJarFileAndCreateContainer(webAppFileCreateCommand, userInfo);
         return ResponseEntity.noContent().build();
     }
@@ -59,7 +60,7 @@ public class DeployResources {
         UserGlobal userInfo = getUserGlobalByFeignClient(token);
         deployApplicationService.stopContainer(WebAppTrackQuery.builder()
                 .applicationId(UUID.fromString(applicationId)).build(), userInfo);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok().build();
     }
 
     @RequestMapping(path = "/apps/container/{applicationId}",
@@ -104,12 +105,7 @@ public class DeployResources {
 
     private UserGlobal getUserGlobalByFeignClient(String token) {
         try {
-            ResponseEntity<UserGlobal> userGlobalResponseEntity = userServiceClient.getUserInfo(token);
-            if (userGlobalResponseEntity.getStatusCode().is2xxSuccessful() && userGlobalResponseEntity.getBody() != null) {
-                return userGlobalResponseEntity.getBody();
-            } else {
-                throw new UserNotfoundException("User not found");
-            }
+            return userServiceClient.getUserInfo(token);
         } catch (FeignException ex) {
             throw new UserNotfoundException("FeignClient error: " + ex.getMessage(), ex);
         } catch (Exception ex) {

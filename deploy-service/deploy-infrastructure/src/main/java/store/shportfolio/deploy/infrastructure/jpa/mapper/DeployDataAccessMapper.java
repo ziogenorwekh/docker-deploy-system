@@ -67,7 +67,7 @@ public class DeployDataAccessMapper {
         return WebAppEntity.builder()
                 .applicationId(webApp.getId().getValue().toString())
                 .applicationName(webApp.getApplicationName().getValue())
-                .userId(webApp.getId().getValue().toString())
+                .userId(webApp.getUserId().getValue())
                 .error(webApp.getErrorMessages())
                 .applicationStatus(webApp.getApplicationStatus())
                 .javaVersion(webApp.getJavaVersion().getVersion())

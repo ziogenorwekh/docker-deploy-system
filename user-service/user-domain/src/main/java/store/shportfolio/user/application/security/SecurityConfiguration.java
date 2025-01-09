@@ -2,6 +2,7 @@ package store.shportfolio.user.application.security;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -19,12 +20,18 @@ import org.springframework.security.oauth2.client.registration.ClientRegistratio
 import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import store.shportfolio.user.application.security.config.GoogleOauth2ConfigData;
 
 @Slf4j
 @Configuration
 @EnableWebSecurity
 public class SecurityConfiguration {
+
+    @Value("${gateway.url}")
+    private String gatewayUrl;
 
     @Bean
     public SecurityFilterChain configure(HttpSecurity http) throws Exception {
@@ -34,11 +41,13 @@ public class SecurityConfiguration {
         http.formLogin(AbstractHttpConfigurer::disable);
         http.httpBasic(AbstractHttpConfigurer::disable);
         http.logout(AbstractHttpConfigurer::disable);
+        http.cors(AbstractHttpConfigurer::disable);
+
 
         http.authorizeHttpRequests(authorizeRequests -> {
             authorizeRequests.requestMatchers(HttpMethod.GET, "/status").permitAll();
             authorizeRequests.requestMatchers(HttpMethod.POST, "/api/users").permitAll();
-            authorizeRequests.requestMatchers(HttpMethod.POST, "/api/auth/**").permitAll();
+            authorizeRequests.requestMatchers("/api/auth/**").permitAll();
 //            authorizeRequests.requestMatchers("/oauth2/authorization/google").permitAll();
             authorizeRequests.anyRequest().authenticated();
         });
@@ -63,6 +72,7 @@ public class SecurityConfiguration {
                 .getAuthenticationManager();
         return authenticationManager;
     }
+
 
 //    @Bean
 //    public ClientRegistrationRepository clientRegistrationRepository() {

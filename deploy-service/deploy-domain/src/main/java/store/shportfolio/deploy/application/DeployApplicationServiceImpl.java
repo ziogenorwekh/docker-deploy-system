@@ -8,10 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import store.shportfolio.common.domain.valueobject.UserGlobal;
 import store.shportfolio.deploy.application.command.*;
-import store.shportfolio.deploy.application.exception.ContainerAccessException;
-import store.shportfolio.deploy.application.exception.DockerContainerException;
-import store.shportfolio.deploy.application.exception.S3UploadFailedException;
-import store.shportfolio.deploy.application.exception.WebAppUserNotMatchException;
+import store.shportfolio.deploy.application.exception.*;
 import store.shportfolio.deploy.application.handler.DockerContainerHandler;
 import store.shportfolio.deploy.application.handler.StorageHandler;
 import store.shportfolio.deploy.application.handler.WebAppHandler;
@@ -20,6 +17,7 @@ import store.shportfolio.deploy.application.vo.ResourceUsage;
 import store.shportfolio.deploy.domain.entity.DockerContainer;
 import store.shportfolio.deploy.domain.entity.Storage;
 import store.shportfolio.deploy.domain.entity.WebApp;
+import store.shportfolio.deploy.domain.valueobject.ApplicationStatus;
 import store.shportfolio.deploy.domain.valueobject.DockerContainerStatus;
 
 import java.io.IOException;
@@ -67,12 +65,10 @@ public class DeployApplicationServiceImpl implements DeployApplicationService {
     }
 
 
-    @Async
     @Override
-    @Transactional
     public void saveJarFileAndCreateContainer(WebAppFileCreateCommand webAppFileCreateCommand, UserGlobal userGlobal) {
-        UUID applicationId = UUID.fromString(webAppFileCreateCommand.getApplicationId());
-        WebApp webApp = this.getWebApp(userGlobal, applicationId);
+        WebApp webApp = validateAndRetrieveWebApp(webAppFileCreateCommand, userGlobal);
+
         try {
             Storage storage = storageHandler.uploadS3(webApp.getId().getValue(), webAppFileCreateCommand.getFile());
             log.info("storage saved data url is {}, filename is {}", storage.getStorageUrl(), storage.getStorageName());
@@ -82,19 +78,16 @@ public class DeployApplicationServiceImpl implements DeployApplicationService {
 
             DockerContainer dockerContainer = dockerContainerHandler.createDockerImageAndRun(webApp,
                     storage.getStorageUrl());
-            log.info("docker container created Id -> {}", dockerContainer.getDockerContainerId().getValue());
-            log.info("docker container endpoint is {}, container status is {}", dockerContainer.getEndPointUrl()
-                    , dockerContainer.getDockerContainerStatus());
-
             webAppHandler.completeContainerizing(webApp);
 
             log.info("containerizing completed -> {}", webApp.getApplicationStatus());
-            log.info("finally webApp must be updated DockerContainer is Id -> {}, is Endpoint -> {}. " +
-                            "storage is fileUrl {}, is name -> {}", dockerContainer.getDockerContainerId().getValue(),
-                    dockerContainer.getEndPointUrl(), storage.getStorageUrl(), storage.getStorageName());
-        } catch (IOException | DockerContainerException e) {
+        } catch (IOException | S3Exception | DockerContainerException | ContainerAccessException e) {
+            log.error("error message is : " + e.getMessage());
             webAppHandler.failedApplication(webApp, e.getMessage());
-            throw new S3UploadFailedException(e.getMessage());
+        } catch (Exception e) {
+            log.error("error class is : " + e.getClass().getSimpleName());
+            log.error("error message is : " + e.getMessage());
+            webAppHandler.failedApplication(webApp, "server error");
         }
     }
 
@@ -163,11 +156,25 @@ public class DeployApplicationServiceImpl implements DeployApplicationService {
         return deployDataMapper.webAppToWebAppContainerResponse(webApp, resourceUsage, containerLogs);
     }
 
+    private WebApp validateAndRetrieveWebApp(WebAppFileCreateCommand webAppFileCreateCommand, UserGlobal userGlobal) {
+        UUID applicationId = UUID.fromString(webAppFileCreateCommand.getApplicationId());
+        WebApp webApp = this.getWebApp(userGlobal, applicationId);
+
+        if (webApp.getApplicationStatus() != ApplicationStatus.CREATED
+                && webApp.getApplicationStatus() != ApplicationStatus.FAILED) {
+            throw new WebAppException("Application already operated.");
+        }
+
+        return webApp;
+    }
+
     private WebApp getWebApp(UserGlobal userGlobal, UUID applicationId) {
         WebApp webApp = webAppHandler.getWebApp(applicationId);
+        log.info("webApp id is {}", webApp.getId());
         if (!webApp.getUserId().getValue().equals(userGlobal.getUserId())) {
+            log.error("user global id is different");
             throw new WebAppUserNotMatchException(String.format("Web app %s does not match user %s",
-                    webApp.getApplicationName(), userGlobal.getUserId()));
+                    webApp.getApplicationName().getValue(), userGlobal.getUserId()));
         }
         return webApp;
     }

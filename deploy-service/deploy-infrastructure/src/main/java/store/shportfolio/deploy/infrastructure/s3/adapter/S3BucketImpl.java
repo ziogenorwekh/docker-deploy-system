@@ -36,18 +36,22 @@ public class S3BucketImpl implements S3Bucket {
                 .storageName(file.getName())
                 .build();
 
-        this.removeLocalFile(file);
-
         return storageInfo;
     }
 
     @Override
     public void deleteS3(String storageName) {
         try {
+            if (!amazonS3.doesObjectExist(bucket, storageName)) {
+                log.info("Object does not exist in bucket. Filename: {}", storageName);
+                return;
+            }
+
+            // 객체 삭제
             amazonS3.deleteObject(bucket, storageName);
-            log.trace("storage remove successful filename is : {}", storageName);
+            log.info("Storage removal successful. Filename: {}", storageName);
         } catch (Exception e) {
-            throw new S3Exception(e.getMessage());
+            throw new S3Exception("delete failed.", e);
         }
     }
 
@@ -57,14 +61,11 @@ public class S3BucketImpl implements S3Bucket {
                     .withCannedAcl(CannedAccessControlList.PublicRead));
 
         } catch (Exception e) {
-            this.removeLocalFile(file);
-            throw new S3Exception(e.getMessage());
+            log.error("upload failed: {}", e.getMessage());
+            throw new S3Exception("upload failed.");
         }
     }
 
-    private void removeLocalFile(File targetFile) {
-        targetFile.delete();
-    }
 
     private void validateFileType(File file) {
         if (file == null || !file.getName().toLowerCase().endsWith(".jar")) {

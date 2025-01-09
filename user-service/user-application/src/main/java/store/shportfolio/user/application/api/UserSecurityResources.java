@@ -4,6 +4,7 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.gson.GsonFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -19,6 +20,7 @@ import store.shportfolio.user.domain.entity.User;
 import java.util.Collections;
 import java.util.Map;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/auth")
 public class UserSecurityResources {
@@ -59,6 +61,7 @@ public class UserSecurityResources {
     public ResponseEntity<UserGlobal> getUserInfo(@RequestHeader("Authorization") String token) {
         Token tokenVO = new Token(token);
         User user = userAuthenticationService.getUserByToken(tokenVO);
+        log.info("user found: email {}", user.getEmail().getValue());
         return ResponseEntity.ok(UserGlobal.builder()
                 .userId(user.getId().getValue())
                 .username(user.getUsername().getValue()).build());

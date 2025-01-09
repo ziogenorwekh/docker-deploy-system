@@ -48,7 +48,7 @@ public class DockerResourceHelper {
                     .memoryUsage(memory)
                     .build();
         } catch (InterruptedException | ExecutionException e) {
-            throw new DockerContainerException(e.getMessage());
+            throw new DockerContainerException("Error getting container resources", e);
         }
     }
 
@@ -94,7 +94,7 @@ public class DockerResourceHelper {
             InspectContainerResponse exec = dockerClient.inspectContainerCmd(containerId).exec();
             return Boolean.TRUE.equals(exec.getState().getRunning());
         } catch (Exception e) {
-            throw new DockerContainerException("Error checking container status: " + e.getMessage());
+            throw new DockerContainerException("error executing container", e);
         }
     }
 }

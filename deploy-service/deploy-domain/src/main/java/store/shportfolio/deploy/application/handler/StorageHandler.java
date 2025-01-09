@@ -43,7 +43,14 @@ public class StorageHandler {
         Storage storage = storageRepository.findByApplicationId(applicationId).orElseThrow(() ->
                 new StorageNotFoundException("storage not found by id: " + applicationId));
         File multipartFileToFile = this.convertMultipartFileToFile(file);
+        log.info("file to save: " + multipartFileToFile.getAbsolutePath());
+
+
         StorageInfo storageInfo = s3Bucket.uploadS3(multipartFileToFile);
+
+        log.info("storageName info: " + storageInfo.getStorageName());
+        removeLocalFile(multipartFileToFile);
+
         deployDomainService.saveStorageInfo(storage, storageInfo.getStorageName(), storageInfo.getFildUrl());
         Storage saved = storageRepository.save(storage);
         log.info("Upload S3 successfully saved filename: {}, url: {}", saved.getStorageName(), saved.getStorageUrl());
@@ -61,11 +68,17 @@ public class StorageHandler {
         String filename = String.format("%s-%s", UUID.randomUUID(), multipartFile.getOriginalFilename());
         File convertedFile = new File(filename);
 
-        if (convertedFile.createNewFile()) {
-            FileOutputStream fileOutputStream = new FileOutputStream(convertedFile);
+        try (FileOutputStream fileOutputStream = new FileOutputStream(convertedFile)) {
             fileOutputStream.write(multipartFile.getBytes());
-            fileOutputStream.close();
         }
         return convertedFile;
+    }
+
+    private void removeLocalFile(File targetFile) {
+        if (targetFile.delete()) {
+            log.info("Temporary file deleted: {}", targetFile.getAbsolutePath());
+        } else {
+            log.warn("Failed to delete temporary file: {}", targetFile.getAbsolutePath());
+        }
     }
 }

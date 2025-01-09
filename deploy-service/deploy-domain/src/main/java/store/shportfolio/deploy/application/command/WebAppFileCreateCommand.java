@@ -8,7 +8,6 @@ import org.springframework.web.multipart.MultipartFile;
 @AllArgsConstructor
 public class WebAppFileCreateCommand {
 
-    @Setter(AccessLevel.PUBLIC)
     private String applicationId;
     private MultipartFile file;
 }

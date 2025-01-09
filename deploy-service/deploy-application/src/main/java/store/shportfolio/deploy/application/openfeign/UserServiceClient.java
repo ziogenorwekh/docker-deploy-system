@@ -7,10 +7,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import store.shportfolio.common.domain.valueobject.UserGlobal;
 
-@FeignClient(name = "user-service")
+@FeignClient(name = "user-service" ,url = "${gateway.user-service.url}")
 public interface UserServiceClient {
 
     @RequestMapping(path = "/api/auth/user/info", method = RequestMethod.GET,
             produces = "application/json")
-    ResponseEntity<UserGlobal> getUserInfo(@RequestHeader("Authorization") String token);
+    UserGlobal getUserInfo(@RequestHeader("Authorization") String token);
 }
