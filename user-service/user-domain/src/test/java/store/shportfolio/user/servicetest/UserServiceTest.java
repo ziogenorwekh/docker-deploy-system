@@ -11,7 +11,7 @@ import store.shportfolio.common.domain.valueobject.Token;
 import store.shportfolio.user.application.jwt.JwtHandler;
 import store.shportfolio.user.application.UserApplicationServiceImpl;
 import store.shportfolio.user.application.command.*;
-import store.shportfolio.user.application.exception.UserEmailDuplicatedException;
+import store.shportfolio.user.application.exception.UserDuplicatedException;
 import store.shportfolio.user.application.mapper.UserDataMapper;
 import store.shportfolio.user.application.ports.output.repository.UserRepository;
 import store.shportfolio.user.domain.UserDomainServiceImpl;
@@ -87,12 +87,12 @@ public class UserServiceTest {
         UserCreateResponse createdUser = userApplicationService.createUser(userCreateCommand);
 
         // then
-        UserEmailDuplicatedException userEmailDuplicatedException = Assertions.
-                assertThrows(UserEmailDuplicatedException.class,
+        UserDuplicatedException userDuplicatedException = Assertions.
+                assertThrows(UserDuplicatedException.class,
                         () -> userApplicationService.createUser(duplicatedUserCreateCommand));
 
         Assertions.assertEquals("User with email duplicated@test.com already exists",
-                userEmailDuplicatedException.getMessage());
+                userDuplicatedException.getMessage());
         Assertions.assertNotNull(createdUser);
         Assertions.assertEquals(email, createdUser.getEmail());
         Assertions.assertEquals(username, createdUser.getUsername());

@@ -6,7 +6,7 @@ import java.util.Random;
 public class DatabaseName {
     private final String value;
 
-    private static final int RANDOM_ALPHABET_LENGTH = 8;
+    private static final int RANDOM_ALPHABET_LENGTH = 6;
 
     public DatabaseName(String value) {
         if (!isValidDatabaseName(value)) {

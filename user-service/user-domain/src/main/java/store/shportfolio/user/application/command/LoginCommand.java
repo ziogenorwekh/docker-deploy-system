@@ -1,8 +1,15 @@
 package store.shportfolio.user.application.command;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotEmpty;
+
 public class LoginCommand {
 
+    @NotEmpty(message = "Email must be necessary.")
+    @Email
     private String email;
+
+    @NotEmpty(message = "NewPassword must be necessary.")
     private String password;
 
     public LoginCommand() {

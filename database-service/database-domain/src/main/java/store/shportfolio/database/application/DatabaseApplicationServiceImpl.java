@@ -39,10 +39,10 @@ public class DatabaseApplicationServiceImpl implements DatabaseApplicationServic
     @Override
     @Transactional
     public DatabaseCreateResponse createDatabase(DatabaseCreateCommand databaseCreateCommand, UserGlobal userGlobal) {
-
         Database database = databaseDomainService.createDatabase(userGlobal, databaseCreateCommand);
 
-        String databaseAccessUrl = databaseEndpointConfigData.getEndpointUrl() + "/" + database.getDatabaseName();
+        String databaseAccessUrl = databaseEndpointConfigData.getEndpointUrl() + "/" +
+                database.getDatabaseName().getValue();
         databaseDomainService.settingAccessUrl(database, databaseAccessUrl);
         log.info("database access url : {}", databaseAccessUrl);
         Database saved = databaseRepository.save(database);
@@ -67,4 +67,5 @@ public class DatabaseApplicationServiceImpl implements DatabaseApplicationServic
         });
         databaseRepository.remove(database);
     }
+
 }

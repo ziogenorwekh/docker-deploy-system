@@ -6,7 +6,7 @@ import java.util.Random;
 public class DatabaseUsername {
     private final String value;
 
-    private static final int RANDOM_ALPHABET_LENGTH = 6;
+    private static final int RANDOM_ALPHABET_LENGTH = 4;
 
     public DatabaseUsername(String value) {
         if (!isValidDatabaseUsername(value)) {

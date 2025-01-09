@@ -1,6 +1,7 @@
 package store.shportfolio.user.application.exceptionhandler;
 
 import jakarta.validation.ConstraintViolationException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -20,13 +21,23 @@ import store.shportfolio.user.domain.exception.DomainException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
+@Slf4j
 @RestControllerAdvice
 public class UserExceptionHandler extends ResponseEntityExceptionHandler {
 
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ExceptionResponse> handleGenericException(Exception ex) {
+        log.error("Unexpected error occurred: {}", ex.getMessage(), ex);
+
+        ExceptionResponse exceptionResponse = ExceptionResponse
+                .builder()
+                .error("Unexpected error occurred")
+                .timestamp(LocalDateTime.now())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(exceptionResponse);
+    }
 
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
@@ -79,9 +90,9 @@ public class UserExceptionHandler extends ResponseEntityExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exceptionResponse);
     }
 
-    @ExceptionHandler(UserEmailDuplicatedException.class)
+    @ExceptionHandler(UserDuplicatedException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
-    public ResponseEntity<ExceptionResponse> handleUserEmailDuplicatedException(UserEmailDuplicatedException ex) {
+    public ResponseEntity<ExceptionResponse> handleUserEmailDuplicatedException(UserDuplicatedException ex) {
         ExceptionResponse exceptionResponse = ExceptionResponse
                 .builder()
                 .error(ex.getMessage())
@@ -125,13 +136,13 @@ public class UserExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(GoogleException.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<ExceptionResponse> handleGoogleException(GoogleException ex) {
         ExceptionResponse exceptionResponse = ExceptionResponse.builder()
                 .error(ex.getMessage())
                 .timestamp(LocalDateTime.now())
                 .build();
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(exceptionResponse);
     }
 
@@ -143,6 +154,18 @@ public class UserExceptionHandler extends ResponseEntityExceptionHandler {
                 .timestamp(LocalDateTime.now())
                 .build();
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(exceptionResponse);
+    }
+
+
+    @ExceptionHandler(TokenInvalidException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ResponseEntity<ExceptionResponse> handleTokenInvalidException(TokenInvalidException ex) {
+        ExceptionResponse exceptionResponse = ExceptionResponse.builder()
+                .error(ex.getMessage())
+                .timestamp(LocalDateTime.now())
+                .build();
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(exceptionResponse);
     }
 }

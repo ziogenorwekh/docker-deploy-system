@@ -2,10 +2,14 @@ package store.shportfolio.user.application.jwt;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.JWTDecodeException;
+import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import store.shportfolio.common.domain.valueobject.Token;
+import store.shportfolio.user.application.exception.TokenInvalidException;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -52,16 +56,32 @@ public class JwtHandler {
 
     public String getEmailFromToken(Token token) {
         log.info("Get email from token -> {}", token.getValue());
-        String tokenValue = token.getValue().substring(7);
-        String secret = env.getProperty("server.token.secret");
-        return JWT.require(Algorithm.HMAC256(secret)).build().verify(tokenValue).getIssuer();
+        return extractClaimFromToken(token, "email");
     }
 
     public String getUserIdByToken(Token token) {
-        log.info("Get email from token -> {}", token.getValue());
+        log.info("Get user ID from token -> {}", token.getValue());
+        return extractClaimFromToken(token, "userId");
+    }
+
+    private String extractClaimFromToken(Token token, String claimType) {
         String tokenValue = token.getValue().substring(7);
         String secret = env.getProperty("server.token.secret");
-        String userId = JWT.require(Algorithm.HMAC256(secret)).build().verify(tokenValue).getIssuer();
-        return userId;
+
+        try {
+            return JWT.require(Algorithm.HMAC256(secret)).build().verify(tokenValue).getIssuer();
+        } catch (TokenExpiredException e) {
+            log.error("{} token has expired: {}", claimType, e.getMessage());
+            throw new TokenInvalidException("The token has expired. Please login again.");
+        } catch (JWTDecodeException e) {
+            log.error("Failed to decode the {} token: {}", claimType, e.getMessage());
+            throw new TokenInvalidException("The token is invalid. Please check your token.");
+        } catch (JWTVerificationException e) {
+            log.error("{} token verification failed: {}", claimType, e.getMessage());
+            throw new TokenInvalidException("Token verification failed. Please login again.");
+        } catch (Exception e) {
+            log.error("Unexpected error while verifying {} token: {}", claimType, e.getMessage());
+            throw new TokenInvalidException("An unexpected error occurred while processing the token.");
+        }
     }
 }

@@ -7,7 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import store.shportfolio.common.domain.valueobject.Token;
 import store.shportfolio.user.application.command.*;
-import store.shportfolio.user.application.exception.UserEmailDuplicatedException;
+import store.shportfolio.user.application.exception.UserDuplicatedException;
 import store.shportfolio.user.application.exception.UserNotFoundException;
 import store.shportfolio.user.application.jwt.JwtHandler;
 import store.shportfolio.user.application.mapper.UserDataMapper;
@@ -54,10 +54,7 @@ public class UserApplicationServiceImpl implements UserApplicationService {
         String token = userCreateCommand.getToken();
         String authenticatedEmail = jwtHandler.getEmailFromToken(new Token(token));
 
-        userRepository.findByEmail(authenticatedEmail).ifPresent(user -> {
-            throw new UserEmailDuplicatedException(
-                    String.format("User with email %s already exists", user.getEmail().getValue()));
-        });
+        isValidUserNameAndEmail(authenticatedEmail, userCreateCommand.getUsername());
 
         String encryptedPassword = passwordEncoder.encode(userCreateCommand.getPassword());
         String userId = UUID.randomUUID().toString();
@@ -95,5 +92,14 @@ public class UserApplicationServiceImpl implements UserApplicationService {
         userRepository.remove(user.getId().getValue());
         log.info("successful delete user -> {}",userDeleteCommand.getUserId());
         return userDeleteEvent;
+    }
+
+    private void isValidUserNameAndEmail(String email, String username) {
+        userRepository.findByEmail(email).ifPresent(user -> {
+            throw new UserDuplicatedException(String.format("User with email %s already exists", email));
+        });
+        userRepository.findByUsername(username).ifPresent(user -> {
+            throw new UserDuplicatedException(String.format("User with username %s already exists", username));
+        });
     }
 }
