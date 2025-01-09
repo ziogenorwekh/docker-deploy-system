@@ -3,6 +3,7 @@ package store.shportfolio.deploy.application.handler;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import store.shportfolio.deploy.application.exception.ApplicationNotFoundException;
 import store.shportfolio.deploy.application.exception.ContainerAccessException;
 import store.shportfolio.deploy.application.exception.DockerNotFoundException;
@@ -42,14 +43,17 @@ public class DockerContainerHandler {
         dockerContainerRepository.save(dockerContainer);
     }
 
+    @Transactional(readOnly = true)
     public DockerContainer getDockerContainer(UUID applicationId) {
         return dockerContainerRepository.findByApplicationId(applicationId).orElseThrow(() ->
                 new DockerNotFoundException("docker not found by id: " + applicationId));
     }
 
     // need additional logic
+    @Transactional
     public DockerContainer createDockerImageAndRun(WebApp webApp, String storageUrl) {
         DockerContainer dockerContainer = this.getDockerContainer(webApp.getId().getValue());
+        log.info("Create docker container: " + dockerContainer);
 
         if (!(dockerContainer.getDockerContainerStatus() == DockerContainerStatus.INITIALIZED)) {
             throw new ContainerAccessException("Docker container is not initialized");

@@ -47,8 +47,8 @@ public class DeployDataAccessMapper {
     public StorageEntity storageEntityToStorage(Storage storage) {
         return StorageEntity.builder()
                 .applicationId(storage.getId().getValue().toString())
-                .storageName(storage.getStorageName() != null ? storage.getStorageName() : null)
-                .storageUrl(storage.getStorageUrl() != null ? storage.getStorageUrl() : null)
+                .storageName(storage.getStorageName() != null ? storage.getStorageName().getValue() : null)
+                .storageUrl(storage.getStorageUrl() != null ? storage.getStorageUrl().getValue() : null)
                 .build();
     }
 

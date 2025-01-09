@@ -14,12 +14,8 @@ import store.shportfolio.deploy.domain.valueobject.DockerContainerStatus;
 @NoArgsConstructor
 public class DockerContainerEntity {
 
-
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @Column(nullable = false,name = "APPLICATION_ID")
+    @Column(nullable = false, name = "APPLICATION_ID", unique = true)
     private String applicationId;
 
 

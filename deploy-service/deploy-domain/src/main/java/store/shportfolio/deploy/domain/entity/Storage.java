@@ -2,14 +2,18 @@ package store.shportfolio.deploy.domain.entity;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.ToString;
 import store.shportfolio.common.domain.entitiy.BaseEntity;
 import store.shportfolio.common.domain.valueobject.ApplicationId;
+import store.shportfolio.deploy.domain.valueobject.StorageName;
+import store.shportfolio.deploy.domain.valueobject.StorageUrl;
 
 @Getter
+@ToString
 public class Storage extends BaseEntity<ApplicationId> {
 
-    private String storageUrl;
-    private String storageName;
+    private StorageUrl storageUrl;
+    private StorageName storageName;
 
     public Storage(ApplicationId applicationId) {
         super.setId(applicationId);
@@ -18,9 +22,9 @@ public class Storage extends BaseEntity<ApplicationId> {
     @Builder
     public Storage(ApplicationId applicationId, String storageUrl,
                    String storageName) {
-        this.storageName = storageName;
+        this.storageName = new StorageName(storageName);
         super.setId(applicationId);
-        this.storageUrl = storageUrl;
+        this.storageUrl = new StorageUrl(storageUrl);
     }
 
     public static Storage createStorage(ApplicationId applicationId) {
@@ -31,8 +35,10 @@ public class Storage extends BaseEntity<ApplicationId> {
                 .build();
     }
 
-    public void savedStorage(String storageUrl, String storageName) {
+    public void savedStorage(StorageUrl storageUrl, StorageName storageName) {
         this.storageUrl = storageUrl;
         this.storageName = storageName;
     }
+
+
 }

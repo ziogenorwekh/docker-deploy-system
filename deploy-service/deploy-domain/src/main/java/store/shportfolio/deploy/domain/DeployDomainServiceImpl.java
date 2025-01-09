@@ -8,6 +8,8 @@ import store.shportfolio.deploy.application.vo.DockerCreated;
 import store.shportfolio.deploy.domain.entity.DockerContainer;
 import store.shportfolio.deploy.domain.entity.Storage;
 import store.shportfolio.deploy.domain.entity.WebApp;
+import store.shportfolio.deploy.domain.valueobject.StorageName;
+import store.shportfolio.deploy.domain.valueobject.StorageUrl;
 
 @Service
 public class DeployDomainServiceImpl implements DeployDomainService {
@@ -25,7 +27,7 @@ public class DeployDomainServiceImpl implements DeployDomainService {
 
     @Override
     public void successfulCreateDockerContainer(DockerContainer dockerContainer, DockerCreated dockerCreated) {
-        dockerContainer.initializedDockerContainer(dockerCreated);
+        dockerContainer.successfulDockerContainer(dockerCreated);
     }
 
     @Override
@@ -44,12 +46,12 @@ public class DeployDomainServiceImpl implements DeployDomainService {
     }
 
     @Override
-    public void failedCreateApplication(WebApp webApp,String error) {
+    public void failedCreateApplication(WebApp webApp, String error) {
         webApp.failedApplication(error);
     }
 
     @Override
-    public void saveStorageInfo(Storage storage, String storageUrl,String storageName) {
+    public void saveStorageInfo(Storage storage, StorageName storageName, StorageUrl storageUrl) {
         storage.savedStorage(storageUrl, storageName);
     }
 

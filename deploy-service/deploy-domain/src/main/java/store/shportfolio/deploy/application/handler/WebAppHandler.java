@@ -2,6 +2,7 @@ package store.shportfolio.deploy.application.handler;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import store.shportfolio.common.domain.valueobject.UserGlobal;
 import store.shportfolio.deploy.application.command.WebAppCreateCommand;
 import store.shportfolio.deploy.application.exception.ApplicationNotFoundException;
@@ -33,16 +34,19 @@ public class WebAppHandler {
         return deployDomainService.createWebApp(userGlobal, webAppCreateCommand);
     }
 
+    @Transactional
     public void startContainerizing(WebApp webApp) {
         deployDomainService.createdToContainerizing(webApp);
         this.saveWebApp(webApp);
     }
 
+    @Transactional
     public void completeContainerizing(WebApp webApp) {
         deployDomainService.containerizingToComplete(webApp);
         this.saveWebApp(webApp);
     }
 
+    @Transactional
     public void failedApplication(WebApp webApp, String errorMessage) {
         deployDomainService.failedCreateApplication(webApp, errorMessage);
         this.saveWebApp(webApp);

@@ -2,6 +2,7 @@ package store.shportfolio.deploy.application.handler;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import store.shportfolio.deploy.application.exception.StorageNotFoundException;
 import store.shportfolio.deploy.application.ports.output.repository.StorageRepository;
@@ -10,6 +11,8 @@ import store.shportfolio.deploy.application.vo.StorageInfo;
 import store.shportfolio.deploy.domain.DeployDomainService;
 import store.shportfolio.deploy.domain.entity.Storage;
 import store.shportfolio.deploy.domain.entity.WebApp;
+import store.shportfolio.deploy.domain.valueobject.StorageName;
+import store.shportfolio.deploy.domain.valueobject.StorageUrl;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -39,6 +42,7 @@ public class StorageHandler {
         storageRepository.save(storage);
     }
 
+    @Transactional
     public Storage uploadS3(UUID applicationId, MultipartFile file) throws IOException {
         Storage storage = storageRepository.findByApplicationId(applicationId).orElseThrow(() ->
                 new StorageNotFoundException("storage not found by id: " + applicationId));
@@ -51,7 +55,8 @@ public class StorageHandler {
         log.info("storageName info: " + storageInfo.getStorageName());
         removeLocalFile(multipartFileToFile);
 
-        deployDomainService.saveStorageInfo(storage, storageInfo.getStorageName(), storageInfo.getFildUrl());
+        deployDomainService.saveStorageInfo(storage, new StorageName(storageInfo.getStorageName()),
+                new StorageUrl(storageInfo.getFildUrl()));
         Storage saved = storageRepository.save(storage);
         log.info("Upload S3 successfully saved filename: {}, url: {}", saved.getStorageName(), saved.getStorageUrl());
         return saved;
@@ -60,7 +65,7 @@ public class StorageHandler {
     public void deleteStorage(UUID applicationId) {
         Storage storage = storageRepository.findByApplicationId(applicationId).orElseThrow(() ->
                 new StorageNotFoundException("storage not found by id: " + applicationId));
-        s3Bucket.deleteS3(storage.getStorageName());
+        s3Bucket.deleteS3(storage.getStorageName().getValue());
         storageRepository.removeByApplicationId(applicationId);
     }
 

@@ -7,6 +7,8 @@ import store.shportfolio.deploy.application.vo.DockerCreated;
 import store.shportfolio.deploy.domain.entity.DockerContainer;
 import store.shportfolio.deploy.domain.entity.Storage;
 import store.shportfolio.deploy.domain.entity.WebApp;
+import store.shportfolio.deploy.domain.valueobject.StorageName;
+import store.shportfolio.deploy.domain.valueobject.StorageUrl;
 
 public interface DeployDomainService {
 
@@ -24,7 +26,7 @@ public interface DeployDomainService {
 
     void failedCreateApplication(WebApp webApp,String error);
 
-    void saveStorageInfo(Storage storage, String storageName, String storageUrl);
+    void saveStorageInfo(Storage storage, StorageName storageName, StorageUrl storageUrl);
 
     void startDockerContainer(DockerContainer dockerContainer);
 

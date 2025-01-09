@@ -9,7 +9,11 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
+import store.shportfolio.common.domain.valueobject.ApplicationId;
+import store.shportfolio.deploy.domain.entity.Storage;
 import store.shportfolio.deploy.domain.entity.WebApp;
+import store.shportfolio.deploy.domain.valueobject.StorageName;
+import store.shportfolio.deploy.domain.valueobject.StorageUrl;
 import store.shportfolio.deploy.infrastructure.jpa.adapter.DockerContainerRepositoryImpl;
 import store.shportfolio.deploy.infrastructure.jpa.adapter.StorageRepositoryImpl;
 import store.shportfolio.deploy.infrastructure.jpa.adapter.WebAppRepositoryImpl;
@@ -65,5 +69,10 @@ public class DeployJpaTests {
     @Test
     @DisplayName("save webapp entity test")
     public void saveWebAppEntity() {
+        Storage storage = Storage.createStorage(new ApplicationId(UUID.randomUUID()));
+        storage.savedStorage(new StorageUrl("url"), new StorageName("name"));
+        Storage saved = storageRepository.save(storage);
+
+        System.out.println(saved);
     }
 }

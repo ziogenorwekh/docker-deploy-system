@@ -19,10 +19,12 @@ import store.shportfolio.deploy.domain.entity.Storage;
 import store.shportfolio.deploy.domain.entity.WebApp;
 import store.shportfolio.deploy.domain.valueobject.ApplicationStatus;
 import store.shportfolio.deploy.domain.valueobject.DockerContainerStatus;
+import store.shportfolio.deploy.domain.valueobject.StorageUrl;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 @Slf4j
 @Service
@@ -71,22 +73,20 @@ public class DeployApplicationServiceImpl implements DeployApplicationService {
 
         try {
             Storage storage = storageHandler.uploadS3(webApp.getId().getValue(), webAppFileCreateCommand.getFile());
-            log.info("storage saved data url is {}, filename is {}", storage.getStorageUrl(), storage.getStorageName());
+            log.info("Storage saved data URL: {}, Filename: {}", storage.getStorageUrl().getValue(),
+                    storage.getStorageName().getValue());
 
             webAppHandler.startContainerizing(webApp);
-            log.info("containerizing started -> {}", webApp.getApplicationStatus());
+            log.info("Containerizing started -> {}", webApp.getApplicationStatus());
 
-            DockerContainer dockerContainer = dockerContainerHandler.createDockerImageAndRun(webApp,
-                    storage.getStorageUrl());
-            webAppHandler.completeContainerizing(webApp);
+            // CompletableFuture 호출
+            processDockerContainerAndComplete(webApp, storage.getStorageUrl());
 
-            log.info("containerizing completed -> {}", webApp.getApplicationStatus());
-        } catch (IOException | S3Exception | DockerContainerException | ContainerAccessException e) {
-            log.error("error message is : " + e.getMessage());
+        } catch (IOException | S3Exception e) {
+            log.error("Error during storage processing: {}", e.getMessage());
             webAppHandler.failedApplication(webApp, e.getMessage());
         } catch (Exception e) {
-            log.error("error class is : " + e.getClass().getSimpleName());
-            log.error("error message is : " + e.getMessage());
+            log.error("Unexpected error: {}", e.getMessage());
             webAppHandler.failedApplication(webApp, "server error");
         }
     }
@@ -154,6 +154,22 @@ public class DeployApplicationServiceImpl implements DeployApplicationService {
         ResourceUsage resourceUsage = dockerContainerHandler.getContainerUsage(dockerContainer);
         String containerLogs = dockerContainerHandler.getContainerLogs(dockerContainer);
         return deployDataMapper.webAppToWebAppContainerResponse(webApp, resourceUsage, containerLogs);
+    }
+
+    private synchronized CompletableFuture<Void> processDockerContainerAndComplete(WebApp webApp, StorageUrl storageUrl) {
+        return CompletableFuture.runAsync(() -> {
+            try {
+                dockerContainerHandler.createDockerImageAndRun(webApp, storageUrl.getValue());
+                webAppHandler.completeContainerizing(webApp);
+                log.info("Docker container processed and application completed -> {}", webApp.getApplicationStatus());
+            } catch (DockerContainerException | ContainerAccessException e) {
+                log.error("Error while processing Docker container: {}", e.getMessage());
+                webAppHandler.failedApplication(webApp, e.getMessage());
+            } catch (Exception e) {
+                log.error("Unexpected error while processing Docker container: {}", e.getMessage());
+                webAppHandler.failedApplication(webApp, "server error");
+            }
+        });
     }
 
     private WebApp validateAndRetrieveWebApp(WebAppFileCreateCommand webAppFileCreateCommand, UserGlobal userGlobal) {

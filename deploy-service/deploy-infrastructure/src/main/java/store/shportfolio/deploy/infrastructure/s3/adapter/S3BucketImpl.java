@@ -35,6 +35,7 @@ public class S3BucketImpl implements S3Bucket {
                 .fildUrl(amazonS3.getUrl(bucket, file.getName()).toString())
                 .storageName(file.getName())
                 .build();
+        log.info("Upload storage info to s3: url-> {} , name-> {}", storageInfo.getFildUrl(), storageInfo.getStorageName());
 
         return storageInfo;
     }

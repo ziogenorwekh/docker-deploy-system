@@ -2,16 +2,15 @@ package store.shportfolio.deploy.domain.entity;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.ToString;
 import store.shportfolio.common.domain.entitiy.BaseEntity;
 import store.shportfolio.common.domain.valueobject.ApplicationId;
 import store.shportfolio.deploy.application.vo.DockerCreated;
-import store.shportfolio.deploy.application.vo.ResourceUsage;
 import store.shportfolio.deploy.domain.valueobject.DockerContainerStatus;
 import store.shportfolio.deploy.domain.valueobject.DockerContainerId;
 
-import java.util.UUID;
-
 @Getter
+@ToString
 public class DockerContainer extends BaseEntity<ApplicationId> {
 
     private DockerContainerId dockerContainerId;
@@ -42,7 +41,7 @@ public class DockerContainer extends BaseEntity<ApplicationId> {
                 .build();
     }
 
-    public void initializedDockerContainer(DockerCreated dockerCreated) {
+    public void successfulDockerContainer(DockerCreated dockerCreated) {
         this.dockerContainerId = new DockerContainerId(dockerCreated.getDockerContainerId());
         this.dockerContainerStatus = dockerCreated.getDockerContainerStatus();
         this.imageId = dockerCreated.getDockerImageId();

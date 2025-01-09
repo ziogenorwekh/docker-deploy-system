@@ -63,7 +63,7 @@ public class DeployResources {
         return ResponseEntity.ok().build();
     }
 
-    @RequestMapping(path = "/apps/container/{applicationId}",
+    @RequestMapping(path = "/apps/logs/{applicationId}",
             method = RequestMethod.GET, produces = "application/json")
     public ResponseEntity<WebAppContainerResponse> retrieveTrackWebAppContainer(
             @PathVariable String applicationId,

@@ -35,7 +35,7 @@ public class DeployDockerTests {
     @DisplayName("create docker container test")
     public void testCreateDockerContainer() {
         WebApp webApp = WebApp.createWebApp("userId", "testApplication", 10350, 17);
-        String fileUrl = "successful";
+        String fileUrl = "https://storage-webbucket.s3.ap-northeast-2.amazonaws.com/7c1d8ebb-5578-43a0-8e0c-e70ba680c6f2-sampleProject-0.0.1-SNAPSHOT.jar";
 
         DockerCreated container = dockerConnector.createContainer(webApp, fileUrl);
 

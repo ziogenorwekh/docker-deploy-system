@@ -15,10 +15,7 @@ import lombok.ToString;
 public class StorageEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @Column(name = "APPLICATION_ID")
+    @Column(name = "APPLICATION_ID",unique = true, nullable = false)
     private String applicationId;
 
     @Column(name = "STORAGE_URL")
