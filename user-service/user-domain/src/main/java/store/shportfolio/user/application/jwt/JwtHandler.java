@@ -64,6 +64,14 @@ public class JwtHandler {
         return extractClaimFromToken(token, "userId");
     }
 
+    public String getUserIdFromToken(String userId,String token) {
+        String claimFromToken = extractClaimFromToken(new Token(token), "userId");
+        if (!userId.equals(claimFromToken)) {
+            throw new TokenInvalidException("is not matching user ID");
+        }
+        return claimFromToken;
+    }
+
     private String extractClaimFromToken(Token token, String claimType) {
         String tokenValue = token.getValue().substring(7);
         String secret = env.getProperty("server.token.secret");
@@ -84,4 +92,5 @@ public class JwtHandler {
             throw new TokenInvalidException("An unexpected error occurred while processing the token.");
         }
     }
+
 }

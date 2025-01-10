@@ -17,6 +17,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import store.shportfolio.user.application.UserApplicationService;
 import store.shportfolio.user.application.api.UserResources;
 import store.shportfolio.user.application.command.*;
+import store.shportfolio.user.application.jwt.JwtHandler;
 import store.shportfolio.user.application.openfeign.DatabaseServiceClient;
 import store.shportfolio.user.application.openfeign.DeployServiceClient;
 
@@ -49,10 +50,14 @@ public class UserResourcesTest {
     @Mock
     private DeployServiceClient deployServiceClient;
 
+    @Mock
+    private JwtHandler jwtHandler;
+
     @BeforeEach
     public void setup() {
         objectMapper = new ObjectMapper();
-        userResources = new UserResources(userApplicationService,databaseServiceClient,deployServiceClient);
+        userResources = new UserResources(userApplicationService, jwtHandler,
+                databaseServiceClient, deployServiceClient);
         mockMvc = MockMvcBuilders
                 .standaloneSetup(userResources)
                 .build();
