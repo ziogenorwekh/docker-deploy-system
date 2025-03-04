@@ -1,17 +1,21 @@
 package store.shportfolio.user.application.api;
 
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import store.shportfolio.common.domain.valueobject.Token;
 import store.shportfolio.user.application.UserApplicationService;
 import store.shportfolio.user.application.command.*;
+import store.shportfolio.user.application.exception.UserDeleteException;
 import store.shportfolio.user.application.jwt.JwtHandler;
 import store.shportfolio.user.domain.event.UserDeleteEvent;
 import store.shportfolio.user.application.openfeign.DatabaseServiceClient;
 import store.shportfolio.user.application.openfeign.DeployServiceClient;
 
+
+@Slf4j
 @RestController
 @RequestMapping("/api")
 public class UserResources {
@@ -37,6 +41,7 @@ public class UserResources {
             , @RequestHeader(name = "Authorization") String token) {
         userCreateCommand.setToken(token);
         UserCreateResponse user = userApplicationService.createUser(userCreateCommand);
+
         return ResponseEntity.status(HttpStatus.CREATED).body(user);
     }
 
@@ -62,24 +67,23 @@ public class UserResources {
         return ResponseEntity.noContent().build();
     }
 
-    // 여기 수정해야 돼
+    @CircuitBreaker(name = "user-service", fallbackMethod = "fallbackDeleteUser")
     @RequestMapping(path = "/users/{userId}", method = RequestMethod.DELETE)
     public ResponseEntity<Void> deleteUser(@PathVariable String userId, @RequestHeader("Authorization") String token) {
-        // 여기 수정해야 됌
         String userIdFromToken = jwtHandler.getUserIdFromToken(userId, token);
-        UserDeleteEvent userDeleteEvent = userApplicationService.deleteUser(UserDeleteCommand
-                .builder().userId(userIdFromToken).build());
-        // feign client send userDeleteEvent business logic
+        userApplicationService.deleteUser(UserDeleteCommand.builder().userId(userIdFromToken).build());
 
-        ResponseEntity<Void> deleteUserDatabase = databaseServiceClient
-                .deleteUserDatabase(token);
-        ResponseEntity<Void> deleteAllUserApplication = deployServiceClient.
-                deleteAllUserApplication(token);
-        if (deleteUserDatabase.getStatusCode() == HttpStatus.NO_CONTENT &&
-                deleteAllUserApplication.getStatusCode() == HttpStatus.NO_CONTENT) {
-            return ResponseEntity.noContent().build();
-        } else {
-            return ResponseEntity.status(HttpStatus.BAD_GATEWAY).build();
-        }
+        // 각각의 외부 서비스 호출에도 서킷 브레이커 적용 필요
+        ResponseEntity<Void> deleteUserDatabase = databaseServiceClient.deleteUserDatabase(token);
+        ResponseEntity<Void> deleteAllUserApplication = deployServiceClient.deleteAllUserApplication(token);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    public ResponseEntity<Void> fallbackDeleteUser(String userId, String token, Throwable t) {
+        log.warn("User deletion process failed for userId: {} due to: {}", userId, t.getMessage(), t);
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
+                .header("X-Fallback-Reason", "User deletion process failed due to service unavailability.")
+                .build();
     }
 }

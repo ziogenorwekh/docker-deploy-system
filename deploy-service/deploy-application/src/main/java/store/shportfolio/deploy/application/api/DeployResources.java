@@ -30,8 +30,9 @@ public class DeployResources {
 
     @RequestMapping(path = "/apps", method = RequestMethod.POST, produces = "application/json")
     public ResponseEntity<WebAppCreateResponse> createWebApp(@RequestBody WebAppCreateCommand command,
-                                                             @RequestHeader("Authorization") String token) {
-        UserGlobal userInfo = getUserGlobalByFeignClient(token);
+                                                             @RequestHeader("X-Authenticated-Username") String username,
+                                                             @RequestHeader("X-Authenticated-UserId") String userId) {
+        UserGlobal userInfo = UserGlobal.builder().userId(userId).username(username).build();
         WebAppCreateResponse webAppCreateResponse = deployApplicationService.createWebApp(userInfo, command);
         return ResponseEntity.status(HttpStatus.CREATED).body(webAppCreateResponse);
     }
@@ -39,8 +40,9 @@ public class DeployResources {
     @RequestMapping(path = "/apps/{applicationId}", method = RequestMethod.POST)
     public ResponseEntity<Void> saveJarFile(@PathVariable UUID applicationId,
                                             @RequestPart(value = "file") MultipartFile file,
-                                            @RequestHeader("Authorization") String token) {
-        UserGlobal userInfo = getUserGlobalByFeignClient(token);
+                                            @RequestHeader("X-Authenticated-Username") String username,
+                                            @RequestHeader("X-Authenticated-UserId") String userId) {
+        UserGlobal userInfo = UserGlobal.builder().userId(userId).username(username).build();
         WebAppFileCreateCommand webAppFileCreateCommand = WebAppFileCreateCommand.builder()
                 .applicationId(applicationId.toString()).file(file).build();
         deployApplicationService.saveJarFileAndCreateContainer(webAppFileCreateCommand, userInfo);
@@ -48,16 +50,18 @@ public class DeployResources {
     }
 
     @RequestMapping(path = "/apps/starting/{applicationId}", method = RequestMethod.PUT, produces = "application/json")
-    public ResponseEntity<Void> startContainer(@PathVariable String applicationId, @RequestHeader("Authorization") String token) {
-        UserGlobal userInfo = getUserGlobalByFeignClient(token);
+    public ResponseEntity<Void> startContainer(@PathVariable String applicationId, @RequestHeader("X-Authenticated-Username") String username,
+                                               @RequestHeader("X-Authenticated-UserId") String userId) {
+        UserGlobal userInfo = UserGlobal.builder().userId(userId).username(username).build();
         deployApplicationService.startContainer(WebAppTrackQuery.builder()
                 .applicationId(UUID.fromString(applicationId)).build(), userInfo);
         return ResponseEntity.noContent().build();
     }
 
     @RequestMapping(path = "/apps/stopping/{applicationId}", method = RequestMethod.PUT, produces = "application/json")
-    public ResponseEntity<Void> stopContainer(@PathVariable String applicationId, @RequestHeader("Authorization") String token) {
-        UserGlobal userInfo = getUserGlobalByFeignClient(token);
+    public ResponseEntity<Void> stopContainer(@PathVariable String applicationId, @RequestHeader("X-Authenticated-Username") String username,
+                                              @RequestHeader("X-Authenticated-UserId") String userId) {
+        UserGlobal userInfo = UserGlobal.builder().userId(userId).username(username).build();
         deployApplicationService.stopContainer(WebAppTrackQuery.builder()
                 .applicationId(UUID.fromString(applicationId)).build(), userInfo);
         return ResponseEntity.ok().build();
@@ -67,8 +71,9 @@ public class DeployResources {
             method = RequestMethod.GET, produces = "application/json")
     public ResponseEntity<WebAppContainerResponse> retrieveTrackWebAppContainer(
             @PathVariable String applicationId,
-            @RequestHeader("Authorization") String token) {
-        UserGlobal userInfo = getUserGlobalByFeignClient(token);
+            @RequestHeader("X-Authenticated-Username") String username,
+            @RequestHeader("X-Authenticated-UserId") String userId) {
+        UserGlobal userInfo = UserGlobal.builder().userId(userId).username(username).build();
         WebAppContainerResponse webAppContainerResponse = deployApplicationService
                 .trackQueryDockerContainerResponse(WebAppTrackQuery.builder()
                         .applicationId(UUID.fromString(applicationId)).build(), userInfo);
@@ -77,8 +82,9 @@ public class DeployResources {
 
     @RequestMapping(path = "/apps/{applicationId}", method = RequestMethod.GET, produces = "application/json")
     public ResponseEntity<WebAppTrackResponse> retrieveTrackWebApp(@PathVariable String applicationId,
-                                                                   @RequestHeader("Authorization") String token) {
-        UserGlobal userInfo = getUserGlobalByFeignClient(token);
+                                                                   @RequestHeader("X-Authenticated-Username") String username,
+                                                                   @RequestHeader("X-Authenticated-UserId") String userId) {
+        UserGlobal userInfo = UserGlobal.builder().userId(userId).username(username).build();
         WebAppTrackResponse webAppTrackResponse = deployApplicationService
                 .trackQueryWebApp(WebAppTrackQuery.builder()
                         .applicationId(UUID.fromString(applicationId)).build(), userInfo);
@@ -87,8 +93,9 @@ public class DeployResources {
 
     @RequestMapping(path = "/apps/{applicationId}", method = RequestMethod.DELETE, produces = "application/json")
     public ResponseEntity<WebAppTrackResponse> deleteWebApp(@PathVariable String applicationId,
-                                                                   @RequestHeader("Authorization") String token) {
-        UserGlobal userInfo = getUserGlobalByFeignClient(token);
+                                                            @RequestHeader("X-Authenticated-Username") String username,
+                                                            @RequestHeader("X-Authenticated-UserId") String userId) {
+        UserGlobal userInfo = UserGlobal.builder().userId(userId).username(username).build();
         deployApplicationService
                 .deleteWebApp(WebAppDeleteCommand.builder()
                         .applicationId(UUID.fromString(applicationId)).build(), userInfo);
@@ -96,8 +103,9 @@ public class DeployResources {
     }
 
     @RequestMapping(path = "/apps", method = RequestMethod.DELETE, produces = "application/json")
-    public ResponseEntity<Void> deleteAllWebApps(@RequestHeader("Authorization") String token) {
-        UserGlobal userInfo = getUserGlobalByFeignClient(token);
+    public ResponseEntity<Void> deleteAllWebApps(@RequestHeader("X-Authenticated-Username") String username,
+                                                 @RequestHeader("X-Authenticated-UserId") String userId) {
+        UserGlobal userInfo = UserGlobal.builder().userId(userId).username(username).build();
         deployApplicationService.deleteAllWebApps(userInfo);
         return ResponseEntity.noContent().build();
     }

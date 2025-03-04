@@ -160,6 +160,7 @@ public class DeployApplicationServiceImpl implements DeployApplicationService {
         return CompletableFuture.runAsync(() -> {
             try {
                 dockerContainerHandler.createDockerImageAndRun(webApp, storageUrl.getValue());
+                log.info("Docker container status is {}", webApp.getApplicationStatus());
                 webAppHandler.completeContainerizing(webApp);
                 log.info("Docker container processed and application completed -> {}", webApp.getApplicationStatus());
             } catch (DockerContainerException | ContainerAccessException e) {

@@ -3,6 +3,7 @@ package store.shportfolio.deploy.domain.entity;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
 import store.shportfolio.common.domain.entitiy.AggregateRoot;
 import store.shportfolio.common.domain.valueobject.*;
 import store.shportfolio.deploy.domain.exception.DomainException;
@@ -10,7 +11,7 @@ import store.shportfolio.deploy.domain.valueobject.ApplicationStatus;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
-
+@Slf4j
 @Getter
 @ToString
 public class WebApp extends AggregateRoot<ApplicationId> {
@@ -47,6 +48,7 @@ public class WebApp extends AggregateRoot<ApplicationId> {
         ApplicationName nApplicationName = new ApplicationName(lowerCase);
         ServerPort nServerPort = new ServerPort(serverPort);
         JavaVersion nJavaVersion = new JavaVersion(javaVersion);
+        LocalDateTime nCreatedAt = LocalDateTime.now();
         isValid(nServerPort,nJavaVersion);
 
         ApplicationId nApplicationId = new ApplicationId(UUID.randomUUID());
@@ -57,12 +59,13 @@ public class WebApp extends AggregateRoot<ApplicationId> {
                 .javaVersion(nJavaVersion)
                 .applicationStatus(ApplicationStatus.CREATED)
                 .serverPort(nServerPort)
-                .createdAt(LocalDateTime.now())
+                .createdAt(nCreatedAt)
                 .build();
     }
 
     public void updateCreatedToContainerizing() {
         if (this.applicationStatus == ApplicationStatus.CREATED) {
+            log.debug("Application status is {}", this.applicationStatus);
             this.applicationStatus = ApplicationStatus.CONTAINERIZING;
         } else {
             throw new DomainException("Application status is not CREATED");
@@ -71,6 +74,7 @@ public class WebApp extends AggregateRoot<ApplicationId> {
 
     public void updateContainerizingToCompleted() {
         if (this.applicationStatus == ApplicationStatus.CONTAINERIZING) {
+            log.debug("Application status is {}", this.applicationStatus);
             this.applicationStatus = ApplicationStatus.COMPLETE;
         } else {
             throw new DomainException("The application status is not CONTAINERIZING");

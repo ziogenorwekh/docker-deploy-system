@@ -99,7 +99,7 @@ public class UserSecurityResourcesTest {
         mockMvc.perform(MockMvcRequestBuilders.post("/api/auth/user/verify-mail")
                 .content(objectMapper.writeValueAsString(emailVerificationCommand))
                 .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.status().isNoContent())
+                .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.token")
                         .value(token));
     }

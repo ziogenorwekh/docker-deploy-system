@@ -47,13 +47,25 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<AuthConfi
             String token = authorizations.get(0).substring("Bearer ".length());
 
             try {
-                String issuer = JWT.require(Algorithm.HMAC256(config.getSecret()))
+                String userId = JWT.require(Algorithm.HMAC256(config.getSecret()))
                         .build()
                         .verify(token)
                         .getIssuer();
 
+                String email = JWT.require(Algorithm.HMAC256(config.getSecret()))
+                        .build()
+                        .verify(token)
+                        .getSubject();
+
+                String username = JWT.require(Algorithm.HMAC256(config.getSecret()))
+                        .build()
+                        .verify(token)
+                        .getClaim("username").asString();
+
                 ServerHttpRequest mutatedRequest = exchange.getRequest().mutate()
-                        .header("X-Authenticated-User", issuer)
+                        .header("X-Authenticated-UserId", userId)
+                        .header("X-Authenticated-Email", email)
+                        .header("X-Authenticated-Username", username)
                         .build();
                 return chain.filter(exchange.mutate().request(mutatedRequest).build());
             } catch (JWTDecodeException | AlgorithmMismatchException | SignatureVerificationException

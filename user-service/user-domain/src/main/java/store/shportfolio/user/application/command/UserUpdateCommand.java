@@ -1,10 +1,22 @@
 package store.shportfolio.user.application.command;
 
 
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
+
 public class UserUpdateCommand {
 
     private String userId;
+    @NotEmpty(message = "CurrentPassword must be necessary.")
+    @Size(min = 4, message = "Password must be at least than 4 characters.")
+    @Size(max = 15, message = "Password must not exceed 10 characters.")
+    @Pattern(regexp = ".*[A-Za-z]+.*", message = "password must contain at least one letter.")
     private String currentPassword;
+    @NotEmpty(message = "NewPassword must be necessary.")
+    @Size(min = 4, message = "Password must be at least than 4 characters.")
+    @Size(max = 15, message = "Password must not exceed 10 characters.")
+    @Pattern(regexp = ".*[A-Za-z]+.*", message = "password must contain at least one letter.")
     private String newPassword;
 
     public UserUpdateCommand(String userId, String currentPassword, String newPassword) {

@@ -9,6 +9,7 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -64,12 +65,12 @@ public class DatabaseResourcesTest {
         DatabaseCreateResponse databaseCreateResponse = DatabaseCreateResponse.builder()
                 .databasePassword("databasePassword")
                 .build();
-        Mockito.when(userServiceClient.getUserInfo(Mockito.anyString())).thenReturn(userGlobal);
         Mockito.when(databaseApplicationService.createDatabase(Mockito.any(DatabaseCreateCommand.class)
                 , Mockito.any(UserGlobal.class))).thenReturn(databaseCreateResponse);
         // when, then
         mockMvc.perform(MockMvcRequestBuilders.post("/api/databases")
-                        .header("Authorization", token)
+                        .header("X-Authenticated-Username", userGlobal.getUsername())
+                        .header("X-Authenticated-UserId",userGlobal.getUserId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(databaseCreateCommand)))
                 .andExpect(MockMvcResultMatchers.status().isCreated())
@@ -89,13 +90,14 @@ public class DatabaseResourcesTest {
                 .databaseUsername("databaseUsername")
                 .accessUrl("accessUrl")
                 .build();
-        Mockito.when(userServiceClient.getUserInfo(Mockito.anyString())).thenReturn(userGlobal);
+//        Mockito.when(userServiceClient.getUserInfo(Mockito.anyString())).thenReturn(userGlobal);
         Mockito.when(databaseApplicationService.trackQuery(Mockito.any(DatabaseTrackQuery.class)))
                 .thenReturn(databaseTrackResponse);
 
         // when, then
         mockMvc.perform(MockMvcRequestBuilders.get("/api/databases")
-                        .header("Authorization", token))
+                        .header("X-Authenticated-Username", userGlobal.getUsername())
+                        .header("X-Authenticated-UserId",userGlobal.getUserId()))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.databasePassword")

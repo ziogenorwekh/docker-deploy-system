@@ -1,10 +1,13 @@
 package store.shportfolio.deploy.domain;
 
+import org.awaitility.Awaitility;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.multipart.MultipartFile;
@@ -40,12 +43,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 @ActiveProfiles("test")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ExtendWith(MockitoExtension.class)
 public class DeployApplicationServiceTest {
 
+    private static final Logger log = LoggerFactory.getLogger(DeployApplicationServiceTest.class);
     private DeployApplicationService deployApplicationService;
 
     private DockerContainerHandler dockerContainerHandler;
@@ -316,8 +321,8 @@ public class DeployApplicationServiceTest {
         Storage result = storageHandler.uploadS3(webApp.getId().getValue(), file);
 
         // then
-        Assertions.assertEquals(storageInfo.getFildUrl(), result.getStorageUrl());
-        Assertions.assertEquals(storageInfo.getStorageName(), result.getStorageName());
+        Assertions.assertEquals(storageInfo.getFildUrl(), result.getStorageUrl().getValue());
+        Assertions.assertEquals(storageInfo.getStorageName(), result.getStorageName().getValue());
         Mockito.verify(storageRepository).save(storage);
     }
 
@@ -348,7 +353,7 @@ public class DeployApplicationServiceTest {
         Mockito.when(containerRepository.findByApplicationId(applicationId.getValue()))
                 .thenReturn(Optional.of(dockerContainer));
         // when
-        DockerContainer result = dockerContainerHandler.createDockerImageAndRun(webApp,storage.getStorageUrl());
+        DockerContainer result = dockerContainerHandler.createDockerImageAndRun(webApp,storage.getStorageUrl().getValue());
 
         // then
         Assertions.assertEquals(DockerContainerStatus.STARTED, result.getDockerContainerStatus());
@@ -420,7 +425,7 @@ public class DeployApplicationServiceTest {
         Mockito.when(containerRepository.findByApplicationId(applicationId.getValue())
         ).thenReturn(Optional.of(beforeStartDockerContainer));
 
-        Mockito.when(dockerConnector.createContainer(webApp, storage.getStorageUrl()))
+        Mockito.when(dockerConnector.createContainer(webApp, storage.getStorageUrl().getValue()))
                 .thenReturn(DockerCreated.builder()
                         .dockerContainerStatus(DockerContainerStatus.STARTED).
                         dockerContainerId("dockerContainerId").build());
@@ -429,21 +434,11 @@ public class DeployApplicationServiceTest {
 
         // when
         deployApplicationService.saveJarFileAndCreateContainer(webAppFileCreateCommand, userGlobal);
-
+        Awaitility.await().atMost(10, TimeUnit.SECONDS)
+                .until(() -> webApp.getApplicationStatus() == ApplicationStatus.COMPLETE);
         // then
-
+        System.out.println("Docker container status: " + webApp.getApplicationStatus());
+        System.out.println("Stop point");
         Assertions.assertEquals(ApplicationStatus.COMPLETE, webApp.getApplicationStatus());
-    }
-
-    private File convertMultipartFileToFile(MultipartFile multipartFile) throws IOException {
-        String filename = String.format("%s-%s", UUID.randomUUID(), multipartFile.getOriginalFilename());
-        File convertedFile = new File(filename);
-
-        if (convertedFile.createNewFile()) {
-            FileOutputStream fileOutputStream = new FileOutputStream(convertedFile);
-            fileOutputStream.write(multipartFile.getBytes());
-            fileOutputStream.close();
-        }
-        return convertedFile;
     }
 }

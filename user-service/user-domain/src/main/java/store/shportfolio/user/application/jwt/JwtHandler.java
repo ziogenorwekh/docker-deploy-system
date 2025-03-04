@@ -40,7 +40,7 @@ public class JwtHandler {
         return new Token(emailToken);
     }
 
-    public Token createLoginToken(String email, String userId) {
+    public Token createLoginToken(String email, String username, String userId) {
         String tokenExpirationTime = env.getProperty("server.token.login.expiration");
         long expirationMinutes = Long.parseLong(Objects.requireNonNull(tokenExpirationTime));
         String secret = env.getProperty("server.token.secret");
@@ -48,7 +48,7 @@ public class JwtHandler {
         ZonedDateTime now = ZonedDateTime.now(zoneId);
         ZonedDateTime expirationTime = now.plusMinutes(expirationMinutes);
         String loginToken = JWT.create().withIssuer(userId)
-                .withSubject(email).withExpiresAt(expirationTime.toInstant())
+                .withSubject(email).withClaim("username", username).withExpiresAt(expirationTime.toInstant())
                 .sign(Algorithm.HMAC256(secret));
         log.info("Successfully created the login token -> {}", email);
         return new Token(loginToken);
@@ -64,7 +64,7 @@ public class JwtHandler {
         return extractClaimFromToken(token, "userId");
     }
 
-    public String getUserIdFromToken(String userId,String token) {
+    public String getUserIdFromToken(String userId, String token) {
         String claimFromToken = extractClaimFromToken(new Token(token), "userId");
         if (!userId.equals(claimFromToken)) {
             throw new TokenInvalidException("is not matching user ID");

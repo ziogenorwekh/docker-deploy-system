@@ -91,12 +91,13 @@ public class UserResourcesTest {
 
         // given
         UserTrackResponse userTrackResponse = new UserTrackResponse(userId, username, email, LocalDateTime.now());
-
+        Mockito.when(jwtHandler.getUserIdFromToken(userId, token)).thenReturn(userId);
         Mockito.when(userApplicationService.trackQueryUser(Mockito.any(UserTrackQuery.class)))
                 .thenReturn(userTrackResponse);
 
         // when, then
         mockMvc.perform(MockMvcRequestBuilders.get("/api/users/{userId}", userId)
+                        .header("Authorization", token)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
@@ -104,5 +105,4 @@ public class UserResourcesTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.email").value(email))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.username").value(username));
     }
-
 }

@@ -58,7 +58,7 @@ public class UserAuthenticationService {
             Authentication authenticate = authenticationManager.authenticate(token);
             userDetails = (UserDetailsImpl) authenticate.getPrincipal();
             log.info("login access user -> {}", userDetails.getEmail());
-            Token jwtToken = jwtHandler.createLoginToken(userDetails.getEmail(), userDetails.getId());
+            Token jwtToken = jwtHandler.createLoginToken(userDetails.getEmail(), userDetails.getUsername(), userDetails.getId());
             return userDataMapper.toLoginResponse(userDetails, jwtToken.getValue());
         } catch (BadCredentialsException e) {
             log.error("BadCredentialsException -> {}", e.getMessage());
@@ -78,7 +78,7 @@ public class UserAuthenticationService {
             User googleUser = userDomainService.createGoogleUser(userId, email, username);
             userRepository.save(googleUser);
         }
-        return jwtHandler.createLoginToken(email, userId);
+        return jwtHandler.createLoginToken(email, username, userId);
     }
 
     @Transactional(readOnly = true)

@@ -30,9 +30,6 @@ import store.shportfolio.user.application.security.config.GoogleOauth2ConfigData
 @EnableWebSecurity
 public class SecurityConfiguration {
 
-    @Value("${gateway.url}")
-    private String gatewayUrl;
-
     @Bean
     public SecurityFilterChain configure(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
@@ -45,11 +42,7 @@ public class SecurityConfiguration {
 
 
         http.authorizeHttpRequests(authorizeRequests -> {
-            authorizeRequests.requestMatchers(HttpMethod.GET, "/status").permitAll();
-            authorizeRequests.requestMatchers(HttpMethod.POST, "/api/users").permitAll();
-            authorizeRequests.requestMatchers("/api/auth/**").permitAll();
-//            authorizeRequests.requestMatchers("/oauth2/authorization/google").permitAll();
-            authorizeRequests.anyRequest().authenticated();
+            authorizeRequests.anyRequest().permitAll();
         });
 
 //        http.oauth2Login(oauth2 -> {

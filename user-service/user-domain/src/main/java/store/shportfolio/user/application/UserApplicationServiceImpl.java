@@ -44,7 +44,8 @@ public class UserApplicationServiceImpl implements UserApplicationService {
     public UserTrackResponse trackQueryUser(UserTrackQuery userTrackQuery) {
         User user = userRepository.findById(userTrackQuery.getUserId()).orElseThrow(() -> new UserNotFoundException(
                 String.format("User with id %s not found", userTrackQuery.getUserId())));
-        log.info("tracking user -> {}",user.getEmail().getValue());
+        log.trace("tracking user -> {}",user.getEmail().getValue());
+        log.debug("tracking user -> {}",user.getEmail().getValue());
         return userDataMapper.toUserTrackResponse(user);
     }
 
