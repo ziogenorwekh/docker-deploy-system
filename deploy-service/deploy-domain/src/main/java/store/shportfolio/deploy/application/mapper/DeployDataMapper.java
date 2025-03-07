@@ -6,6 +6,7 @@ import store.shportfolio.deploy.application.command.WebAppCreateResponse;
 import store.shportfolio.deploy.application.command.WebAppTrackResponse;
 import store.shportfolio.deploy.application.vo.ResourceUsage;
 import store.shportfolio.deploy.domain.entity.WebApp;
+import store.shportfolio.deploy.domain.valueobject.DockerContainerStatus;
 
 @Component
 public class DeployDataMapper {
@@ -22,7 +23,8 @@ public class DeployDataMapper {
                 .build();
     }
 
-    public WebAppTrackResponse webAppToWebAppTrackResponse(WebApp webApp, String endpointUrl) {
+    public WebAppTrackResponse webAppToWebAppTrackResponse(WebApp webApp, String endpointUrl
+    , DockerContainerStatus dockerContainerStatus) {
         return WebAppTrackResponse.builder()
                 .applicationId(webApp.getId().getValue())
                 .applicationName(webApp.getApplicationName().getValue())
@@ -30,6 +32,7 @@ public class DeployDataMapper {
                 .serverPort(webApp.getServerPort().getValue())
                 .applicationStatus(webApp.getApplicationStatus())
                 .endPointUrl(endpointUrl)
+                .dockerContainerStatus(dockerContainerStatus)
                 .errorMessages(webApp.getErrorMessages())
                 .userId(webApp.getUserId().getValue())
                 .createdAt(webApp.getCreatedAt())
@@ -37,9 +40,12 @@ public class DeployDataMapper {
     }
 
     public WebAppContainerResponse webAppToWebAppContainerResponse(WebApp webApp,
-                                                                   ResourceUsage resourceUsage, String logs) {
+                                                                   ResourceUsage resourceUsage,
+                                                                   String logs,
+                                                                   DockerContainerStatus dockerContainerStatus) {
         return WebAppContainerResponse.builder()
                 .applicationId(webApp.getId().getValue().toString())
+                .dockerContainerStatus(dockerContainerStatus)
                 .applicationName(webApp.getApplicationName().getValue())
                 .cpuUsage(resourceUsage.getCpuUsage())
                 .memoryUsage(resourceUsage.getMemoryUsage())

@@ -2,6 +2,7 @@ package store.shportfolio.deploy.application.command;
 
 import lombok.*;
 import store.shportfolio.deploy.domain.valueobject.ApplicationStatus;
+import store.shportfolio.deploy.domain.valueobject.DockerContainerStatus;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -19,5 +20,6 @@ public class WebAppTrackResponse {
     private String userId;
     private String errorMessages;
     private String endPointUrl;
+    private DockerContainerStatus dockerContainerStatus;
     private LocalDateTime createdAt;
 }

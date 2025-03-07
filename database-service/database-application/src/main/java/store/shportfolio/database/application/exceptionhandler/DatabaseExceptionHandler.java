@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 @Slf4j
 @RestControllerAdvice
-public class UserExceptionHandler extends ResponseEntityExceptionHandler {
+public class DatabaseExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ExceptionResponse> handleGenericException(Exception ex) {
@@ -36,7 +36,16 @@ public class UserExceptionHandler extends ResponseEntityExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(exceptionResponse);
     }
-
+    @ExceptionHandler(IllegalAccessException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<Object> handleIllegalAccessException(IllegalAccessException ex, WebRequest request) {
+        ExceptionResponse exceptionResponse = ExceptionResponse
+                .builder()
+                .error(ex.getMessage())
+                .timestamp(LocalDateTime.now())
+                .build();
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
+    }
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
                                                                   HttpHeaders headers,

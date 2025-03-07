@@ -1,5 +1,6 @@
 package store.shportfolio.deploy.infrastructure.docker.adapter;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -8,6 +9,7 @@ import store.shportfolio.deploy.application.vo.DockerCreated;
 import store.shportfolio.deploy.application.vo.ResourceUsage;
 import store.shportfolio.deploy.domain.entity.WebApp;
 import store.shportfolio.deploy.domain.valueobject.DockerContainerStatus;
+import store.shportfolio.deploy.application.exception.DockerContainerCreatingFailedException;
 import store.shportfolio.deploy.infrastructure.docker.helper.DockerContainerHelper;
 import store.shportfolio.deploy.infrastructure.docker.helper.DockerImageCreateHelper;
 import store.shportfolio.deploy.infrastructure.docker.helper.DockerResourceHelper;
@@ -15,6 +17,7 @@ import store.shportfolio.deploy.infrastructure.docker.helper.DockerfileCreateHel
 
 import java.io.File;
 
+@Slf4j
 @Component
 public class DockerConnectorImpl implements DockerConnector {
 
@@ -38,28 +41,44 @@ public class DockerConnectorImpl implements DockerConnector {
 
     @Override
     public DockerCreated createContainer(WebApp webApp, String storageUrl) {
+        File dockerfile = null;
+        String imageId = null;
+        String dockerId = null;
         try {
-            File dockerfile = dockerfileCreateHelper.createDockerfile(webApp, storageUrl);
-            String imageId = dockerImageCreateHelper.createImage(webApp, dockerfile);
-            String dockerId = dockerContainerHelper.runContainer(imageId, webApp);
-            dockerfileCreateHelper.deleteLocalDockerfile(dockerfile);
-            return DockerCreated
-                    .builder()
-                    .dockerContainerStatus(DockerContainerStatus.STARTED)
-                    .error("")
-                    .endPointUrl(String.format("%s:%s", endpointUrl, webApp.getServerPort().getValue()))
-                    .dockerImageId(imageId)
-                    .dockerContainerId(dockerId)
-                    .build();
+            dockerfile = dockerfileCreateHelper.createDockerfile(webApp, storageUrl);
+            imageId = dockerImageCreateHelper.createImage(webApp, dockerfile);
+            dockerId = dockerContainerHelper.runContainer(imageId, webApp);
+            log.info("time wait 15 seconds");
+            Thread.sleep(1000L * 15);
+            if (dockerContainerHelper.isContainerRunning(dockerId)) {
+                return DockerCreated
+                        .builder()
+                        .dockerContainerStatus(DockerContainerStatus.STARTED)
+                        .error("")
+                        .endPointUrl(String.format("%s:%s", endpointUrl, webApp.getServerPort().getValue()))
+                        .dockerImageId(imageId)
+                        .dockerContainerId(dockerId)
+                        .build();
+            } else {
+                return DockerCreated.builder()
+                        .dockerContainerStatus(DockerContainerStatus.ERROR)
+                        .dockerContainerId(dockerId)
+                        .endPointUrl("")
+                        .dockerImageId(imageId)
+                        .error("Container not running. Check Container logs.")
+                        .build();
+            }
         } catch (Exception e) {
-            return DockerCreated
-                    .builder()
+            log.error(e.getMessage(), e);
+            return DockerCreated.builder()
                     .dockerContainerStatus(DockerContainerStatus.ERROR)
-                    .dockerContainerId("")
+                    .dockerContainerId(dockerId)
                     .endPointUrl("")
-                    .dockerImageId("")
-                    .error(e.getMessage())
+                    .dockerImageId(imageId)
+                    .error("Container not running. Check Container logs.")
                     .build();
+        } finally {
+            dockerfileCreateHelper.deleteLocalDockerfile(dockerfile);
         }
     }
 

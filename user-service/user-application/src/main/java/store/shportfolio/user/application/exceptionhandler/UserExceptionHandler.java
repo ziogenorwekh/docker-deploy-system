@@ -66,6 +66,16 @@ public class UserExceptionHandler extends ResponseEntityExceptionHandler {
                 .build());
     }
 
+    @ExceptionHandler(IllegalAccessException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<Object> handleIllegalAccessException(IllegalAccessException ex, WebRequest request) {
+        ExceptionResponse exceptionResponse = ExceptionResponse
+                .builder()
+                .error(ex.getMessage())
+                .timestamp(LocalDateTime.now())
+                .build();
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
+    }
 
 
     @ExceptionHandler(DomainException.class)

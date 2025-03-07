@@ -100,7 +100,8 @@ public class DeployApplicationServiceImpl implements DeployApplicationService {
         WebApp webApp = this.getWebApp(userGlobal, applicationId);
         DockerContainer dockerContainer = dockerContainerHandler.getDockerContainer(applicationId);
 
-        return deployDataMapper.webAppToWebAppTrackResponse(webApp,dockerContainer.getEndPointUrl());
+        return deployDataMapper.webAppToWebAppTrackResponse(webApp, dockerContainer.getEndPointUrl()
+                , dockerContainer.getDockerContainerStatus());
     }
 
     @Override
@@ -153,7 +154,9 @@ public class DeployApplicationServiceImpl implements DeployApplicationService {
         DockerContainer dockerContainer = dockerContainerHandler.getDockerContainer(applicationId);
         ResourceUsage resourceUsage = dockerContainerHandler.getContainerUsage(dockerContainer);
         String containerLogs = dockerContainerHandler.getContainerLogs(dockerContainer);
-        return deployDataMapper.webAppToWebAppContainerResponse(webApp, resourceUsage, containerLogs);
+
+        return deployDataMapper.webAppToWebAppContainerResponse(webApp, resourceUsage, containerLogs,
+                dockerContainer.getDockerContainerStatus());
     }
 
     private synchronized CompletableFuture<Void> processDockerContainerAndComplete(WebApp webApp, StorageUrl storageUrl) {
@@ -163,7 +166,7 @@ public class DeployApplicationServiceImpl implements DeployApplicationService {
                 log.info("Docker container status is {}", webApp.getApplicationStatus());
                 webAppHandler.completeContainerizing(webApp);
                 log.info("Docker container processed and application completed -> {}", webApp.getApplicationStatus());
-            } catch (DockerContainerException | ContainerAccessException e) {
+            } catch (DockerContainerException | ContainerAccessException | DockerContainerCreatingFailedException e) {
                 log.error("Error while processing Docker container: {}", e.getMessage());
                 webAppHandler.failedApplication(webApp, e.getMessage());
             } catch (Exception e) {

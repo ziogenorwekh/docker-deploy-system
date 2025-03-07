@@ -71,9 +71,6 @@ public class DockerContainerHandler {
 
 
     public String getContainerLogs(DockerContainer dockerContainer) {
-        if (dockerContainer.getDockerContainerStatus() != DockerContainerStatus.STARTED) {
-            throw new ContainerAccessException("Container is not started yet");
-        }
         return dockerConnector.trackLogs(dockerContainer.getDockerContainerId().getValue());
     }
 
@@ -108,9 +105,6 @@ public class DockerContainerHandler {
 
 
     public ResourceUsage getContainerUsage(DockerContainer dockerContainer) {
-        if (dockerContainer.getDockerContainerStatus() != DockerContainerStatus.STARTED) {
-            throw new ContainerAccessException("Container is not started yet");
-        }
         return dockerConnector.getResourceUsage(dockerContainer.getDockerContainerId().getValue());
     }
 
@@ -118,7 +112,6 @@ public class DockerContainerHandler {
         DockerContainer dockerContainer = this.getDockerContainer(applicationId);
         dockerConnector.dropContainer(dockerContainer.getDockerContainerId().getValue(),
                 dockerContainer.getImageId());
-
         dockerContainerRepository.removeByApplicationId(applicationId);
     }
 }

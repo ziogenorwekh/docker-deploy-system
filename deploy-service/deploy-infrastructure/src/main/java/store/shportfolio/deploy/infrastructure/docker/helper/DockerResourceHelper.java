@@ -28,9 +28,11 @@ public class DockerResourceHelper {
 
     public ResourceUsage getContainerResources(String containerId) {
         if (!isContainerRunning(containerId)) {
-            throw new DockerContainerException("Container is not running");
+            return ResourceUsage.builder()
+                    .memoryUsage("Not running")
+                    .cpuUsage("Not running")
+                    .build();
         }
-
 
         StatsCmd command = dockerClient.statsCmd(containerId);
         CompletableFuture<Statistics> aSynchronized = synchronizeDockerConnection(command);
