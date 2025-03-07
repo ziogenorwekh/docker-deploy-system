@@ -4,9 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import store.shportfolio.deploy.application.exception.ApplicationNotFoundException;
-import store.shportfolio.deploy.application.exception.ContainerAccessException;
-import store.shportfolio.deploy.application.exception.DockerNotFoundException;
+import store.shportfolio.deploy.application.exception.*;
 import store.shportfolio.deploy.application.ports.output.docker.DockerConnector;
 import store.shportfolio.deploy.application.ports.output.repository.DockerContainerRepository;
 import store.shportfolio.deploy.application.vo.DockerCreated;
@@ -75,6 +73,9 @@ public class DockerContainerHandler {
     }
 
     public DockerContainer startContainer(DockerContainer dockerContainer) {
+        if (dockerContainer.getDockerContainerStatus() == DockerContainerStatus.ERROR) {
+            throw new DockerContainerErrorException("Container status error");
+        }
 
         if (dockerContainer.getDockerContainerStatus() == DockerContainerStatus.STARTED) {
             throw new ContainerAccessException("Container already started");
@@ -90,6 +91,10 @@ public class DockerContainerHandler {
     }
 
     public DockerContainer stopContainer(DockerContainer dockerContainer) {
+        if (dockerContainer.getDockerContainerStatus() == DockerContainerStatus.ERROR) {
+            throw new DockerContainerErrorException("Container status error");
+        }
+
         if (dockerContainer.getDockerContainerStatus() == DockerContainerStatus.STOPPED) {
             throw new ContainerAccessException("Container already stopped");
         }

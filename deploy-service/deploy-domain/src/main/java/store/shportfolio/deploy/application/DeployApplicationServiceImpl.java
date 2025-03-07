@@ -110,6 +110,7 @@ public class DeployApplicationServiceImpl implements DeployApplicationService {
         UUID applicationId = webAppTrackQuery.getApplicationId();
         webAppHandler.isMatchUser(userGlobal.getUserId(), applicationId);
         DockerContainer dockerContainer = dockerContainerHandler.getDockerContainer(applicationId);
+
         dockerContainerHandler.startContainer(dockerContainer);
     }
 
@@ -119,6 +120,7 @@ public class DeployApplicationServiceImpl implements DeployApplicationService {
         UUID applicationId = webAppTrackQuery.getApplicationId();
         webAppHandler.isMatchUser(userGlobal.getUserId(), applicationId);
         DockerContainer dockerContainer = dockerContainerHandler.getDockerContainer(applicationId);
+
         dockerContainerHandler.stopContainer(dockerContainer);
     }
 
