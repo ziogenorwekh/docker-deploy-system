@@ -40,7 +40,8 @@ public class DeployExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(IllegalAccessException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResponseEntity<Object> handleIllegalAccessException(IllegalAccessException ex, WebRequest request) {
+    public ResponseEntity<Object> handleIllegalAccessException(IllegalAccessException ex,
+                                                               WebRequest request) {
         ExceptionResponse exceptionResponse = ExceptionResponse
                 .builder()
                 .error(ex.getMessage())
@@ -48,7 +49,6 @@ public class DeployExceptionHandler extends ResponseEntityExceptionHandler {
                 .build();
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
     }
-
 
 
     @ExceptionHandler(value = ConstraintViolationException.class)
@@ -65,6 +65,7 @@ public class DeployExceptionHandler extends ResponseEntityExceptionHandler {
                 .errors(errors)
                 .build());
     }
+
     @ExceptionHandler(DomainException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<ExceptionResponse> handleDomainException(DomainException ex) {

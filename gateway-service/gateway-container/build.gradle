@@ -1,5 +1,8 @@
 plugins {
     id 'java'
+    id 'org.springframework.boot' version '3.0.9'
+    id 'io.spring.dependency-management' version '1.1.6'
+    id 'com.google.cloud.tools.jib' version '3.4.0'
 }
 
 group = 'store.shportfolio'
@@ -28,4 +31,19 @@ jar {
         attributes 'Main-Class': 'store.shportfolio.gateway.container.GatewayApplication' // 메인 클래스의 완전한 패키지 이름
     }
     enabled = true
+}
+
+jib {
+    from {
+        image = 'openjdk:17.0.2-slim'
+    }
+    to {
+        image = 'gateway-service'
+        tags = ['latest']
+    }
+    container {
+        mainClass = 'store.shportfolio.gateway.container.GatewayApplication'
+        jvmFlags = ['-Dspring.profiles.active=dev']
+        ports = ['8600']
+    }
 }
