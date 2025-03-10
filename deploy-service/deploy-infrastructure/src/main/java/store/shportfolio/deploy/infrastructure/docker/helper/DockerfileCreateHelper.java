@@ -21,6 +21,7 @@ public class DockerfileCreateHelper {
         String outputFile = String.format("%s/Dockerfile-%s", filePath, webApp.getApplicationName().getValue());
         DockerfileCommand dockerfileCommand = new DockerfileCommand(webApp.getJavaVersion().getVersion(), storageUrl
                 , webApp.getApplicationName().getValue(), webApp.getServerPort().getValue());
+        log.info("output file: {}", outputFile);
         File dockerfile = null;
         try {
             dockerfile = new File(outputFile);
@@ -28,7 +29,7 @@ public class DockerfileCreateHelper {
             writer.write(dockerfileCommand.writeDockerfileCommand());
             writer.flush();
             writer.close();
-
+        log.info("dockerfile created");
         } catch (IOException e) {
             log.error("create dockerfile error message is : {}", e.getMessage());
         }

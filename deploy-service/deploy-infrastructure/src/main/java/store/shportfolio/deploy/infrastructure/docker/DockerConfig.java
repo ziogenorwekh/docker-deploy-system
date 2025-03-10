@@ -42,6 +42,7 @@ public class DockerConfig {
 
     @Bean
     public DockerClient dockerClient() {
-        return DockerClientImpl.getInstance(config(),dockerHttpClient());
+        return DockerClientImpl
+                .getInstance(config(),dockerHttpClient());
     }
 }

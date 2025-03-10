@@ -45,6 +45,7 @@ public class DockerConnectorImpl implements DockerConnector {
         String imageId = null;
         String dockerId = null;
         try {
+            log.info("start docker create container");
             dockerfile = dockerfileCreateHelper.createDockerfile(webApp, storageUrl);
             imageId = dockerImageCreateHelper.createImage(webApp, dockerfile);
             dockerId = dockerContainerHelper.runContainer(imageId, webApp);
