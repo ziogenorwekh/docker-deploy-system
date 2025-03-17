@@ -157,13 +157,13 @@ public class UserExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(LoginException.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<ExceptionResponse> handleLoginException(LoginException ex) {
         ExceptionResponse exceptionResponse = ExceptionResponse.builder()
                 .error(ex.getMessage())
                 .timestamp(LocalDateTime.now())
                 .build();
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(exceptionResponse);
     }
 

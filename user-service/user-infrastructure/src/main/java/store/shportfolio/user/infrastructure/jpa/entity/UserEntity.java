@@ -23,6 +23,9 @@ public class UserEntity {
     @Column(nullable = false, name = "email", unique = true, updatable = false)
     private String email;
 
+    @Column(nullable = false)
+    private Boolean oauth;
+
     @Column(name = "createdAt")
     private LocalDateTime createdAt;
 
@@ -33,12 +36,13 @@ public class UserEntity {
     public UserEntity() {
     }
 
-    public UserEntity(String userId, String username, String password, String email,
+    public UserEntity(String userId, String username, String password, String email, Boolean oauth,
                       LocalDateTime createdAt, AccountStatus accountStatus) {
         this.userId = userId;
         this.username = username;
         this.password = password;
         this.email = email;
+        this.oauth = oauth;
         this.createdAt = createdAt;
         this.accountStatus = accountStatus;
     }
@@ -68,6 +72,10 @@ public class UserEntity {
         return accountStatus;
     }
 
+    public Boolean getOauth() {
+        return oauth;
+    }
+
     public static class Builder {
         private String userId;
         private String username;
@@ -75,6 +83,7 @@ public class UserEntity {
         private String email;
         private LocalDateTime createdAt;
         private AccountStatus accountStatus;
+        private Boolean oauth;
 
         public Builder userId(String userId) {
             this.userId = userId;
@@ -106,8 +115,13 @@ public class UserEntity {
             return this;
         }
 
+        public Builder oauth(Boolean oauth) {
+            this.oauth = oauth;
+            return this;
+        }
+
         public UserEntity build() {
-            return new UserEntity(userId, username, password, email, createdAt, accountStatus);
+            return new UserEntity(userId, username, password, email, oauth, createdAt, accountStatus);
         }
     }
 

@@ -16,7 +16,9 @@ public class UserDataMapper {
                 .userId(user.getId().getValue())
                 .email(user.getEmail().getValue())
                 .username(user.getUsername().getValue())
-                .createdAt(user.getCreatedAt()).build();
+                .createdAt(user.getCreatedAt())
+                .oAuth(user.getoAuth())
+                .build();
     }
 
     public UserCreateResponse toUserCreateResponse(User user) {
@@ -27,9 +29,10 @@ public class UserDataMapper {
                 .build();
     }
 
-    public LoginResponse toLoginResponse(UserDetailsImpl userDetails, String token) {
+    public LoginResponse toLoginResponse(UserDetailsImpl userDetails, String token, Boolean oauth) {
         return LoginResponse.builder().userId(userDetails.getId())
                 .email(userDetails.getEmail())
+                .oauth(oauth)
                 .token(token).build();
     }
 }

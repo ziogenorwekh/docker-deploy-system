@@ -42,8 +42,8 @@ public class ExceptionResponse {
         }
     }
 
-    public static ExceptionResponse.Builder builder() {
-        return new ExceptionResponse.Builder();
+    public static Builder builder() {
+        return new Builder();
     }
 
 }

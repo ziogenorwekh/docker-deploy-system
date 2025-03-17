@@ -4,6 +4,7 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.gson.GsonFactory;
+import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,7 +18,12 @@ import store.shportfolio.user.application.command.*;
 import store.shportfolio.user.application.exception.GoogleException;
 import store.shportfolio.user.domain.entity.User;
 
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -25,7 +31,7 @@ import java.util.Map;
 @RequestMapping("/api/auth")
 public class UserSecurityResources {
 
-    @Value("spring.security.oauth2.client.registration.google.client-id")
+    @Value("${spring.security.oauth2.client.registration.google.client-id}")
     private String CLIENT_ID;
     private final UserAuthenticationService userAuthenticationService;
 
@@ -43,6 +49,7 @@ public class UserSecurityResources {
 
     @RequestMapping(path = "/user/mail-send", method = RequestMethod.POST)
     public ResponseEntity<Void> sendEmail(@RequestBody EmailSendCommand emailSendCommand) {
+        log.info("Sending email to {}", emailSendCommand.getEmail());
         userAuthenticationService.sendEmail(emailSendCommand);
         return ResponseEntity.ok().build();
     }
@@ -68,29 +75,32 @@ public class UserSecurityResources {
     }
 
     @RequestMapping(path = "/google", method = RequestMethod.POST)
-    public ResponseEntity<LoginResponse> authenticateWithGoogle(@RequestBody Map<String, String> payload) {
+    public ResponseEntity<LoginResponse> authenticateWithGoogle(
+            @RequestBody Map<String, String> payload) {
         String tokenId = payload.get("tokenId");
-
+        log.info("tokenId: {}", tokenId);
         try {
+
             // Google ID 토큰 검증
             GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(
                     new NetHttpTransport(),
-                    GsonFactory.getDefaultInstance()
+                    new GsonFactory()
             ).setAudience(Collections.singletonList(CLIENT_ID)).build();
 
             GoogleIdToken idToken = verifier.verify(tokenId);
             if (idToken == null) {
+                log.error("Google ID token verification failed");
                 throw new GoogleException("Invalid Google token");
             }
             GoogleIdToken.Payload tokenPayload = idToken.getPayload();
-
             String email = tokenPayload.getEmail();
-            String userId = (String) tokenPayload.get("sub");
+            log.info("email: {}", email);
+            String userId = (String) tokenPayload.getSubject();
             String name = (String) tokenPayload.get("name");
             Token token = userAuthenticationService.loginByGoogle(email, userId, name);
 
             LoginResponse loginResponse = LoginResponse.builder().email(email).userId(userId)
-                    .token(token.getValue()).build();
+                    .token(token.getValue()).oauth(true).build();
             return ResponseEntity.ok(loginResponse);
         } catch (Exception e) {
             throw new GoogleException(e.getMessage());

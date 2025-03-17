@@ -19,16 +19,18 @@ public class User extends AggregateRoot<UserId> {
     private Password password;
     private AccountStatus accountStatus;
     private final LocalDateTime createdAt;
+    private Boolean oAuth;
 
     public User(UserId userId, Email email,
                 Username username, Password password,
-                AccountStatus accountStatus, LocalDateTime createdAt) {
+                AccountStatus accountStatus, LocalDateTime createdAt, Boolean oAuth) {
         this.email = email;
         this.username = username;
         this.password = password;
         this.accountStatus = accountStatus;
         this.createdAt = createdAt;
         super.setId(userId);
+        this.oAuth = oAuth;
     }
 
     public User(String userId, String email,
@@ -43,7 +45,7 @@ public class User extends AggregateRoot<UserId> {
     }
 
 
-    public static User createUser(String newUserId, String email, String newUsername, String newPassword) {
+    public static User createUser(String newUserId, String email, String newUsername, String newPassword, Boolean oAuth) {
         isValidateEmail(email);
         isValidateUsername(newUsername);
         Password password = new Password(newPassword);
@@ -55,10 +57,10 @@ public class User extends AggregateRoot<UserId> {
 
         LocalDateTime createdAt = LocalDateTime.now();
         AccountStatus newAccountStatus = AccountStatus.ENABLED;
-        return new User(userId, newEmail, username, password, newAccountStatus, createdAt);
+        return new User(userId, newEmail, username, password, newAccountStatus, createdAt, oAuth);
     }
 
-    public static User createGoogleUser(String googleUserId, String email, String newUsername) {
+    public static User createGoogleUser(String googleUserId, String email, String newUsername, Boolean oAuth) {
         String removeWhitespace = Username.removeWhitespace(newUsername);
 
         UserId userId = new UserId(googleUserId);
@@ -68,7 +70,7 @@ public class User extends AggregateRoot<UserId> {
         LocalDateTime createdAt = LocalDateTime.now();
         AccountStatus newAccountStatus = AccountStatus.ENABLED;
 
-        return new User(userId, newEmail, username, password, newAccountStatus, createdAt);
+        return new User(userId, newEmail, username, password, newAccountStatus, createdAt, oAuth);
     }
 
     /**
@@ -129,4 +131,7 @@ public class User extends AggregateRoot<UserId> {
         return createdAt;
     }
 
+    public Boolean getoAuth() {
+        return oAuth;
+    }
 }

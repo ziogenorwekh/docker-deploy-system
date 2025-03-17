@@ -13,6 +13,7 @@ import org.springframework.validation.annotation.Validated;
 import store.shportfolio.common.domain.valueobject.Token;
 import store.shportfolio.user.application.command.*;
 import store.shportfolio.user.application.exception.LoginException;
+import store.shportfolio.user.application.exception.UserDuplicatedException;
 import store.shportfolio.user.application.exception.UserNotFoundException;
 import store.shportfolio.user.application.jwt.JwtHandler;
 import store.shportfolio.user.application.mapper.UserDataMapper;
@@ -59,7 +60,7 @@ public class UserAuthenticationService {
             userDetails = (UserDetailsImpl) authenticate.getPrincipal();
             log.info("login access user -> {}", userDetails.getEmail());
             Token jwtToken = jwtHandler.createLoginToken(userDetails.getEmail(), userDetails.getUsername(), userDetails.getId());
-            return userDataMapper.toLoginResponse(userDetails, jwtToken.getValue());
+            return userDataMapper.toLoginResponse(userDetails, jwtToken.getValue(), false);
         } catch (BadCredentialsException e) {
             log.error("BadCredentialsException -> {}", e.getMessage());
             throw new BadCredentialsException("Login failed", e);
@@ -90,6 +91,9 @@ public class UserAuthenticationService {
     }
 
     public void sendEmail(EmailSendCommand emailSendCommand) {
+        userRepository.findByEmail(emailSendCommand.getEmail()).ifPresent(user -> {
+            throw new UserDuplicatedException("Email already exists");
+        });
         log.info("send email -> {}", emailSendCommand.getEmail());
         mailSender.sendMail(emailSendCommand.getEmail());
     }

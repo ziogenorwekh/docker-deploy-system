@@ -11,8 +11,6 @@ import store.shportfolio.user.application.command.*;
 import store.shportfolio.user.application.exception.UserDeleteException;
 import store.shportfolio.user.application.jwt.JwtHandler;
 import store.shportfolio.user.domain.event.UserDeleteEvent;
-import store.shportfolio.user.application.openfeign.DatabaseServiceClient;
-import store.shportfolio.user.application.openfeign.DeployServiceClient;
 
 
 @Slf4j
@@ -22,17 +20,12 @@ public class UserResources {
 
     private final UserApplicationService userApplicationService;
     private final JwtHandler jwtHandler;
-    private final DatabaseServiceClient databaseServiceClient;
-    private final DeployServiceClient deployServiceClient;
 
     @Autowired
-    public UserResources(UserApplicationService userApplicationService, JwtHandler jwtHandler,
-                         DatabaseServiceClient databaseServiceClient,
-                         DeployServiceClient deployServiceClient) {
+    public UserResources(UserApplicationService userApplicationService, JwtHandler jwtHandler
+    ) {
         this.userApplicationService = userApplicationService;
         this.jwtHandler = jwtHandler;
-        this.databaseServiceClient = databaseServiceClient;
-        this.deployServiceClient = deployServiceClient;
     }
 
 
@@ -74,8 +67,8 @@ public class UserResources {
         userApplicationService.deleteUser(UserDeleteCommand.builder().userId(userIdFromToken).build());
 
         // 각각의 외부 서비스 호출에도 서킷 브레이커 적용 필요
-        ResponseEntity<Void> deleteUserDatabase = databaseServiceClient.deleteUserDatabase(token);
-        ResponseEntity<Void> deleteAllUserApplication = deployServiceClient.deleteAllUserApplication(token);
+//        ResponseEntity<Void> deleteUserDatabase = databaseServiceClient.deleteUserDatabase(token);
+//        ResponseEntity<Void> deleteAllUserApplication = deployServiceClient.deleteAllUserApplication(token);
 
         return ResponseEntity.noContent().build();
     }

@@ -4,7 +4,9 @@ package store.shportfolio.user.application.command;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor
 public class UserUpdateCommand {
 
     private String userId;

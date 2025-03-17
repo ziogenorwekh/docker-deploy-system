@@ -20,12 +20,13 @@ public class UserEntityDataAccessMapper {
                 .accountStatus(user.getAccountStatus())
                 .createdAt(user.getCreatedAt())
                 .password(user.getPassword().getValue())
+                .oauth(user.getoAuth())
                 .build();
     }
 
     public User userEntityToUser(UserEntity userEntity) {
         return new User(new UserId(userEntity.getUserId()),
-                new Email(userEntity.getEmail()),new Username(userEntity.getUsername()),
-                new Password(userEntity.getPassword()),userEntity.getAccountStatus(),userEntity.getCreatedAt());
+                new Email(userEntity.getEmail()), new Username(userEntity.getUsername()),
+                new Password(userEntity.getPassword()), userEntity.getAccountStatus(), userEntity.getCreatedAt(), userEntity.getOauth());
     }
 }

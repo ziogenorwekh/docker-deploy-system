@@ -13,13 +13,13 @@ public class UserDomainServiceImpl implements UserDomainService {
     @Override
     public User createUser(String userId, String email, String newUsername, String newPassword) {
         log.info("Creating user with email {}", email);
-        return User.createUser(userId, email, newUsername, newPassword);
+        return User.createUser(userId, email, newUsername, newPassword, false);
     }
 
     @Override
     public User createGoogleUser(String googleId, String email, String username) {
         log.info("Creating user with google id: {} , email: {}", googleId, email);
-        return User.createGoogleUser(googleId, email, username);
+        return User.createGoogleUser(googleId, email, username, true);
     }
 
     @Override

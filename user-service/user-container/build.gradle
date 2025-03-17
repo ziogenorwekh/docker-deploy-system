@@ -12,6 +12,12 @@ repositories {
     mavenCentral()
 }
 
+dependencyManagement {
+    dependencies {
+        dependency 'com.google.guava:guava:32.1.2-jre'
+    }
+}
+
 dependencies {
     testImplementation platform('org.junit:junit-bom:5.10.0')
 
@@ -19,9 +25,7 @@ dependencies {
     implementation project(':user-service:user-infrastructure')
     implementation project(':user-service:user-application')
     implementation project(':common:common-domain')
-    // https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-starter-netflix-eureka-client
     implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-eureka-client', version: '4.0.0'
-    implementation 'org.springframework.cloud:spring-cloud-starter'
 
     testImplementation 'org.junit.jupiter:junit-jupiter'
 
@@ -52,5 +56,6 @@ jib {
         mainClass = 'store.shportfolio.user.container.UserApplication' // 메인 클래스 지정
         jvmFlags = ['-Dspring.profiles.active=dev']
         ports = ['9010'] // 컨테이너에서 노출할 포트
+        creationTime = 'USE_CURRENT_TIMESTAMP'
     }
 }
