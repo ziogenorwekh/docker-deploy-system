@@ -35,7 +35,7 @@ jar {
 
 jib {
     from {
-        image = 'openjdk:17.0.2-slim'
+        image = 'openjdk:17-slim'
     }
     to {
         image = 'gateway-service'
@@ -45,5 +45,6 @@ jib {
         mainClass = 'store.shportfolio.gateway.container.GatewayApplication'
         jvmFlags = ['-Dspring.profiles.active=dev']
         ports = ['8600']
+        creationTime = 'USE_CURRENT_TIMESTAMP'
     }
 }

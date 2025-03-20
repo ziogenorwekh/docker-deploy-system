@@ -38,7 +38,7 @@ jar {
 
 jib {
     from {
-        image = 'openjdk:17.0.2-slim'
+        image = 'openjdk:17-slim'
     }
     to {
         image = 'discovery-service'
@@ -48,5 +48,6 @@ jib {
         mainClass = 'store.shportfolio.discovery.DiscoveryApplication'
         jvmFlags = ['-Dspring.profiles.active=dev']
         ports = ['8761']
+        creationTime = 'USE_CURRENT_TIMESTAMP'
     }
 }

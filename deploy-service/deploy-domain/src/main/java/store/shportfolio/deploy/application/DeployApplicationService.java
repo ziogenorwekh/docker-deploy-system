@@ -5,16 +5,21 @@ import org.springframework.scheduling.annotation.Async;
 import store.shportfolio.common.domain.valueobject.UserGlobal;
 import store.shportfolio.deploy.application.command.*;
 
+import java.util.List;
+
 
 public interface DeployApplicationService {
 
 
-    WebAppCreateResponse createWebApp(@Valid UserGlobal userGlobal, @Valid WebAppCreateCommand webAppCreateCommand);
+    WebAppCreateResponse createWebApp(@Valid UserGlobal userGlobal,
+                                      @Valid WebAppCreateCommand webAppCreateCommand);
 
     @Async
     void saveJarFileAndCreateContainer(WebAppFileCreateCommand webAppFileCreateCommand, UserGlobal userGlobal);
 
     WebAppTrackResponse trackQueryWebApp(@Valid WebAppTrackQuery webAppTrackQuery, UserGlobal userGlobal);
+
+    List<WebAppTrackResponse> trackQueryAllWebApps(UserGlobal userGlobal);
 
     void startContainer(@Valid WebAppTrackQuery webAppTrackQuery, UserGlobal userGlobal);
 

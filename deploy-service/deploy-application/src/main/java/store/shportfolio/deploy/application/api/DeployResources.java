@@ -1,6 +1,7 @@
 package store.shportfolio.deploy.application.api;
 
 import feign.FeignException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,8 +13,10 @@ import store.shportfolio.deploy.application.command.*;
 import store.shportfolio.deploy.application.exception.UserNotfoundException;
 import store.shportfolio.deploy.application.openfeign.UserServiceClient;
 
+import java.util.List;
 import java.util.UUID;
 
+@Slf4j
 @RestController
 @RequestMapping("/api")
 public class DeployResources {
@@ -89,6 +92,14 @@ public class DeployResources {
                 .trackQueryWebApp(WebAppTrackQuery.builder()
                         .applicationId(UUID.fromString(applicationId)).build(), userInfo);
         return ResponseEntity.status(HttpStatus.OK).body(webAppTrackResponse);
+    }
+
+    @RequestMapping(path = "/apps/all", method = RequestMethod.GET, produces = "application/json")
+    public ResponseEntity<List<WebAppTrackResponse>> retrieveTrackWebApps(@RequestHeader("X-Authenticated-Username") String username,
+                                                                   @RequestHeader("X-Authenticated-UserId") String userId) {
+        UserGlobal userInfo = UserGlobal.builder().userId(userId).username(username).build();
+        List<WebAppTrackResponse> webAppTrackResponses = deployApplicationService.trackQueryAllWebApps(userInfo);
+        return ResponseEntity.ok(webAppTrackResponses);
     }
 
     @RequestMapping(path = "/apps/{applicationId}", method = RequestMethod.DELETE, produces = "application/json")

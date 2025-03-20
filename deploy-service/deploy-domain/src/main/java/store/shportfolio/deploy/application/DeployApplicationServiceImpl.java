@@ -25,6 +25,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Slf4j
 @Service
@@ -105,6 +107,16 @@ public class DeployApplicationServiceImpl implements DeployApplicationService {
     }
 
     @Override
+    public List<WebAppTrackResponse> trackQueryAllWebApps(UserGlobal userGlobal) {
+        List<WebApp> webApps = webAppHandler.findAll(userGlobal.getUserId());
+        Stream<WebAppTrackResponse> webAppTrackResponseStream = webApps.stream().map(webApp -> {
+            DockerContainer dockerContainer = dockerContainerHandler.getDockerContainer(webApp.getId().getValue());
+            return deployDataMapper.webAppToWebAppTrackResponse(webApp, dockerContainer.getEndPointUrl(), dockerContainer.getDockerContainerStatus());
+        });
+        return webAppTrackResponseStream.collect(Collectors.toList());
+    }
+
+    @Override
     @Transactional
     public void startContainer(WebAppTrackQuery webAppTrackQuery, UserGlobal userGlobal) {
         UUID applicationId = webAppTrackQuery.getApplicationId();
@@ -130,7 +142,10 @@ public class DeployApplicationServiceImpl implements DeployApplicationService {
         UUID applicationId = webAppDeleteCommand.getApplicationId();
         log.info("delete webApp id is {}", applicationId);
         WebApp webApp = this.getWebApp(userGlobal, applicationId);
-
+        if (webApp.getApplicationStatus().equals(ApplicationStatus.CREATED)) {
+            webAppHandler.deleteWebApp(webApp);
+            return;
+        }
         webAppHandler.deleteWebApp(webApp);
         storageHandler.deleteStorage(webApp.getId().getValue());
         dockerContainerHandler.deleteDockerContainer(webApp.getId().getValue());

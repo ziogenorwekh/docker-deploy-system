@@ -40,7 +40,7 @@ jar {
 
 jib {
     from {
-        image = 'openjdk:17.0.2-slim'
+        image = 'openjdk:17-slim'
     }
     to {
         image = 'database-service'
@@ -50,5 +50,6 @@ jib {
         mainClass = 'store.shportfolio.database.container.DatabaseApplication'
         jvmFlags = ['-Dspring.profiles.active=dev']
         ports = ['9020']
+        creationTime = 'USE_CURRENT_TIMESTAMP'
     }
 }

@@ -43,7 +43,7 @@ jar {
 
 jib {
     from {
-        image = 'openjdk:17.0.2-slim'
+        image = 'openjdk:17-slim'
     }
     to {
         image = 'deploy-service'
@@ -53,5 +53,6 @@ jib {
         mainClass = 'store.shportfolio.deploy.container.DeployApplication'
         jvmFlags = ['-Dspring.profiles.active=dev']
         ports = ['9030']
+        creationTime = 'USE_CURRENT_TIMESTAMP'
     }
 }

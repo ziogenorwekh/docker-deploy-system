@@ -16,6 +16,8 @@ import store.shportfolio.database.application.ports.output.DatabaseRepository;
 import store.shportfolio.database.domain.DatabaseDomainService;
 import store.shportfolio.database.domain.entity.Database;
 
+import java.util.Optional;
+
 @Slf4j
 @Service
 @Validated
@@ -62,10 +64,10 @@ public class DatabaseApplicationServiceImpl implements DatabaseApplicationServic
     @Override
     @Transactional
     public void deleteDatabase(UserGlobal userGlobal) {
-        Database database = databaseRepository.findByUserId(userGlobal.getUserId()).orElseThrow(() -> {
-            throw new DatabaseNotFoundException("User not register user's database");
+        Optional<Database> database = databaseRepository.findByUserId(userGlobal.getUserId());
+        database.ifPresent(deleteDatabase -> {
+            databaseRepository.remove(deleteDatabase);
         });
-        databaseRepository.remove(database);
     }
 
 }

@@ -46,7 +46,7 @@ jar {
 
 jib {
     from {
-        image = 'openjdk:17.0.2-slim'
+        image = 'openjdk:17-slim'
     }
     to {
         image = 'user-service'
