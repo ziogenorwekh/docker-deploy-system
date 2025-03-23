@@ -57,8 +57,8 @@ public class Database extends AggregateRoot<DatabaseId> {
 
 
     private static void isValidDatabasePassword(DatabasePassword databasePassword) {
-        if (!databasePassword.isValid()) {
-            throw new DomainException("Database password is invalid");
+        if (!databasePassword.isValid() || !databasePassword.atLeast8Characters()) {
+            throw new DomainException("Database password is invalid or has at least 8 characters");
         }
     }
 

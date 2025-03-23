@@ -65,6 +65,11 @@ public class WebAppRepositoryImpl implements WebAppRepository {
     }
 
     @Override
+    public Optional<WebApp> findByPort(int port) {
+        return webAppJpaRepository.findByServerPort(port).map(deployDataAccessMapper::webAppEntityToWebAppEntity);
+    }
+
+    @Override
     public Optional<WebApp> findByApplicationName(String applicationName) {
         return webAppJpaRepository.findByApplicationName(applicationName)
                 .map(deployDataAccessMapper::webAppEntityToWebAppEntity);

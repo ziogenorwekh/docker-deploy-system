@@ -2,7 +2,6 @@ package store.shportfolio.deploy.application.ports.output.docker;
 
 import store.shportfolio.deploy.application.vo.DockerCreated;
 import store.shportfolio.deploy.application.vo.ResourceUsage;
-import store.shportfolio.deploy.domain.entity.DockerContainer;
 import store.shportfolio.deploy.domain.entity.WebApp;
 
 public interface DockerConnector {
@@ -17,6 +16,7 @@ public interface DockerConnector {
 
     Boolean stopContainer(String dockerContainerId);
 
-    void dropContainer(String dockerContainerId, String imageId);
+    void dropContainer(String dockerContainerId);
 
+    void removeImage(String imageId);
 }

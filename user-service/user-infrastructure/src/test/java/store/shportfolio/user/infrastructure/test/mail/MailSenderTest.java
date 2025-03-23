@@ -6,8 +6,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import store.shportfolio.user.infrastructure.exception.AlreadyMailSendException;
+import store.shportfolio.user.application.exception.AlreadyMailSendException;
 import store.shportfolio.user.infrastructure.mail.CacheConfig;
 import store.shportfolio.user.infrastructure.mail.CustomCacheManager;
 import store.shportfolio.user.infrastructure.mail.MailConfig;
@@ -16,7 +15,8 @@ import store.shportfolio.user.infrastructure.mail.adapter.MailSenderImpl;
 
 @ActiveProfiles("test")
 @EnableConfigurationProperties(MailConfigData.class)
-@SpringBootTest(classes = {CacheConfig.class, MailConfig.class},useMainMethod = SpringBootTest.UseMainMethod.NEVER)
+@SpringBootTest(classes = {CacheConfig.class, MailConfig.class,CustomCacheManager.class},
+        useMainMethod = SpringBootTest.UseMainMethod.NEVER)
 public class MailSenderTest {
 
 
@@ -38,7 +38,7 @@ public class MailSenderTest {
         customCacheManager.clear();
     }
 
-//    @Test
+    @Test
     @DisplayName("mail send test")
     public void mailSendTestAndIsSaveCaChe() {
 

@@ -35,7 +35,7 @@ public class UserRepositoryTest {
     public void createUserByDb() {
 
         // given
-        User user = User.createUser(userId, email, username, password);
+        User user = User.createUser(userId, email, username, password,false);
 
         // when
         User saved = userRepository.save(user);
@@ -52,7 +52,7 @@ public class UserRepositoryTest {
     public void findUserByDb() {
 
         // given
-        User user = User.createUser(userId, email, username, password);
+        User user = User.createUser(userId, email, username, password,false);
         userRepository.save(user);
 
         // when

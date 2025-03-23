@@ -82,6 +82,13 @@ public class WebAppHandler {
                 });
     }
 
+    public void isExistPort(int port) {
+        webAppRepository.findByPort(port)
+                .ifPresent(webApp -> {
+                    throw new ApplicationNotFoundException(String.format("WebApp with port %s already exist", port));
+                });
+    }
+
     public void deleteWebApp(WebApp webApp) {
         webAppRepository.deleteByApplicationId(webApp.getId().getValue());
     }

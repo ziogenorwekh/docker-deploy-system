@@ -10,6 +10,7 @@ import store.shportfolio.database.application.command.DatabaseCreateResponse;
 import store.shportfolio.database.application.command.DatabaseTrackQuery;
 import store.shportfolio.database.application.command.DatabaseTrackResponse;
 import store.shportfolio.database.application.config.DatabaseEndpointConfigData;
+import store.shportfolio.database.application.exception.DatabaseAlreadyCreatedException;
 import store.shportfolio.database.application.exception.DatabaseNotFoundException;
 import store.shportfolio.database.application.mapper.DatabaseDataMapper;
 import store.shportfolio.database.application.ports.output.DatabaseRepository;
@@ -41,10 +42,10 @@ public class DatabaseApplicationServiceImpl implements DatabaseApplicationServic
     @Override
     @Transactional
     public DatabaseCreateResponse createDatabase(DatabaseCreateCommand databaseCreateCommand, UserGlobal userGlobal) {
+        isExistUsersDatabase(userGlobal);
         Database database = databaseDomainService.createDatabase(userGlobal, databaseCreateCommand);
 
-        String databaseAccessUrl = databaseEndpointConfigData.getEndpointUrl() + "/" +
-                database.getDatabaseName().getValue();
+        String databaseAccessUrl = databaseEndpointConfigData.getEndpointUrl();
         databaseDomainService.settingAccessUrl(database, databaseAccessUrl);
         log.info("database access url : {}", databaseAccessUrl);
         Database saved = databaseRepository.save(database);
@@ -70,4 +71,11 @@ public class DatabaseApplicationServiceImpl implements DatabaseApplicationServic
         });
     }
 
+    private void isExistUsersDatabase(UserGlobal userGlobal) {
+        databaseRepository.findByUserId(userGlobal.getUserId())
+                .ifPresent(database -> {
+                    throw new DatabaseAlreadyCreatedException(
+                            String.format("User %s already exists", userGlobal.getUsername()));
+                });
+    }
 }

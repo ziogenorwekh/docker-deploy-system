@@ -49,7 +49,7 @@ public class DockerContainerHandler {
 
     // need additional logic
     @Transactional
-    public DockerContainer createDockerImageAndRun(WebApp webApp, String storageUrl) {
+    public DockerContainer createDockerImageAndRun(WebApp webApp, String storageUrl) throws Exception {
         DockerContainer dockerContainer = this.getDockerContainer(webApp.getId().getValue());
         log.info("Create docker container: " + dockerContainer);
 
@@ -60,6 +60,10 @@ public class DockerContainerHandler {
         log.info("docker container must be INITIALIZED -> {}", dockerContainer.getDockerContainerStatus());
 
         DockerCreated dockerCreated = dockerConnector.createContainer(webApp, storageUrl);
+        if (dockerCreated.getDockerContainerStatus() == DockerContainerStatus.ERROR) {
+            throw new DockerContainerException(dockerCreated.getError());
+        }
+
         deployDomainService.successfulCreateDockerContainer(dockerContainer, dockerCreated);
         DockerContainer saved = dockerContainerRepository.save(dockerContainer);
 
@@ -115,8 +119,12 @@ public class DockerContainerHandler {
 
     public void deleteDockerContainer(UUID applicationId) {
         DockerContainer dockerContainer = this.getDockerContainer(applicationId);
-        dockerConnector.dropContainer(dockerContainer.getDockerContainerId().getValue(),
-                dockerContainer.getImageId());
+        try {
+            dockerConnector.dropContainer(dockerContainer.getDockerContainerId().getValue());
+            dockerConnector.removeImage(dockerContainer.getImageId());
+        } catch (RuntimeException e) {
+            log.error("Error dropping docker container, message is {}", e.getMessage());
+        }
         dockerContainerRepository.removeByApplicationId(applicationId);
     }
 }

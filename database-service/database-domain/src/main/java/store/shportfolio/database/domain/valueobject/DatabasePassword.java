@@ -18,6 +18,10 @@ public class DatabasePassword {
         return value != null && value.matches("^[a-zA-Z0-9]+$");
     }
 
+    public boolean atLeast8Characters() {
+        return value != null && value.length() >= 8;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;

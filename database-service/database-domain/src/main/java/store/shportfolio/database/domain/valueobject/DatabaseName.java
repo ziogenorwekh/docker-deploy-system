@@ -20,8 +20,9 @@ public class DatabaseName {
     }
 
     public static DatabaseName fromUsername(String username) {
+        String replacedUsername = username.replace(" ", "");
         String randomAlphabet = generateRandomAlphabet(RANDOM_ALPHABET_LENGTH);
-        String databaseName = username + "_" + randomAlphabet;
+        String databaseName = replacedUsername + "_" + randomAlphabet;
         return new DatabaseName(databaseName);
     }
 

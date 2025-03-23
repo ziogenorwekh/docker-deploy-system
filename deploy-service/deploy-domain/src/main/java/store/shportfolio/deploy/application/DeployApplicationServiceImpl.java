@@ -52,7 +52,7 @@ public class DeployApplicationServiceImpl implements DeployApplicationService {
     public WebAppCreateResponse createWebApp(UserGlobal userGlobal, WebAppCreateCommand webAppCreateCommand) {
 
         webAppHandler.isExistApplicationName(webAppCreateCommand.getApplicationName());
-
+        webAppHandler.isExistPort(webAppCreateCommand.getPort());
         WebApp webApp = webAppHandler.createWebApp(userGlobal, webAppCreateCommand);
 
         Storage storage = storageHandler.createStorage(webApp);
@@ -183,7 +183,9 @@ public class DeployApplicationServiceImpl implements DeployApplicationService {
                 log.info("Docker container status is {}", webApp.getApplicationStatus());
                 webAppHandler.completeContainerizing(webApp);
                 log.info("Docker container processed and application completed -> {}", webApp.getApplicationStatus());
-            } catch (DockerContainerException | ContainerAccessException | DockerContainerCreatingFailedException e) {
+            } catch (DockerContainerException | ContainerAccessException |
+                     DockerContainerCreatingFailedException | DockerContainerRunException |
+                     DockerImageCreationException e) {
                 log.error("Error while processing Docker container: {}", e.getMessage());
                 webAppHandler.failedApplication(webApp, e.getMessage());
             } catch (Exception e) {

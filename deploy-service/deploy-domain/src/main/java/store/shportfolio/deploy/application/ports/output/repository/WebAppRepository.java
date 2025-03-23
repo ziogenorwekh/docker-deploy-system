@@ -19,6 +19,8 @@ public interface WebAppRepository {
 
     void deleteByApplicationId(UUID applicationId);
 
+    Optional<WebApp> findByPort(int port);
+
 
     Optional<WebApp> findByApplicationName(String applicationName);
 

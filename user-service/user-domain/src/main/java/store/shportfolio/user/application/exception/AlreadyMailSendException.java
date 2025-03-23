@@ -1,4 +1,4 @@
-package store.shportfolio.user.infrastructure.exception;
+package store.shportfolio.user.application.exception;
 
 public class AlreadyMailSendException extends RuntimeException {
     public AlreadyMailSendException(String message) {

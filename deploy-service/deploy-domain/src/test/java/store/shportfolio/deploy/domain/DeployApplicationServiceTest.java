@@ -45,12 +45,12 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
+
 @ActiveProfiles("test")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ExtendWith(MockitoExtension.class)
 public class DeployApplicationServiceTest {
 
-    private static final Logger log = LoggerFactory.getLogger(DeployApplicationServiceTest.class);
     private DeployApplicationService deployApplicationService;
 
     private DockerContainerHandler dockerContainerHandler;
@@ -353,7 +353,13 @@ public class DeployApplicationServiceTest {
         Mockito.when(containerRepository.findByApplicationId(applicationId.getValue()))
                 .thenReturn(Optional.of(dockerContainer));
         // when
-        DockerContainer result = dockerContainerHandler.createDockerImageAndRun(webApp,storage.getStorageUrl().getValue());
+        DockerContainer result = null;
+        try {
+            result = dockerContainerHandler.createDockerImageAndRun(webApp,storage.getStorageUrl().getValue());
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            throw new RuntimeException(e);
+        }
 
         // then
         Assertions.assertEquals(DockerContainerStatus.STARTED, result.getDockerContainerStatus());

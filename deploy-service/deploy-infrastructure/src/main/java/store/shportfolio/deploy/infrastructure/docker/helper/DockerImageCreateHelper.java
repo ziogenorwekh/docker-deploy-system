@@ -5,6 +5,7 @@ import com.github.dockerjava.api.command.BuildImageResultCallback;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import store.shportfolio.deploy.application.exception.DockerContainerException;
+import store.shportfolio.deploy.application.exception.DockerImageCreationException;
 import store.shportfolio.deploy.domain.entity.WebApp;
 
 import java.io.File;
@@ -39,7 +40,7 @@ public class DockerImageCreateHelper {
             return imageId;
         } catch (Exception e) {
             log.error(e.getMessage());
-            throw new DockerContainerException("Error causes creating Docker image.", e);
+            throw new DockerImageCreationException(String.format("Error creating image Error message is %s", e.getMessage()));
         }
     }
 }

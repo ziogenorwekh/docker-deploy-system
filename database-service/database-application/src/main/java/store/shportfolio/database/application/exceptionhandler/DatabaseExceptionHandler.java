@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+import store.shportfolio.database.application.exception.DatabaseAlreadyCreatedException;
 import store.shportfolio.database.application.exception.DatabaseNotFoundException;
 import store.shportfolio.database.application.exception.UserNotfoundException;
 import store.shportfolio.database.domain.exception.DomainException;
@@ -36,9 +37,9 @@ public class DatabaseExceptionHandler extends ResponseEntityExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(exceptionResponse);
     }
-    @ExceptionHandler(IllegalAccessException.class)
+    @ExceptionHandler(DatabaseAlreadyCreatedException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResponseEntity<Object> handleIllegalAccessException(IllegalAccessException ex, WebRequest request) {
+    public ResponseEntity<Object> handleDatabaseAlreadyCreatedException(DatabaseAlreadyCreatedException ex, WebRequest request) {
         ExceptionResponse exceptionResponse = ExceptionResponse
                 .builder()
                 .error(ex.getMessage())

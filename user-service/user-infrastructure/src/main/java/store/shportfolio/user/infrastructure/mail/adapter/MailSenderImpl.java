@@ -8,7 +8,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
 import store.shportfolio.user.application.ports.output.mail.MailSender;
-import store.shportfolio.user.infrastructure.exception.AlreadyMailSendException;
+import store.shportfolio.user.application.exception.AlreadyMailSendException;
 import store.shportfolio.user.infrastructure.mail.CustomCacheManager;
 
 import java.util.Optional;
@@ -29,8 +29,8 @@ public class MailSenderImpl implements MailSender {
     @Override
     public void sendMail(String email) {
         String code = generateRandomCode();
-        log.info("Sending mail to " + email);
-        log.info("Sending code " + code);
+        log.info("Sending mail to {}", email);
+        log.info("Sending code {}", code);
         if (!customCacheManager.save(email, code)) {
             throw new AlreadyMailSendException(String.format("%s already sent", email));
         }

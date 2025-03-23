@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 public class DatabaseCreateCommand {
 
     @NotEmpty(message = "Password must be necessary.")
-    @Size(min = 4, message = "Password must be at least than 4 characters.")
+    @Size(min = 8, message = "Password must be at least than 8 characters.")
     @Pattern(regexp = "^[a-zA-Z0-9]+$", message = "Password must contain only letters and numbers.")
     private String databasePassword;
 

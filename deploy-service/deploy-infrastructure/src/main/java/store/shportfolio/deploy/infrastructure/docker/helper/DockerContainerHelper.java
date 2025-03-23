@@ -5,17 +5,16 @@ import com.github.dockerjava.api.command.CreateContainerResponse;
 import com.github.dockerjava.api.command.InspectContainerResponse;
 import com.github.dockerjava.api.exception.DockerException;
 import com.github.dockerjava.api.model.ExposedPort;
-import com.github.dockerjava.api.model.Frame;
 import com.github.dockerjava.api.model.Ports;
 import com.github.dockerjava.core.command.LogContainerResultCallback;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import store.shportfolio.deploy.application.exception.DockerContainerException;
+import store.shportfolio.deploy.application.exception.DockerContainerRunException;
 import store.shportfolio.deploy.domain.entity.WebApp;
 
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
-import java.nio.charset.StandardCharsets;
 
 @Slf4j
 @Component
@@ -64,7 +63,7 @@ public class DockerContainerHelper {
 
         } catch (DockerException e) {
             log.error("DockerContainerHelper: {}", e.getMessage());
-            throw new DockerContainerException("Error running container");
+            throw new DockerContainerRunException("Error running container");
         }
     }
 
@@ -142,17 +141,20 @@ public class DockerContainerHelper {
     }
 
 
-    public void dropContainerAndRemoveImage(String containerId, String imageId) {
+    public void dropContainer(String containerId) {
         try {
             if (isContainerRunning(containerId)) {
                 dockerClient.stopContainerCmd(containerId).exec();
             }
             dockerClient.removeContainerCmd(containerId).exec();
-            dockerClient.removeImageCmd(imageId).exec();
         } catch (Exception e) {
             log.error("DockerContainerHelper: {}", e.getMessage());
             throw new DockerContainerException("Error fetching container logs");
         }
+    }
+
+    public void removeImage(String imageId) throws DockerException {
+        dockerClient.removeImageCmd(imageId).exec();
     }
 
     public boolean isContainerRunning(String containerId) {

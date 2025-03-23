@@ -13,6 +13,7 @@ public interface WebAppJpaRepository extends JpaRepository<WebAppEntity, String>
 
     Optional<WebAppEntity> findByApplicationName(String applicationName);
 
+    Optional<WebAppEntity> findByServerPort(int port);
 
     @Query("select w from WebAppEntity w where w.userId = ?1")
     List<WebAppEntity> findAllByUserId(String userId);

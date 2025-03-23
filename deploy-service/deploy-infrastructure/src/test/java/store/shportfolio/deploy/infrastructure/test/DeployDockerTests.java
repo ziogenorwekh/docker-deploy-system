@@ -45,7 +45,8 @@ public class DeployDockerTests {
         Assertions.assertEquals(DockerContainerStatus.STARTED, container.getDockerContainerStatus());
         Assertions.assertFalse(container.getDockerContainerId().isBlank());
 
-        dockerConnector.dropContainer(container.getDockerContainerId(), container.getDockerImageId());
+        dockerConnector.dropContainer(container.getDockerContainerId());
+        dockerConnector.removeImage(container.getDockerImageId());
     }
 
 //    @Test
@@ -82,7 +83,8 @@ public class DeployDockerTests {
 
         Thread.sleep(4000L);
 
-        dockerConnector.dropContainer(container.getDockerContainerId(), container.getDockerImageId());
+        dockerConnector.dropContainer(container.getDockerContainerId());
+        dockerConnector.removeImage(container.getDockerImageId());
         Assertions.assertFalse(trackLogs.isEmpty());
         System.out.println("trackLogs = " + trackLogs);
     }

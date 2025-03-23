@@ -62,7 +62,7 @@ public class UserServiceTest {
         UserCreateCommand userCreateCommand = new UserCreateCommand(email, username, password);
         userCreateCommand.setToken("Token");
         String encodedPassword = passwordEncoder.encode(userCreateCommand.getPassword());
-        User user = User.createUser(userId, email, username, encodedPassword);
+        User user = User.createUser(userId, email, username, encodedPassword,false);
 
         Mockito.when(userRepository.findByEmail(email)).thenReturn(Optional.empty());
         Mockito.when(jwtHandler.getEmailFromToken(new Token("Token")))
@@ -76,7 +76,7 @@ public class UserServiceTest {
                 new UserCreateCommand(duplicatedEmail, "duplicated", duplicatedPassword);
         duplicatedUserCreateCommand.setToken("duplicatedToken");
         User duplicatedUser = User.createUser(UUID.randomUUID().toString(),
-                duplicatedEmail, "duplicated", duplicatedPassword);
+                duplicatedEmail, "duplicated", duplicatedPassword,false);
 
         Mockito.when(userRepository.findByEmail(duplicatedEmail))
                 .thenReturn(Optional.of(duplicatedUser));
@@ -108,7 +108,7 @@ public class UserServiceTest {
         String email = "test@test.com";
         String username = "test";
         String encryptedPassword = passwordEncoder.encode("password");
-        User user = User.createUser(userId, email, username, encryptedPassword);
+        User user = User.createUser(userId, email, username, encryptedPassword,false);
 
         Mockito.when(userRepository.findById(userId)).thenReturn(Optional.of(user));
         // when
@@ -134,8 +134,8 @@ public class UserServiceTest {
 
         UserUpdateCommand userUpdateCommand = new UserUpdateCommand(userId, currentPassword, newPassword);
 
-        User user = User.createUser(userId, email, username, encryptedPassword);
-        User updatedUser = User.createUser(userId, email, username, encryptedNewPassword);
+        User user = User.createUser(userId, email, username, encryptedPassword,false);
+        User updatedUser = User.createUser(userId, email, username, encryptedNewPassword,false);
 
         Mockito.when(userRepository.findById(userId))
                 .thenReturn(Optional.of(user));
@@ -165,7 +165,7 @@ public class UserServiceTest {
 
         UserUpdateCommand userUpdateCommand = new UserUpdateCommand(userId, currentPassword, newPassword);
 
-        User user = User.createUser(userId, email, username, encryptedPassword);
+        User user = User.createUser(userId, email, username, encryptedPassword,false);
 
         Mockito.when(userRepository.findById(userId)).thenReturn(Optional.of(user));
 
@@ -189,7 +189,7 @@ public class UserServiceTest {
 
         UserDeleteCommand userDeleteCommand = new UserDeleteCommand(userId);
 
-        User user = User.createUser(userId, email, username, encryptedPassword);
+        User user = User.createUser(userId, email, username, encryptedPassword,false);
         Mockito.when(userRepository.findById(userId)).thenReturn(Optional.of(user));
 
         // when

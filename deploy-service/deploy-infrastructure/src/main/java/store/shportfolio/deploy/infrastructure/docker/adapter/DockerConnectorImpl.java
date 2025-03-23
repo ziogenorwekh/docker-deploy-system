@@ -9,7 +9,6 @@ import store.shportfolio.deploy.application.vo.DockerCreated;
 import store.shportfolio.deploy.application.vo.ResourceUsage;
 import store.shportfolio.deploy.domain.entity.WebApp;
 import store.shportfolio.deploy.domain.valueobject.DockerContainerStatus;
-import store.shportfolio.deploy.application.exception.DockerContainerCreatingFailedException;
 import store.shportfolio.deploy.infrastructure.docker.helper.DockerContainerHelper;
 import store.shportfolio.deploy.infrastructure.docker.helper.DockerImageCreateHelper;
 import store.shportfolio.deploy.infrastructure.docker.helper.DockerResourceHelper;
@@ -69,14 +68,15 @@ public class DockerConnectorImpl implements DockerConnector {
                         .error("Container not running. Check Container logs.")
                         .build();
             }
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             log.error(e.getMessage(), e);
             return DockerCreated.builder()
                     .dockerContainerStatus(DockerContainerStatus.ERROR)
                     .dockerContainerId(dockerId)
                     .endPointUrl("")
                     .dockerImageId(imageId)
-                    .error("Container not running. Check Container logs.")
+                    .error(e.getMessage())
                     .build();
         } finally {
             dockerfileCreateHelper.deleteLocalDockerfile(dockerfile);
@@ -104,7 +104,12 @@ public class DockerConnectorImpl implements DockerConnector {
     }
 
     @Override
-    public void dropContainer(String dockerContainerId, String imageId) {
-        dockerContainerHelper.dropContainerAndRemoveImage(dockerContainerId, imageId);
+    public void dropContainer(String dockerContainerId) {
+        dockerContainerHelper.dropContainer(dockerContainerId);
+    }
+
+    @Override
+    public void removeImage(String imageId) {
+        dockerContainerHelper.removeImage(imageId);
     }
 }
