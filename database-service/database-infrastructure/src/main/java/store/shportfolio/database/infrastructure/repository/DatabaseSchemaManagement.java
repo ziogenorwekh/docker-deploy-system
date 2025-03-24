@@ -23,7 +23,7 @@ public class DatabaseSchemaManagement {
             jdbcTemplate.execute("CREATE DATABASE " + databaseName + ";");
             jdbcTemplate.execute("CREATE USER " + "'" + databaseUsername + "'"
                     + "@" + "'" + "%" + "'" + "IDENTIFIED BY" + "'" + databasePassword + "';");
-            jdbcTemplate.execute("GRANT SELECT, CREATE, INSERT, UPDATE, DELETE, DROP ON " +
+            jdbcTemplate.execute("GRANT ALL ON " +
                     databaseName + ".* TO " + "'" + databaseUsername + "'" + "@'%'");
 
             log.info("Database and user created successfully: {}", databaseName);

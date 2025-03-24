@@ -17,13 +17,13 @@ import java.time.LocalDateTime;
 public class WebAppEntity {
 
     @Id
-    @Column(name = "APPLICATION_ID",unique = true, nullable = false)
+    @Column(name = "APPLICATION_ID", unique = true, nullable = false)
     private String applicationId;
 
-    @Column(name = "USER_ID",nullable = false)
+    @Column(name = "USER_ID", nullable = false, unique = true)
     private String userId;
 
-    @Column(name = "APPLICATION_NAME",nullable = false,unique = true)
+    @Column(name = "APPLICATION_NAME", nullable = false, unique = true)
     private String applicationName;
 
     @Column(nullable = false, name = "SERVER_PORT")

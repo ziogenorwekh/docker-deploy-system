@@ -99,10 +99,6 @@ public class DockerContainerHelper {
 
 
     public String trackLogContainer(String containerId) {
-//        if (!isContainerRunning(containerId)) {
-//            throw new DockerContainerException("Container is not running");
-//        }
-
         try (OutputStream outputStream = new ByteArrayOutputStream()) {
             // 로그를 받아서 처리하는 callback 정의
             LogContainerResultCallback callback = new LogContainerResultCallback() {

@@ -11,25 +11,25 @@ import java.time.LocalDateTime;
 public class UserEntity {
 
     @Id
-    @Column(nullable = false, unique = true)
+    @Column(name = "USER_ID", nullable = false, unique = true)
     private String userId;
 
-    @Column(nullable = false, name = "username", unique = true)
+    @Column(nullable = false, name = "USERNAME", unique = true)
     private String username;
 
-    @Column(name = "password")
+    @Column(name = "PASSWORD")
     private String password;
 
-    @Column(nullable = false, name = "email", unique = true, updatable = false)
+    @Column(nullable = false, name = "EMAIL", unique = true, updatable = false)
     private String email;
 
-    @Column(nullable = false)
+    @Column(name = "OAUTH",nullable = false)
     private Boolean oauth;
 
-    @Column(name = "createdAt")
+    @Column(name = "CREATED_AT")
     private LocalDateTime createdAt;
 
-    @Column(name = "accountStatus", nullable = false)
+    @Column(name = "ACCOUT_STATUS", nullable = false)
     @Enumerated(EnumType.STRING)
     private AccountStatus accountStatus;
 

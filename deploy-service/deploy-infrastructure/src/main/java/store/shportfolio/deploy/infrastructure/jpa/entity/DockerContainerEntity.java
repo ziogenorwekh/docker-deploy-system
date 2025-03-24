@@ -19,13 +19,13 @@ public class DockerContainerEntity {
     private String applicationId;
 
 
-    @Column(name = "DOCKERCONTAINER_ID")
+    @Column(name = "DOCKERCONTAINER_ID", unique = true)
     private String dockerContainerId;
 
     @Column(name = "IMAGE_ID")
     private String imageId;
 
-    @Column(name = "ENDPOINT_URL", nullable = false)
+    @Column(name = "ENDPOINT_URL")
     private String endPointUrl;
 
     @Enumerated(EnumType.STRING)

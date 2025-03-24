@@ -24,7 +24,7 @@ public class DockerConnectorImpl implements DockerConnector {
     private final DockerImageCreateHelper dockerImageCreateHelper;
     private final DockerContainerHelper dockerContainerHelper;
     private final DockerResourceHelper dockerResourceHelper;
-    @Value("docker.server.endpoint")
+    @Value("${user.docker.server.endpoint}")
     private String endpointUrl;
 
     @Autowired

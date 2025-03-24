@@ -209,7 +209,7 @@ public class DeployApplicationServiceImpl implements DeployApplicationService {
 
     private WebApp getWebApp(UserGlobal userGlobal, UUID applicationId) {
         WebApp webApp = webAppHandler.getWebApp(applicationId);
-        log.info("webApp id is {}", webApp.getId());
+        log.info("webApp id is {}", webApp.getId().getValue());
         if (!webApp.getUserId().getValue().equals(userGlobal.getUserId())) {
             log.error("user global id is different");
             throw new WebAppUserNotMatchException(String.format("Web app %s does not match user %s",

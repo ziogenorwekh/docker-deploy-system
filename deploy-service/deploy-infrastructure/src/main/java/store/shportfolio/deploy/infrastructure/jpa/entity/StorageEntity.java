@@ -18,7 +18,7 @@ public class StorageEntity {
     @Column(name = "APPLICATION_ID",unique = true, nullable = false)
     private String applicationId;
 
-    @Column(name = "STORAGE_URL")
+    @Column(name = "STORAGE_URL",unique = true)
     private String storageUrl;
 
     @Column(name = "STORAGE_NAME")
