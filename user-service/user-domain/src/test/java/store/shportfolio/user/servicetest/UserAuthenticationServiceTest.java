@@ -116,7 +116,7 @@ public class UserAuthenticationServiceTest {
         String username = "test";
         String password = "123456";
         User registeredUser = new User(new UserId(userId), new Email(email), new Username(username),
-                new Password(password), AccountStatus.ENABLED, LocalDateTime.now());
+                new Password(password), AccountStatus.ENABLED, LocalDateTime.now(), false);
 
 
         Mockito.lenient().when(userRepository.findByEmail(email))
@@ -154,7 +154,7 @@ public class UserAuthenticationServiceTest {
         String password = "123456";
 
         User registeredUser = new User(new UserId(userId), new Email(email), new Username(username),
-                new Password(password), AccountStatus.ENABLED, LocalDateTime.now());
+                new Password(password), AccountStatus.ENABLED, LocalDateTime.now(),false);
 
         Mockito.when(userRepository.findById(userId)).thenReturn(Optional.of(registeredUser));
 
