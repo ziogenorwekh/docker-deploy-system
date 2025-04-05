@@ -109,3 +109,5 @@ replay_pid*
 *.pem
 
 # End of https://www.toptal.com/developers/gitignore/api/java
+
+artifacts/
