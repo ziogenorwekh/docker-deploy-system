@@ -21,7 +21,6 @@ import store.shportfolio.gateway.application.config.AuthConfigData;
 import java.util.List;
 
 @Slf4j
-
 @Component
 public class AuthenticationFilter extends AbstractGatewayFilterFactory<AuthConfigData> {
 

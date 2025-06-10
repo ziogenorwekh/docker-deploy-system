@@ -107,7 +107,8 @@ hs_err_pid*
 replay_pid*
 
 *.pem
-
+*.pub
+*Dockerfile
 # End of https://www.toptal.com/developers/gitignore/api/java
-
+movetoec2/
 artifacts/

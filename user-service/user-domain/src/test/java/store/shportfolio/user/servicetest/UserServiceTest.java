@@ -121,7 +121,7 @@ public class UserServiceTest {
     }
 
     @Test
-    @DisplayName("user normal update test")
+    @DisplayName("user normal updating test")
     public void updateUserPassword() {
         // given
         String username = "test";
@@ -151,7 +151,7 @@ public class UserServiceTest {
     }
 
     @Test
-    @DisplayName("update password but, not match current password")
+    @DisplayName("updating password but, not match current password")
     public void updateWrongCurrentPassword() {
 
         // given

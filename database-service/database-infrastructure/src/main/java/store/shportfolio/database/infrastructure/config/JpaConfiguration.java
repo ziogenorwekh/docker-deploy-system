@@ -59,7 +59,7 @@ public class JpaConfiguration {
         properties.put("hibernate.show_sql", jpaDatabaseConfigData.getShowSql());
         return builder
                 .dataSource(dataSource)
-                .packages(jpaDatabaseConfigData.getPackageScanArea()) // Update with your domain package
+                .packages(jpaDatabaseConfigData.getPackageScanArea()) // Updating with your domain package
                 .persistenceUnit(jpaDatabaseConfigData.getPersistenceUnit())
                 .properties(properties)
                 .build();

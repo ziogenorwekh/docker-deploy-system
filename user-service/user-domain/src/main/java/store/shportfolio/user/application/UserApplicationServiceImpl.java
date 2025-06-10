@@ -80,7 +80,7 @@ public class UserApplicationServiceImpl implements UserApplicationService {
                 userUpdateCommand.getCurrentPassword(), encryptedNewPassword);
 
         userRepository.save(updatedUser);
-        log.info("successful update user -> {}",updatedUser.getEmail().getValue());
+        log.info("successful updating user -> {}",updatedUser.getEmail().getValue());
     }
 
     @Override
