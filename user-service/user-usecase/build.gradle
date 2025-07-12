@@ -1,0 +1,25 @@
+plugins {
+    id 'java'
+}
+
+group = 'store.shportfolio'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation project(':common:common-domain')
+    implementation project(':user-service:user-domain')
+    testImplementation platform("org.junit:junit-bom:${junitBomVersion}")
+
+    implementation "org.springframework.boot:spring-boot-starter-validation:${springBootVersion}"
+    implementation "org.springframework:spring-tx:${springVersion}"
+    testImplementation "org.springframework.boot:spring-boot-starter-test:${springBootVersion}"
+    testImplementation "org.junit.jupiter:junit-jupiter"
+}
+
+test {
+    useJUnitPlatform()
+}

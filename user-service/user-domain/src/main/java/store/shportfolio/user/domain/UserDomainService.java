@@ -11,7 +11,7 @@ public interface UserDomainService {
     User createUser(String userId, String email, String newUsername, String newPassword);
 
     User createGoogleUser(String googleId,String email,String username);
-    User updateUser(User user, String currentPassword, String newPassword);
+    User updateUser(User user, String newPassword);
     void disableUser(User user);
     UserDeleteEvent deleteUser(User user);
 

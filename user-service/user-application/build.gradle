@@ -11,6 +11,7 @@ repositories {
 
 dependencies {
     implementation project(':user-service:user-domain')
+    implementation project(':user-service:user-usecase')
     implementation project(':common:common-domain')
 
     testImplementation platform("org.junit:junit-bom:${junitBomVersion}")
@@ -19,13 +20,10 @@ dependencies {
     implementation "org.springframework.boot:spring-boot-starter-validation:${springBootVersion}"
     implementation "org.springframework.security:spring-security-core:${springSecurityCoreVersion}"
     implementation "org.springframework.boot:spring-boot-starter-web:${springBootVersion}"
-
     implementation("com.google.api-client:google-api-client:${googleApiClientVersion}") {
         exclude group: 'com.google.guava', module: 'guava'
     }
-
     implementation "io.github.resilience4j:resilience4j-circuitbreaker:${resilience4jCircuitbreakerVersion}"
-
     implementation "org.springframework.boot:spring-boot-starter-aop"
     implementation "org.springframework.cloud:spring-cloud-starter-openfeign:${springCloudEurekaVersion}"
 

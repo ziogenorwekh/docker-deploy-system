@@ -74,13 +74,9 @@ public class User extends AggregateRoot<UserId> {
     }
 
     /**
-     * @param currentPassword is raw password
      * @param newPassword     is encrypted password
      */
-    public void updatePassword(String currentPassword, String newPassword) {
-        if (!password.matches(currentPassword)) {
-            throw new DomainException("Password does not match");
-        }
+    public void updatePassword(String newPassword) {
         Password password = new Password(newPassword);
         if (!password.isEncrypted()) {
             throw new DomainException("Password must be encrypted");

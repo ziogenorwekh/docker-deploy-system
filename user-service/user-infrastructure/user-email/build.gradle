@@ -1,0 +1,27 @@
+plugins {
+    id 'java'
+}
+
+group = 'store.shportfolio'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation platform('org.junit:junit-bom:5.10.0')
+    implementation project(':user-service:user-usecase')
+
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testImplementation platform("org.junit:junit-bom:${junitBomVersion}")
+    implementation "org.springframework.boot:spring-boot-starter-mail:${springBootVersion}"
+    implementation "org.springframework.boot:spring-boot-starter-cache:${springBootVersion}"
+    testImplementation "org.springframework.boot:spring-boot-starter-test:${springBootVersion}"
+    implementation "com.github.ben-manes.caffeine:caffeine:${caffeineVersion}"
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+}
+
+test {
+    useJUnitPlatform()
+}

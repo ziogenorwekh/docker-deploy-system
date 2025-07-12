@@ -21,8 +21,11 @@ dependencies {
     testImplementation platform("org.junit:junit-bom:${junitBomVersion}")
 
     implementation project(':user-service:user-domain')
-    implementation project(':user-service:user-infrastructure')
+    implementation project(':user-service:user-infrastructure:user-database')
+    implementation project(':user-service:user-infrastructure:user-email')
+    implementation project(':user-service:user-infrastructure:user-security')
     implementation project(':user-service:user-application')
+    implementation project(':user-service:user-usecase')
     implementation project(':common:common-domain')
 
     implementation "org.springframework.cloud:spring-cloud-starter-netflix-eureka-client:${springCloudEurekaVersion}"

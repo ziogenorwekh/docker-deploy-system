@@ -36,3 +36,8 @@ findProject(':deploy-service:deploy-container')?.name = 'deploy-container'
 include 'common:common-domain'
 findProject(':common:common-domain')?.name = 'common-domain'
 
+
+include 'user-service:user-usecase'
+include 'user-service:user-infrastructure:user-database'
+include 'user-service:user-infrastructure:user-email'
+include 'user-service:user-infrastructure:user-security'

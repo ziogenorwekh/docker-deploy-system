@@ -1,6 +1,5 @@
 package store.shportfolio.user.domain.valueobject;
 
-import org.springframework.security.crypto.bcrypt.BCrypt;
 
 import java.util.Objects;
 
@@ -14,10 +13,6 @@ public class Password {
 
     public String getValue() {
         return value;
-    }
-
-    public boolean matches(String rawPassword) {
-        return BCrypt.checkpw(rawPassword, this.value);
     }
 
     public boolean isEncrypted() {

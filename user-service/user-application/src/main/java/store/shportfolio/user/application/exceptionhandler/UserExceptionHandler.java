@@ -15,7 +15,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
-import store.shportfolio.user.application.exception.*;
+import store.shportfolio.user.application.exception.UserNotOwnerException;
+import store.shportfolio.user.usecase.exception.*;
 import store.shportfolio.user.domain.exception.DomainException;
 
 import java.time.LocalDateTime;
@@ -86,6 +87,29 @@ public class UserExceptionHandler extends ResponseEntityExceptionHandler {
                 .timestamp(LocalDateTime.now())
                 .build();
         return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(exceptionResponse);
+    }
+
+    @ExceptionHandler(UserNotOwnerException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ResponseEntity<Object> handleUserNotOwnerException(UserNotOwnerException ex) {
+        ExceptionResponse exceptionResponse = ExceptionResponse
+                .builder()
+                .error(ex.getMessage())
+                .timestamp(LocalDateTime.now())
+                .build();
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(exceptionResponse);
+    }
+
+
+    @ExceptionHandler(CustomBadCredentialsException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ResponseEntity<Object> handleCustomBadCredentialsException(CustomBadCredentialsException ex) {
+        ExceptionResponse exceptionResponse = ExceptionResponse
+                .builder()
+                .error(ex.getMessage())
+                .timestamp(LocalDateTime.now())
+                .build();
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(exceptionResponse);
     }
 
 
