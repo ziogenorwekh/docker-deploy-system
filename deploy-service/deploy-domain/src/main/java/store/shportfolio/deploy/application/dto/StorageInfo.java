@@ -1,4 +1,4 @@
-package store.shportfolio.deploy.application.vo;
+package store.shportfolio.deploy.application.dto;
 
 import lombok.Builder;
 import lombok.Getter;

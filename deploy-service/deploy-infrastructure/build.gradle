@@ -12,28 +12,16 @@ repositories {
 dependencies {
     implementation project(':common:common-domain')
     implementation project(':deploy-service:deploy-domain')
-
-    implementation group: 'com.mysql', name: 'mysql-connector-j', version: '8.3.0'
-
-// https://mvnrepository.com/artifact/com.github.docker-java/docker-java
-    implementation group: 'com.github.docker-java', name: 'docker-java', version: '3.4.1'
-
-    // https://mvnrepository.com/artifact/com.github.docker-java/docker-java-transport-httpclient5
-    implementation group: 'com.github.docker-java', name: 'docker-java-transport-httpclient5', version: '3.4.0'
-
-    testImplementation group: 'com.h2database', name: 'h2', version: '2.3.232'
-// https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-starter-aws
-    implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-aws', version: '2.2.6.RELEASE'
-
-    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa', version: '3.4.0'
-
-    // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-test
-    testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: '3.4.0'
-
-    testImplementation platform('org.junit:junit-bom:5.10.0')
-    testImplementation 'org.junit.jupiter:junit-jupiter'
+    implementation "com.mysql:mysql-connector-j:${mysqlConnectorVersion}"
+    implementation "com.github.docker-java:docker-java:${dockerJavaVersion}"
+    implementation "com.github.docker-java:docker-java-transport-httpclient5:${dockerJavaHttpclientVersion}"
+    testImplementation "com.h2database:h2:${h2Version}"
+    implementation "org.springframework.cloud:spring-cloud-starter-aws:${springCloudAwsVersion}"
+    implementation "org.springframework.boot:spring-boot-starter-data-jpa:${springBootVersion}"
+    testImplementation "org.springframework.boot:spring-boot-starter-test:${springBootVersion}"
+    testImplementation platform("org.junit:junit-bom:${junitBomVersion}")
+    testImplementation "org.junit.jupiter:junit-jupiter"
 }
-
 test {
     useJUnitPlatform()
 }

@@ -2,7 +2,6 @@ package store.shportfolio.deploy.application;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
@@ -13,12 +12,11 @@ import store.shportfolio.deploy.application.handler.DockerContainerHandler;
 import store.shportfolio.deploy.application.handler.StorageHandler;
 import store.shportfolio.deploy.application.handler.WebAppHandler;
 import store.shportfolio.deploy.application.mapper.DeployDataMapper;
-import store.shportfolio.deploy.application.vo.ResourceUsage;
+import store.shportfolio.deploy.application.dto.ResourceUsage;
 import store.shportfolio.deploy.domain.entity.DockerContainer;
 import store.shportfolio.deploy.domain.entity.Storage;
 import store.shportfolio.deploy.domain.entity.WebApp;
 import store.shportfolio.deploy.domain.valueobject.ApplicationStatus;
-import store.shportfolio.deploy.domain.valueobject.DockerContainerStatus;
 import store.shportfolio.deploy.domain.valueobject.StorageUrl;
 
 import java.io.IOException;

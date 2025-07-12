@@ -1,7 +1,7 @@
 package store.shportfolio.deploy.application.ports.output.docker;
 
-import store.shportfolio.deploy.application.vo.DockerCreated;
-import store.shportfolio.deploy.application.vo.ResourceUsage;
+import store.shportfolio.deploy.application.dto.DockerCreated;
+import store.shportfolio.deploy.application.dto.ResourceUsage;
 import store.shportfolio.deploy.domain.entity.WebApp;
 
 public interface DockerConnector {

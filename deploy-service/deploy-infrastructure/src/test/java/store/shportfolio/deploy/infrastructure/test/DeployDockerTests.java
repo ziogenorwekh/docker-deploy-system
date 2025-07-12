@@ -2,21 +2,14 @@ package store.shportfolio.deploy.infrastructure.test;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
-import store.shportfolio.deploy.application.vo.DockerCreated;
-import store.shportfolio.deploy.application.vo.ResourceUsage;
+import store.shportfolio.deploy.application.dto.DockerCreated;
+import store.shportfolio.deploy.application.dto.ResourceUsage;
 import store.shportfolio.deploy.domain.entity.WebApp;
 import store.shportfolio.deploy.domain.valueobject.DockerContainerStatus;
 import store.shportfolio.deploy.infrastructure.docker.DockerConfig;
 import store.shportfolio.deploy.infrastructure.docker.adapter.DockerConnectorImpl;
-import store.shportfolio.deploy.infrastructure.docker.helper.DockerContainerHelper;
-import store.shportfolio.deploy.infrastructure.docker.helper.DockerImageCreateHelper;
-import store.shportfolio.deploy.infrastructure.docker.helper.DockerResourceHelper;
-import store.shportfolio.deploy.infrastructure.docker.helper.DockerfileCreateHelper;
 
 @ActiveProfiles("docker")
 @ContextConfiguration(classes = {DockerConfig.class})

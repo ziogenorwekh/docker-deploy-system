@@ -1,10 +1,8 @@
 package store.shportfolio.deploy.application.ports.output.s3;
 
-import org.springframework.web.multipart.MultipartFile;
-import store.shportfolio.deploy.application.vo.StorageInfo;
+import store.shportfolio.deploy.application.dto.StorageInfo;
 
 import java.io.File;
-import java.io.IOException;
 
 public interface S3Bucket {
 

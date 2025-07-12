@@ -5,11 +5,10 @@ import com.github.dockerjava.api.async.ResultCallback;
 import com.github.dockerjava.api.command.InspectContainerResponse;
 import com.github.dockerjava.api.command.StatsCmd;
 import com.github.dockerjava.api.model.Statistics;
-import com.github.dockerjava.core.InvocationBuilder;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Component;
 import store.shportfolio.deploy.application.exception.DockerContainerException;
-import store.shportfolio.deploy.application.vo.ResourceUsage;
+import store.shportfolio.deploy.application.dto.ResourceUsage;
 
 import java.io.Closeable;
 import java.io.IOException;

@@ -1,10 +1,8 @@
-package store.shportfolio.deploy.application.vo;
+package store.shportfolio.deploy.application.dto;
 
 import lombok.Builder;
 import lombok.Getter;
 import store.shportfolio.deploy.domain.valueobject.DockerContainerStatus;
-
-import java.util.UUID;
 
 @Getter
 @Builder

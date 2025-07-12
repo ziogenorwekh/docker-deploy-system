@@ -1,9 +1,10 @@
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '3.0.9'
-    id 'io.spring.dependency-management' version '1.1.6'
-    id 'com.google.cloud.tools.jib' version '3.4.0'
+    id 'org.springframework.boot' version "${springBootPluginVersion}"
+    id 'io.spring.dependency-management' version "${springDependencyManagementVersion}"
+    id 'com.google.cloud.tools.jib' version "${jibPluginVersion}"
 }
+
 
 group = 'store.shportfolio'
 version = '1.0-SNAPSHOT'
@@ -13,14 +14,14 @@ repositories {
 }
 
 dependencies {
-    testImplementation platform('org.junit:junit-bom:5.10.0')
+    testImplementation platform("org.junit:junit-bom:${junitBomVersion}")
 
-    implementation 'org.springframework.cloud:spring-cloud-starter'
-    implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-eureka-server', version: '4.0.0'
+    implementation "org.springframework.cloud:spring-cloud-starter"
+    implementation "org.springframework.cloud:spring-cloud-starter-netflix-eureka-server:${springCloudStarterVersion}"
+
+    implementation "com.google.code.gson:gson:${gsonVersion}"
 
     testImplementation 'org.junit.jupiter:junit-jupiter'
-    implementation group: 'com.google.code.gson', name: 'gson', version: '2.10.1'
-
 }
 
 test {

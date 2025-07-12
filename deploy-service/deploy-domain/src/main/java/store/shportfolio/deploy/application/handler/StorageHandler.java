@@ -7,7 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 import store.shportfolio.deploy.application.exception.StorageNotFoundException;
 import store.shportfolio.deploy.application.ports.output.repository.StorageRepository;
 import store.shportfolio.deploy.application.ports.output.s3.S3Bucket;
-import store.shportfolio.deploy.application.vo.StorageInfo;
+import store.shportfolio.deploy.application.dto.StorageInfo;
 import store.shportfolio.deploy.domain.DeployDomainService;
 import store.shportfolio.deploy.domain.entity.Storage;
 import store.shportfolio.deploy.domain.entity.WebApp;

@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.ToString;
 import store.shportfolio.common.domain.entitiy.BaseEntity;
 import store.shportfolio.common.domain.valueobject.ApplicationId;
-import store.shportfolio.deploy.application.vo.DockerCreated;
+import store.shportfolio.deploy.application.dto.DockerCreated;
 import store.shportfolio.deploy.domain.valueobject.DockerContainerStatus;
 import store.shportfolio.deploy.domain.valueobject.DockerContainerId;
 

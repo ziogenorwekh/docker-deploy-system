@@ -1,31 +1,29 @@
-plugins {
-    id 'java'
-}
+    plugins {
+        id 'java'
+    }
 
-group = 'store.shportfolio'
-version = '1.0-SNAPSHOT'
+    group = 'store.shportfolio'
+    version = '1.0-SNAPSHOT'
 
-repositories {
-    mavenCentral()
-}
+    repositories {
+        mavenCentral()
+    }
 
-dependencies {
+    dependencies {
+        implementation project(':database-service:database-domain')
+        implementation project(':common:common-domain')
 
-    implementation project(':database-service:database-domain')
-    implementation project(':common:common-domain')
+        implementation "org.springframework.boot:spring-boot-starter-data-jpa:${springBootVersion}"
+        implementation "org.springframework.boot:spring-boot-starter-jdbc:${springBootVersion}"
 
-    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa', version: '3.4.0'
-    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc', version: '3.4.0'
+        implementation "com.mysql:mysql-connector-j:${mysqlConnectorVersion}"
 
-    implementation group: 'com.mysql', name: 'mysql-connector-j', version: '8.3.0'
-    // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-test
-    testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: '3.4.0'
+        testImplementation "org.springframework.boot:spring-boot-starter-test:${springBootVersion}"
 
+        testImplementation platform("org.junit:junit-bom:${junitBomVersion}")
+        testImplementation "org.junit.jupiter:junit-jupiter"
+    }
 
-    testImplementation platform('org.junit:junit-bom:5.10.0')
-    testImplementation 'org.junit.jupiter:junit-jupiter'
-}
-
-test {
-    useJUnitPlatform()
-}
+    test {
+        useJUnitPlatform()
+    }

@@ -9,24 +9,19 @@ repositories {
     mavenCentral()
 }
 
+
 dependencies {
     implementation project(':common:common-domain')
-    testImplementation platform('org.junit:junit-bom:5.10.0')
+    testImplementation platform("org.junit:junit-bom:${junitBomVersion}")
 
-// https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-validation
-    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation', version: '3.4.0'
-    implementation group: 'org.springframework', name: 'spring-tx', version: '6.2.0'
+    implementation "org.springframework.boot:spring-boot-starter-validation:${springBootVersion}"
+    implementation "org.springframework:spring-tx:${springVersion}"
+    implementation "org.springframework.boot:spring-boot-starter-security:${springBootVersion}"
+    implementation "com.auth0:java-jwt:${javaJwtVersion}"
 
-    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-security', version: '3.4.0'
-
-    // https://mvnrepository.com/artifact/com.auth0/java-jwt
-    implementation group: 'com.auth0', name: 'java-jwt', version: '4.4.0'
-
-// https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-test
-    testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: '3.4.0'
-
-    testImplementation 'org.springframework.security:spring-security-test:5.7.9'
-    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testImplementation "org.springframework.boot:spring-boot-starter-test:${springBootVersion}"
+    testImplementation "org.springframework.security:spring-security-test:${springSecurityTestVersion}"
+    testImplementation "org.junit.jupiter:junit-jupiter"
 }
 
 test {

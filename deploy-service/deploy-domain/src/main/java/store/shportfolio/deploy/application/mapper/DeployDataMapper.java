@@ -4,7 +4,7 @@ import org.springframework.stereotype.Component;
 import store.shportfolio.deploy.application.command.WebAppContainerResponse;
 import store.shportfolio.deploy.application.command.WebAppCreateResponse;
 import store.shportfolio.deploy.application.command.WebAppTrackResponse;
-import store.shportfolio.deploy.application.vo.ResourceUsage;
+import store.shportfolio.deploy.application.dto.ResourceUsage;
 import store.shportfolio.deploy.domain.entity.WebApp;
 import store.shportfolio.deploy.domain.valueobject.DockerContainerStatus;
 

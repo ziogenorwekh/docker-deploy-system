@@ -2,11 +2,10 @@ package store.shportfolio.deploy.infrastructure.test;
 
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
-import store.shportfolio.deploy.application.vo.StorageInfo;
+import store.shportfolio.deploy.application.dto.StorageInfo;
 import store.shportfolio.deploy.infrastructure.s3.adapter.S3BucketImpl;
 import store.shportfolio.deploy.infrastructure.s3.config.S3Config;
 
