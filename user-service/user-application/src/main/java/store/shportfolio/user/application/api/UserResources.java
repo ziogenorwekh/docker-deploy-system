@@ -46,7 +46,7 @@ public class UserResources {
 
     @RequestMapping(path = "/users/{userId}", method = RequestMethod.GET, produces = "application/json")
     public ResponseEntity<UserTrackResponse> retrieveUser(@PathVariable String userId,
-                                                          @RequestHeader(name = "X-User-UserId") String userIdFromToken) {
+                                                          @RequestHeader(name = "X-Authenticated-UserId") String userIdFromToken) {
         validateEqualsRequesterAndBearer(userId, userIdFromToken);
         UserTrackResponse userTrackResponse = userUseCase
                 .trackQueryUser(UserTrackQuery.builder().userId(userIdFromToken).build());
@@ -56,7 +56,7 @@ public class UserResources {
     @RequestMapping(path = "/users/{userId}", method = RequestMethod.PUT)
     public ResponseEntity<Void> updateUser(@PathVariable String userId,
                                            @RequestBody UserUpdateCommand userUpdateCommand,
-                                           @RequestHeader(name = "X-User-UserId") String userIdFromToken) {
+                                           @RequestHeader(name = "X-Authenticated-UserId") String userIdFromToken) {
         validateEqualsRequesterAndBearer(userId, userIdFromToken);
         userUseCase.updateUser(UserUpdateCommand.builder().userId(userIdFromToken)
                 .newPassword(userUpdateCommand.getNewPassword())
@@ -67,7 +67,7 @@ public class UserResources {
     @CircuitBreaker(name = "user-service", fallbackMethod = "fallbackDeleteUser")
     @RequestMapping(path = "/users/{userId}", method = RequestMethod.DELETE)
     public ResponseEntity<Void> deleteUser(@PathVariable String userId,
-                                           @RequestHeader(name = "X-User-UserId") String userIdFromToken) {
+                                           @RequestHeader(name = "X-Authenticated-UserId") String userIdFromToken) {
         validateEqualsRequesterAndBearer(userId, userIdFromToken);
         try {
             databaseServiceClient.deleteUserDatabase(userIdFromToken);

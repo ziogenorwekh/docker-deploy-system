@@ -12,7 +12,7 @@ import javax.sql.DataSource;
 @Configuration
 public class JdbcConfiguration {
 
-    private JdbcDatabaseConfigData jdbcDatabaseConfigData;
+    private final JdbcDatabaseConfigData jdbcDatabaseConfigData;
 
     public JdbcConfiguration(JdbcDatabaseConfigData jdbcDatabaseConfigData) {
         this.jdbcDatabaseConfigData = jdbcDatabaseConfigData;
@@ -20,13 +20,12 @@ public class JdbcConfiguration {
 
     @Bean(name = "JdbcDataSource")
     public DataSource dataSource() {
-        DataSource dataSource = DataSourceBuilder.create()
+        return DataSourceBuilder.create()
                 .password(jdbcDatabaseConfigData.getPassword())
                 .url(jdbcDatabaseConfigData.getDatabaseUrl())
                 .username(jdbcDatabaseConfigData.getUsername())
                 .driverClassName(jdbcDatabaseConfigData.getDriverClassName())
                 .build();
-        return dataSource;
     }
 
     @Bean

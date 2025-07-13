@@ -13,10 +13,11 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
-import store.shportfolio.database.application.exception.DatabaseAlreadyCreatedException;
-import store.shportfolio.database.application.exception.DatabaseNotFoundException;
-import store.shportfolio.database.application.exception.UserNotfoundException;
 import store.shportfolio.database.domain.exception.DomainException;
+import store.shportfolio.database.usecase.exception.DatabaseAlreadyCreatedException;
+import store.shportfolio.database.usecase.exception.DatabaseNotFoundException;
+import store.shportfolio.database.usecase.exception.DatabaseSchemaException;
+import store.shportfolio.database.usecase.exception.UserNotfoundException;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -105,5 +106,16 @@ public class DatabaseExceptionHandler extends ResponseEntityExceptionHandler {
                 .build();
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exceptionResponse);
+    }
+    @ExceptionHandler(DatabaseSchemaException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ResponseEntity<ExceptionResponse> handleDatabaseSchemaException(DatabaseSchemaException ex) {
+        ExceptionResponse exceptionResponse = ExceptionResponse
+                .builder()
+                .error(ex.getMessage())
+                .timestamp(LocalDateTime.now())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(exceptionResponse);
     }
 }

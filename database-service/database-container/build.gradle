@@ -17,6 +17,7 @@ dependencies {
 
 
     implementation project(':database-service:database-domain')
+    implementation project(':database-service:database-usecase')
     implementation project(':database-service:database-application')
     implementation project(':database-service:database-infrastructure')
     implementation project(':common:common-domain')

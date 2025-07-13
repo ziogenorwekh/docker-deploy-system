@@ -11,6 +11,7 @@ repositories {
 
 dependencies {
     implementation project(':database-service:database-domain')
+    implementation project(':database-service:database-usecase')
     implementation project(':common:common-domain')
     implementation "org.springframework.boot:spring-boot-starter-validation:${springBootVersion}"
     implementation "org.springframework.boot:spring-boot-starter-web:${springBootVersion}"

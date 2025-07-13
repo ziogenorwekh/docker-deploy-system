@@ -1,6 +1,5 @@
 package store.shportfolio.common.domain.valueobject;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -9,6 +8,7 @@ import java.util.Objects;
 @Data
 @NoArgsConstructor
 public class UserGlobal {
+
 
     private String userId;
 

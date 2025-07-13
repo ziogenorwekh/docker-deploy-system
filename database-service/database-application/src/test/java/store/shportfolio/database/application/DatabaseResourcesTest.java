@@ -9,7 +9,6 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -17,11 +16,12 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import store.shportfolio.common.domain.valueobject.UserGlobal;
 import store.shportfolio.database.application.api.DatabaseResources;
-import store.shportfolio.database.application.command.DatabaseCreateCommand;
-import store.shportfolio.database.application.command.DatabaseCreateResponse;
-import store.shportfolio.database.application.command.DatabaseTrackQuery;
-import store.shportfolio.database.application.command.DatabaseTrackResponse;
 import store.shportfolio.database.application.openfeign.UserServiceClient;
+import store.shportfolio.database.usecase.DatabaseUseCase;
+import store.shportfolio.database.usecase.command.DatabaseCreateCommand;
+import store.shportfolio.database.usecase.command.DatabaseCreateResponse;
+import store.shportfolio.database.usecase.command.DatabaseTrackQuery;
+import store.shportfolio.database.usecase.command.DatabaseTrackResponse;
 
 import java.util.UUID;
 
@@ -40,7 +40,7 @@ public class DatabaseResourcesTest {
     private UserServiceClient userServiceClient;
 
     @Autowired
-    private DatabaseApplicationService databaseApplicationService;
+    private DatabaseUseCase databaseUseCase;
 
 
     private final String token = "token";
@@ -50,7 +50,7 @@ public class DatabaseResourcesTest {
     @BeforeEach
     void setUp() {
         objectMapper = new ObjectMapper();
-        databaseResources = new DatabaseResources(userServiceClient, databaseApplicationService);
+        databaseResources = new DatabaseResources(databaseUseCase);
         mockMvc = MockMvcBuilders
                 .standaloneSetup(databaseResources)
                 .build();
@@ -65,7 +65,7 @@ public class DatabaseResourcesTest {
         DatabaseCreateResponse databaseCreateResponse = DatabaseCreateResponse.builder()
                 .databasePassword("databasePassword")
                 .build();
-        Mockito.when(databaseApplicationService.createDatabase(Mockito.any(DatabaseCreateCommand.class)
+        Mockito.when(databaseUseCase.createDatabase(Mockito.any(DatabaseCreateCommand.class)
                 , Mockito.any(UserGlobal.class))).thenReturn(databaseCreateResponse);
         // when, then
         mockMvc.perform(MockMvcRequestBuilders.post("/api/databases")
@@ -90,8 +90,7 @@ public class DatabaseResourcesTest {
                 .databaseUsername("databaseUsername")
                 .accessUrl("accessUrl")
                 .build();
-//        Mockito.when(userServiceClient.getUserInfo(Mockito.anyString())).thenReturn(userGlobal);
-        Mockito.when(databaseApplicationService.trackQuery(Mockito.any(DatabaseTrackQuery.class)))
+        Mockito.when(databaseUseCase.trackQuery(Mockito.any(DatabaseTrackQuery.class)))
                 .thenReturn(databaseTrackResponse);
 
         // when, then

@@ -1,15 +1,14 @@
 package store.shportfolio.database.domain;
 
 import store.shportfolio.common.domain.valueobject.UserGlobal;
-import store.shportfolio.database.application.command.DatabaseCreateCommand;
 import store.shportfolio.database.domain.entity.Database;
 
 
 public class DatabaseDomainServiceImpl implements DatabaseDomainService {
 
     @Override
-    public Database createDatabase(UserGlobal userGlobal, DatabaseCreateCommand databaseCreateCommand) {
-        return Database.createDatabase(userGlobal, databaseCreateCommand);
+    public Database createDatabase(UserGlobal userGlobal, String password) {
+        return Database.createDatabase(userGlobal, password);
     }
 
     @Override

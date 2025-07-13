@@ -4,8 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
-import store.shportfolio.database.domain.entity.Database;
-import store.shportfolio.database.infrastructure.exception.DatabaseSchemaException;
+import store.shportfolio.database.usecase.exception.DatabaseSchemaException;
 
 @Slf4j
 @Repository

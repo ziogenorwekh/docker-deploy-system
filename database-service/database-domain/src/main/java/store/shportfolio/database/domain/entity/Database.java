@@ -6,7 +6,6 @@ import store.shportfolio.common.domain.entitiy.AggregateRoot;
 import store.shportfolio.common.domain.valueobject.DatabaseId;
 import store.shportfolio.common.domain.valueobject.UserGlobal;
 import store.shportfolio.common.domain.valueobject.UserId;
-import store.shportfolio.database.application.command.DatabaseCreateCommand;
 import store.shportfolio.database.domain.exception.DomainException;
 import store.shportfolio.database.domain.valueobject.DatabaseName;
 import store.shportfolio.database.domain.valueobject.DatabasePassword;
@@ -35,11 +34,10 @@ public class Database extends AggregateRoot<DatabaseId> {
     }
 
 
-    public static Database createDatabase(UserGlobal userGlobal, DatabaseCreateCommand databaseCreateCommand) {
+    public static Database createDatabase(UserGlobal userGlobal, String password) {
         UUID databaseId = UUID.randomUUID();
         DatabaseId databaseIdObject = new DatabaseId(databaseId);
-        String databasePassword = databaseCreateCommand.getDatabasePassword();
-        DatabasePassword newPassword = new DatabasePassword(databasePassword);
+        DatabasePassword newPassword = new DatabasePassword(password);
         isValidDatabasePassword(newPassword);
         UserId newUserId = new UserId(userGlobal.getUserId());
         DatabaseUsername createdDatabaseUsername = DatabaseUsername.fromUsername(userGlobal.getUsername());

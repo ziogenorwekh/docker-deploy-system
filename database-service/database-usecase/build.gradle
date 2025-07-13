@@ -11,6 +11,13 @@ repositories {
 
 dependencies {
     implementation project(':common:common-domain')
+    implementation project(':database-service:database-domain')
+
+    implementation "org.springframework:spring-tx:${springVersion}"
+
+    implementation "org.springframework.boot:spring-boot-starter-validation:${springBootVersion}"
+    testImplementation "org.springframework.boot:spring-boot-starter-test:${springBootVersion}"
+
     testImplementation platform("org.junit:junit-bom:${junitBomVersion}")
     testImplementation "org.junit.jupiter:junit-jupiter"
 }
