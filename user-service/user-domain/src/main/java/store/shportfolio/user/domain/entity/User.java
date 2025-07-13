@@ -49,7 +49,6 @@ public class User extends AggregateRoot<UserId> {
         isValidateEmail(email);
         isValidateUsername(newUsername);
         Password password = new Password(newPassword);
-        isValidatePassword(password);
 
         UserId userId = new UserId(newUserId);
         Email newEmail = new Email(email);
@@ -98,12 +97,6 @@ public class User extends AggregateRoot<UserId> {
     private static void isValidateUsername(String username) {
         if (!Username.isValidUsername(username)) {
             throw new DomainException("Username is not valid");
-        }
-    }
-
-    private static void isValidatePassword(Password password) {
-        if (!password.isEncrypted()) {
-            throw new DomainException("Password must be encrypted");
         }
     }
 

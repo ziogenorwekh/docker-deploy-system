@@ -79,21 +79,22 @@ public class UserUseCaseImpl implements UserUseCase {
 
         User updatedUser = userDomainService.updateUser(user, encryptedNewPassword);
 
-        userRepository.save(updatedUser);
-        log.info("successful updating user -> {}",updatedUser.getEmail().getValue());
+        User save = userRepository.save(updatedUser);
+        log.info("successful updating user -> {}",save.getEmail().getValue());
     }
 
     @Override
     @Transactional
     public UserDeleteEvent deleteUser(UserDeleteCommand userDeleteCommand) {
-        User user = userRepository.findById(userDeleteCommand.getUserId()).orElseThrow(() -> {
-            throw new UserNotFoundException(String.format("User with id %s not found", userDeleteCommand.getUserId()));
-        });
+        User user = userRepository.findById(userDeleteCommand.getUserId())
+                .orElseThrow(() -> new UserNotFoundException(String.format("User with id %s not found",
+                        userDeleteCommand.getUserId())));
         UserDeleteEvent userDeleteEvent = userDomainService.deleteUser(user);
         userRepository.remove(user.getId().getValue());
         log.info("successful delete user -> {}",userDeleteCommand.getUserId());
         return userDeleteEvent;
     }
+
 
     private void isValidUserNameAndEmail(String email, String username) {
         userRepository.findByEmail(email).ifPresent(user -> {

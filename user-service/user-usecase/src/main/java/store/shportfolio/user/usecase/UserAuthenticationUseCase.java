@@ -12,7 +12,6 @@ import store.shportfolio.user.usecase.exception.CustomBadCredentialsException;
 import store.shportfolio.user.usecase.exception.UserDuplicatedException;
 import store.shportfolio.user.usecase.exception.UserNotFoundException;
 import store.shportfolio.user.usecase.mapper.UserDataMapper;
-import store.shportfolio.user.usecase.ports.input.UserAuthenticationUseCase;
 import store.shportfolio.user.usecase.ports.output.mail.MailSender;
 import store.shportfolio.user.usecase.ports.output.repository.UserRepository;
 import store.shportfolio.user.usecase.ports.output.security.JwtPort;
@@ -23,7 +22,7 @@ import store.shportfolio.user.domain.entity.User;
 @Slf4j
 @Component
 @Validated
-public class UserAuthenticationUseCaseImpl implements UserAuthenticationUseCase {
+public class UserAuthenticationUseCase implements store.shportfolio.user.usecase.ports.input.UserAuthenticationUseCase {
 
     private final UserRepository userRepository;
     private final UserDomainService userDomainService;
@@ -33,10 +32,10 @@ public class UserAuthenticationUseCaseImpl implements UserAuthenticationUseCase 
     private final UserAuthenticatePort userAuthenticatePort;
 
     @Autowired
-    public UserAuthenticationUseCaseImpl(UserRepository userRepository, UserDomainService userDomainService,
-                                         JwtPort jwtHandler,
-                                         UserDataMapper userDataMapper, MailSender mailSender,
-                                         UserAuthenticatePort userAuthenticatePort) {
+    public UserAuthenticationUseCase(UserRepository userRepository, UserDomainService userDomainService,
+                                     JwtPort jwtHandler,
+                                     UserDataMapper userDataMapper, MailSender mailSender,
+                                     UserAuthenticatePort userAuthenticatePort) {
         this.userRepository = userRepository;
         this.userDomainService = userDomainService;
         this.jwtPort = jwtHandler;

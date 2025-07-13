@@ -12,7 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import store.shportfolio.common.domain.valueobject.Token;
 import store.shportfolio.common.domain.valueobject.UserGlobal;
-import store.shportfolio.user.usecase.UserAuthenticationUseCaseImpl;
+import store.shportfolio.user.usecase.UserAuthenticationUseCase;
 import store.shportfolio.user.usecase.command.*;
 import store.shportfolio.user.usecase.exception.GoogleException;
 import store.shportfolio.user.domain.entity.User;
@@ -27,30 +27,30 @@ public class UserSecurityResources {
 
     @Value("${spring.security.oauth2.client.registration.google.client-id}")
     private String CLIENT_ID;
-    private final UserAuthenticationUseCaseImpl usercaseImplAuthenticationUse;
+    private final UserAuthenticationUseCase userAuthenticationUseCase;
 
     @Autowired
-    public UserSecurityResources(UserAuthenticationUseCaseImpl usercaseImplAuthenticationUse) {
-        this.usercaseImplAuthenticationUse = usercaseImplAuthenticationUse;
+    public UserSecurityResources(UserAuthenticationUseCase userAuthenticationUseCase) {
+        this.userAuthenticationUseCase = userAuthenticationUseCase;
     }
 
     @RequestMapping(path = "/login", method = RequestMethod.POST)
     public ResponseEntity<LoginResponse> login(@RequestBody LoginCommand loginCommand) {
 
-        LoginResponse loginResponse = usercaseImplAuthenticationUse.login(loginCommand);
+        LoginResponse loginResponse = userAuthenticationUseCase.login(loginCommand);
         return ResponseEntity.ok(loginResponse);
     }
 
     @RequestMapping(path = "/user/mail-send", method = RequestMethod.POST)
     public ResponseEntity<Void> sendEmail(@RequestBody EmailSendCommand emailSendCommand) {
         log.info("Sending email to {}", emailSendCommand.getEmail());
-        usercaseImplAuthenticationUse.sendEmail(emailSendCommand);
+        userAuthenticationUseCase.sendEmail(emailSendCommand);
         return ResponseEntity.ok().build();
     }
 
     @RequestMapping(path = "/user/verify-mail", method = RequestMethod.POST)
     public ResponseEntity<EmailTemporalTokenResponse> verifyEmail(@RequestBody EmailVerificationCommand emailVerificationCommand) {
-        Token token = usercaseImplAuthenticationUse.verifyEmail(emailVerificationCommand);
+        Token token = userAuthenticationUseCase.verifyEmail(emailVerificationCommand);
         EmailTemporalTokenResponse emailTemporalTokenResponse =
                 EmailTemporalTokenResponse.builder()
                         .token(token.getValue()).build();
@@ -61,7 +61,7 @@ public class UserSecurityResources {
     @RequestMapping(path = "/user/info", method = RequestMethod.GET)
     public ResponseEntity<UserGlobal> getUserInfo(@RequestHeader("Authorization") String token) {
         Token tokenVO = new Token(token);
-        User user = usercaseImplAuthenticationUse.getUserByToken(tokenVO);
+        User user = userAuthenticationUseCase.getUserByToken(tokenVO);
         log.info("user found: email {}", user.getEmail().getValue());
         return ResponseEntity.ok(UserGlobal.builder()
                 .userId(user.getId().getValue())
@@ -91,7 +91,7 @@ public class UserSecurityResources {
             log.info("email: {}", email);
             String userId = (String) tokenPayload.getSubject();
             String name = (String) tokenPayload.get("name");
-            Token token = usercaseImplAuthenticationUse.loginByGoogle(email, userId, name);
+            Token token = userAuthenticationUseCase.loginByGoogle(email, userId, name);
 
             LoginResponse loginResponse = LoginResponse.builder().email(email).userId(userId)
                     .token(token.getValue()).oauth(true).build();
