@@ -1,4 +1,4 @@
-package store.shportfolio.deploy.application.ports.output.s3;
+package store.shportfolio.deploy.application.output.s3;
 
 import store.shportfolio.deploy.application.dto.StorageInfo;
 

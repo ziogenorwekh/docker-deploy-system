@@ -3,28 +3,19 @@ plugins {
 }
 
 group = 'store.shportfolio'
-version = '1.0-SNAPSHOT'
+version = ''
 
 repositories {
     mavenCentral()
 }
 
-
 dependencies {
-
     implementation project(':common:common-domain')
     implementation project(':deploy-service:deploy-domain')
-    implementation project(':deploy-service:deploy-usecase')
-
     implementation "org.springframework.boot:spring-boot-starter-validation:${springBootVersion}"
     implementation "org.springframework.boot:spring-boot-starter-web:${springBootVersion}"
-
-    implementation "com.fasterxml.jackson.core:jackson-databind:${jacksonDatabindVersion}"
-
-    implementation "org.springframework.cloud:spring-cloud-starter-openfeign:${springCloudStarterVersion}"
-
+    implementation "org.springframework:spring-tx:${springVersion}"
     testImplementation "org.springframework.boot:spring-boot-starter-test:${springBootVersion}"
-
     testImplementation platform("org.junit:junit-bom:${junitBomVersion}")
     testImplementation "org.junit.jupiter:junit-jupiter"
 }

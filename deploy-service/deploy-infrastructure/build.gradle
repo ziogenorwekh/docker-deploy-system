@@ -12,6 +12,7 @@ repositories {
 dependencies {
     implementation project(':common:common-domain')
     implementation project(':deploy-service:deploy-domain')
+    implementation project(':deploy-service:deploy-usecase')
     implementation "com.mysql:mysql-connector-j:${mysqlConnectorVersion}"
     implementation "com.github.docker-java:docker-java:${dockerJavaVersion}"
     implementation "com.github.docker-java:docker-java-transport-httpclient5:${dockerJavaHttpclientVersion}"

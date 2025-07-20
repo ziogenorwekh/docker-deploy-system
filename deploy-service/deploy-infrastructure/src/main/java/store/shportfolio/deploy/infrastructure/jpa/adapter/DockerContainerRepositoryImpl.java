@@ -2,7 +2,7 @@ package store.shportfolio.deploy.infrastructure.jpa.adapter;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-import store.shportfolio.deploy.application.ports.output.repository.DockerContainerRepository;
+import store.shportfolio.deploy.application.output.repository.DockerContainerRepository;
 import store.shportfolio.deploy.domain.entity.DockerContainer;
 import store.shportfolio.deploy.domain.entity.WebApp;
 import store.shportfolio.deploy.infrastructure.jpa.entity.DockerContainerEntity;

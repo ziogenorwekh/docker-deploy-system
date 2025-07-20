@@ -2,7 +2,6 @@ package store.shportfolio.deploy.application.command;
 
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import store.shportfolio.deploy.domain.valueobject.DockerContainerStatus;
 
 @Getter
