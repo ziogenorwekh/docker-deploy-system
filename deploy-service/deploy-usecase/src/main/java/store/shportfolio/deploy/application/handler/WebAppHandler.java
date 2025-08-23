@@ -7,7 +7,7 @@ import store.shportfolio.common.domain.valueobject.UserGlobal;
 import store.shportfolio.deploy.application.command.WebAppCreateCommand;
 import store.shportfolio.deploy.application.exception.ApplicationNotFoundException;
 import store.shportfolio.deploy.application.exception.WebAppUserNotMatchException;
-import store.shportfolio.deploy.application.output.repository.WebAppRepository;
+import store.shportfolio.deploy.application.ports.output.repository.WebAppRepository;
 import store.shportfolio.deploy.domain.DeployDomainService;
 import store.shportfolio.deploy.domain.entity.WebApp;
 

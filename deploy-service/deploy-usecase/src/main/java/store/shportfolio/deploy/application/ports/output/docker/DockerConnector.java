@@ -1,4 +1,4 @@
-package store.shportfolio.deploy.application.output.docker;
+package store.shportfolio.deploy.application.ports.output.docker;
 
 import store.shportfolio.deploy.application.dto.DockerCreated;
 import store.shportfolio.deploy.application.dto.ResourceUsage;

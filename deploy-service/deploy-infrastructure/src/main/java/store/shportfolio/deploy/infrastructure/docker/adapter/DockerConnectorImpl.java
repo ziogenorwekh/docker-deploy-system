@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import store.shportfolio.deploy.application.dto.DockerCreated;
 import store.shportfolio.deploy.application.dto.ResourceUsage;
-import store.shportfolio.deploy.application.output.docker.DockerConnector;
+import store.shportfolio.deploy.application.ports.output.docker.DockerConnector;
 import store.shportfolio.deploy.domain.entity.WebApp;
 import store.shportfolio.deploy.domain.valueobject.DockerContainerStatus;
 import store.shportfolio.deploy.infrastructure.docker.helper.DockerContainerHelper;

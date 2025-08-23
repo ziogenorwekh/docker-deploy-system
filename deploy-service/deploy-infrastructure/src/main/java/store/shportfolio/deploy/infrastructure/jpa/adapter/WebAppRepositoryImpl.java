@@ -3,7 +3,7 @@ package store.shportfolio.deploy.infrastructure.jpa.adapter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-import store.shportfolio.deploy.application.output.repository.WebAppRepository;
+import store.shportfolio.deploy.application.ports.output.repository.WebAppRepository;
 import store.shportfolio.deploy.domain.entity.WebApp;
 import store.shportfolio.deploy.infrastructure.jpa.entity.WebAppEntity;
 import store.shportfolio.deploy.infrastructure.jpa.mapper.DeployDataAccessMapper;

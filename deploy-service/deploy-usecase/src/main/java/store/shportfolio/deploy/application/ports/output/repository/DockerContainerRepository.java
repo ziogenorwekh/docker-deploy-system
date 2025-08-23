@@ -1,4 +1,4 @@
-package store.shportfolio.deploy.application.output.repository;
+package store.shportfolio.deploy.application.ports.output.repository;
 
 import store.shportfolio.deploy.domain.entity.DockerContainer;
 

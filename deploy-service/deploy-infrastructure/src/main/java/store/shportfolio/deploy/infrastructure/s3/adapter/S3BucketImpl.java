@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import store.shportfolio.deploy.application.exception.S3Exception;
 import store.shportfolio.deploy.application.dto.StorageInfo;
-import store.shportfolio.deploy.application.output.s3.S3Bucket;
+import store.shportfolio.deploy.application.ports.output.s3.S3Bucket;
 
 import java.io.File;
 
