@@ -1,6 +1,6 @@
 package store.shportfolio.deploy.application.exception;
 
-public class DockerContainerException extends RuntimeException {
+public class DockerContainerException extends WebAppException {
     public DockerContainerException(String message) {
         super(message);
     }

@@ -6,10 +6,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import store.shportfolio.deploy.application.dto.DockerCreated;
 import store.shportfolio.deploy.application.dto.ResourceUsage;
-import store.shportfolio.deploy.application.exception.ContainerAccessException;
-import store.shportfolio.deploy.application.exception.DockerContainerErrorException;
-import store.shportfolio.deploy.application.exception.DockerContainerException;
-import store.shportfolio.deploy.application.exception.DockerNotFoundException;
+import store.shportfolio.deploy.application.exception.*;
 import store.shportfolio.deploy.application.ports.output.docker.DockerConnector;
 import store.shportfolio.deploy.application.ports.output.repository.DockerContainerRepository;
 import store.shportfolio.deploy.domain.DeployDomainService;
@@ -50,9 +47,8 @@ public class DockerContainerHandler {
                 new DockerNotFoundException("docker not found by id: " + applicationId));
     }
 
-    // need additional logic
     @Transactional
-    public DockerContainer createDockerImageAndRun(WebApp webApp, String storageUrl) throws Exception {
+    public DockerContainer createDockerImageAndRun(WebApp webApp, String storageUrl) {
         DockerContainer dockerContainer = this.getDockerContainer(webApp.getId().getValue());
         log.info("Create docker container: " + dockerContainer);
 
@@ -127,7 +123,7 @@ public class DockerContainerHandler {
         try {
             dockerConnector.dropContainer(dockerContainer.getDockerContainerId().getValue());
             dockerConnector.removeImage(dockerContainer.getImageId());
-        } catch (RuntimeException e) {
+        } catch (Exception e) {
             log.error("Error dropping docker container, message is {}", e.getMessage());
         }
         dockerContainerRepository.removeByApplicationId(applicationId);

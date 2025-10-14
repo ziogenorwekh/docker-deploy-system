@@ -6,6 +6,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.multipart.MultipartFile;
 import store.shportfolio.common.domain.valueobject.UserGlobal;
 import store.shportfolio.deploy.application.command.*;
 import store.shportfolio.deploy.application.dto.ResourceUsage;
@@ -14,12 +15,15 @@ import store.shportfolio.deploy.application.handler.DockerContainerHandler;
 import store.shportfolio.deploy.application.handler.StorageHandler;
 import store.shportfolio.deploy.application.handler.WebAppHandler;
 import store.shportfolio.deploy.application.mapper.DeployDataMapper;
+import store.shportfolio.deploy.application.ports.input.DockerContainerizationUseCase;
 import store.shportfolio.deploy.domain.entity.DockerContainer;
 import store.shportfolio.deploy.domain.entity.Storage;
 import store.shportfolio.deploy.domain.entity.WebApp;
 import store.shportfolio.deploy.domain.valueobject.ApplicationStatus;
 import store.shportfolio.deploy.domain.valueobject.StorageUrl;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
@@ -36,14 +40,17 @@ public class DeployApplicationServiceImpl implements DeployApplicationService {
     private final StorageHandler storageHandler;
     private final WebAppHandler webAppHandler;
     private final DeployDataMapper deployDataMapper;
-
+    private final DockerContainerizationUseCase dockerContainerizationUseCase;
     @Autowired
     public DeployApplicationServiceImpl(DockerContainerHandler dockerContainerHandler,
-                                        StorageHandler storageHandler, WebAppHandler webAppHandler, DeployDataMapper deployDataMapper) {
+                                        StorageHandler storageHandler, WebAppHandler webAppHandler,
+                                        DeployDataMapper deployDataMapper,
+                                        DockerContainerizationUseCase dockerContainerizationUseCase) {
         this.dockerContainerHandler = dockerContainerHandler;
         this.storageHandler = storageHandler;
         this.webAppHandler = webAppHandler;
         this.deployDataMapper = deployDataMapper;
+        this.dockerContainerizationUseCase = dockerContainerizationUseCase;
     }
 
     @Override
@@ -69,27 +76,17 @@ public class DeployApplicationServiceImpl implements DeployApplicationService {
 
 
     @Override
-    public void saveJarFileAndCreateContainer(WebAppFileCreateCommand webAppFileCreateCommand, UserGlobal userGlobal) {
+    public void saveJarFile(WebAppFileCreateCommand webAppFileCreateCommand, UserGlobal userGlobal) {
         WebApp webApp = validateAndRetrieveWebApp(webAppFileCreateCommand, userGlobal);
-
+        webAppHandler.startContainerizing(webApp);
+        log.info("Containerizing started -> {}", webApp.getApplicationStatus());
+        File file;
         try {
-            Storage storage = storageHandler.uploadS3(webApp.getId().getValue(), webAppFileCreateCommand.getFile());
-            log.info("Storage saved data URL: {}, Filename: {}", storage.getStorageUrl().getValue(),
-                    storage.getStorageName().getValue());
-
-            webAppHandler.startContainerizing(webApp);
-            log.info("Containerizing started -> {}", webApp.getApplicationStatus());
-
-            // CompletableFuture 호출
-            processDockerContainerAndComplete(webApp, storage.getStorageUrl());
-
-        } catch (IOException | S3Exception e) {
-            log.error("Error during storage processing: {}", e.getMessage());
-            webAppHandler.failedApplication(webApp, e.getMessage());
-        } catch (Exception e) {
-            log.error("Unexpected error: {}", e.getMessage());
-            webAppHandler.failedApplication(webApp, "server error");
+            file =  this.convertMultipartFileToFile(webAppFileCreateCommand.getFile());
+        } catch (IOException e) {
+            throw new FileExchangeFailedException("File conversion failed.");
         }
+        dockerContainerizationUseCase.uploadWebAppFile(webApp, file);
     }
 
 
@@ -175,25 +172,6 @@ public class DeployApplicationServiceImpl implements DeployApplicationService {
                 dockerContainer.getDockerContainerStatus());
     }
 
-    private synchronized CompletableFuture<Void> processDockerContainerAndComplete(WebApp webApp, StorageUrl storageUrl) {
-        return CompletableFuture.runAsync(() -> {
-            try {
-                dockerContainerHandler.createDockerImageAndRun(webApp, storageUrl.getValue());
-                log.info("Docker container status is {}", webApp.getApplicationStatus());
-                webAppHandler.completeContainerizing(webApp);
-                log.info("Docker container processed and application completed -> {}", webApp.getApplicationStatus());
-            } catch (DockerContainerException | ContainerAccessException |
-                     DockerContainerCreatingFailedException | DockerContainerRunException |
-                     DockerImageCreationException e) {
-                log.error("Error while processing Docker container: {}", e.getMessage());
-                webAppHandler.failedApplication(webApp, e.getMessage());
-            } catch (Exception e) {
-                log.error("Unexpected error while processing Docker container: {}", e.getMessage());
-                webAppHandler.failedApplication(webApp, "server error");
-            }
-        });
-    }
-
     private WebApp validateAndRetrieveWebApp(WebAppFileCreateCommand webAppFileCreateCommand, UserGlobal userGlobal) {
         UUID applicationId = UUID.fromString(webAppFileCreateCommand.getApplicationId());
         WebApp webApp = this.getWebApp(userGlobal, applicationId);
@@ -202,7 +180,6 @@ public class DeployApplicationServiceImpl implements DeployApplicationService {
                 && webApp.getApplicationStatus() != ApplicationStatus.FAILED) {
             throw new WebAppException("Application already operated.");
         }
-
         return webApp;
     }
 
@@ -217,4 +194,13 @@ public class DeployApplicationServiceImpl implements DeployApplicationService {
         return webApp;
     }
 
+    private File convertMultipartFileToFile(MultipartFile multipartFile) throws IOException {
+        String originalFilename = multipartFile.getOriginalFilename();
+        String prefix = originalFilename != null ? originalFilename.substring(0, originalFilename.lastIndexOf('.')) : "temp";
+        String suffix = originalFilename != null ? originalFilename.substring(originalFilename.lastIndexOf('.')) : ".tmp";
+        File tempFile = File.createTempFile(prefix + "-", suffix);
+        multipartFile.transferTo(tempFile);
+        tempFile.deleteOnExit();
+        return tempFile;
+    }
 }

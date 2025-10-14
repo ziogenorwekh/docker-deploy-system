@@ -1,6 +1,5 @@
 package store.shportfolio.deploy.application.api;
 
-import feign.FeignException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -10,7 +9,6 @@ import org.springframework.web.multipart.MultipartFile;
 import store.shportfolio.common.domain.valueobject.UserGlobal;
 import store.shportfolio.deploy.application.DeployApplicationService;
 import store.shportfolio.deploy.application.command.*;
-import store.shportfolio.deploy.application.exception.UserNotfoundException;
 import store.shportfolio.deploy.application.openfeign.UserServiceClient;
 
 import java.util.List;
@@ -48,7 +46,7 @@ public class DeployResources {
         UserGlobal userInfo = UserGlobal.builder().userId(userId).username(username).build();
         WebAppFileCreateCommand webAppFileCreateCommand = WebAppFileCreateCommand.builder()
                 .applicationId(applicationId.toString()).file(file).build();
-        deployApplicationService.saveJarFileAndCreateContainer(webAppFileCreateCommand, userInfo);
+        deployApplicationService.saveJarFile(webAppFileCreateCommand, userInfo);
         return ResponseEntity.noContent().build();
     }
 
@@ -119,16 +117,5 @@ public class DeployResources {
         UserGlobal userInfo = UserGlobal.builder().userId(userId).username(username).build();
         deployApplicationService.deleteAllWebApps(userInfo);
         return ResponseEntity.noContent().build();
-    }
-
-
-    private UserGlobal getUserGlobalByFeignClient(String token) {
-        try {
-            return userServiceClient.getUserInfo(token);
-        } catch (FeignException ex) {
-            throw new UserNotfoundException("FeignClient error: " + ex.getMessage(), ex);
-        } catch (Exception ex) {
-            throw new UserNotfoundException("Unexpected error: " + ex.getMessage(), ex);
-        }
     }
 }

@@ -7,7 +7,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.multipart.MultipartFile;
 import store.shportfolio.common.domain.valueobject.*;
 import store.shportfolio.deploy.application.DeployApplicationService;
@@ -17,6 +16,8 @@ import store.shportfolio.deploy.application.handler.DockerContainerHandler;
 import store.shportfolio.deploy.application.handler.StorageHandler;
 import store.shportfolio.deploy.application.handler.WebAppHandler;
 import store.shportfolio.deploy.application.mapper.DeployDataMapper;
+import store.shportfolio.deploy.application.ports.input.DockerContainerizationUseCase;
+import store.shportfolio.deploy.application.ports.input.impl.DockerContainerizationUseCaseImpl;
 import store.shportfolio.deploy.application.ports.output.docker.DockerConnector;
 import store.shportfolio.deploy.application.ports.output.repository.DockerContainerRepository;
 import store.shportfolio.deploy.application.ports.output.repository.StorageRepository;
@@ -73,6 +74,8 @@ public class DeployApplicationServiceTest {
     @Mock
     private WebAppRepository webAppRepository;
 
+    private DockerContainerizationUseCase dockerContainerizationUseCase;
+
     private List<String> createdFiles = new ArrayList<>();
 
     @Mock
@@ -88,9 +91,12 @@ public class DeployApplicationServiceTest {
         webAppHandler = new WebAppHandler(webAppRepository, deployDomainService);
         deployDataMapper = new DeployDataMapper();
         storageHandler = new StorageHandler(storageRepository, s3Bucket, deployDomainService);
+        dockerContainerizationUseCase = new DockerContainerizationUseCaseImpl(storageHandler,
+                webAppHandler, dockerContainerHandler);
         deployApplicationService = new DeployApplicationServiceImpl(
                 dockerContainerHandler, storageHandler, webAppHandler, deployDataMapper
-        );
+        , dockerContainerizationUseCase);
+
     }
 
     @AfterEach
@@ -309,7 +315,7 @@ public class DeployApplicationServiceTest {
         WebApp webApp = WebApp.builder()
                 .applicationId(applicationId)
                 .build();
-        MultipartFile file = new MockMultipartFile("file", "test.jar", "application/octet-stream", new byte[0]);
+        File file = new File("test.jar");
 
         Mockito.when(s3Bucket.uploadS3(Mockito.any())).thenReturn(storageInfo);
         Mockito.when(storageRepository.save(Mockito.any(Storage.class))).thenReturn(storage);
@@ -367,7 +373,7 @@ public class DeployApplicationServiceTest {
 
     @Test
     @DisplayName("Jar 파일 저장 및 컨테이너 생성 전체 테스트")
-    public void testSaveJarFileAndCreateContainerAndCreateContainer() throws IOException {
+    public void testSaveJarFileAndCreateContainer() throws IOException {
         // given
         ApplicationId applicationId = new ApplicationId(UUID.randomUUID());
         UserGlobal userGlobal = new UserGlobal(userId.toString(), username);
@@ -437,7 +443,7 @@ public class DeployApplicationServiceTest {
                 .thenReturn(dockerContainer);
 
         // when
-        deployApplicationService.saveJarFileAndCreateContainer(webAppFileCreateCommand, userGlobal);
+        deployApplicationService.saveJarFile(webAppFileCreateCommand, userGlobal);
         Awaitility.await().atMost(10, TimeUnit.SECONDS)
                 .until(() -> webApp.getApplicationStatus() == ApplicationStatus.COMPLETE);
         // then

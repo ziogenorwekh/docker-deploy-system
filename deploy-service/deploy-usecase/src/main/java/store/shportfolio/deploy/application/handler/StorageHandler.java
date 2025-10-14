@@ -42,18 +42,14 @@ public class StorageHandler {
         storageRepository.save(storage);
     }
 
-    @Transactional
-    public Storage uploadS3(UUID applicationId, MultipartFile file) throws IOException {
+    public Storage uploadS3(UUID applicationId, File file) {
         Storage storage = storageRepository.findByApplicationId(applicationId).orElseThrow(() ->
                 new StorageNotFoundException("storage not found by id: " + applicationId));
-        File multipartFileToFile = this.convertMultipartFileToFile(file);
-        log.info("file to save: " + multipartFileToFile.getAbsolutePath());
 
-
-        StorageInfo storageInfo = s3Bucket.uploadS3(multipartFileToFile);
+        StorageInfo storageInfo = s3Bucket.uploadS3(file);
 
         log.info("storageName info: " + storageInfo.getStorageName());
-        removeLocalFile(multipartFileToFile);
+        removeLocalFile(file);
 
         deployDomainService.saveStorageInfo(storage, new StorageName(storageInfo.getStorageName()),
                 new StorageUrl(storageInfo.getFildUrl()));
@@ -67,16 +63,6 @@ public class StorageHandler {
                 new StorageNotFoundException("storage not found by id: " + applicationId));
         s3Bucket.deleteS3(storage.getStorageName().getValue());
         storageRepository.removeByApplicationId(applicationId);
-    }
-
-    private File convertMultipartFileToFile(MultipartFile multipartFile) throws IOException {
-        String filename = String.format("%s-%s", UUID.randomUUID(), multipartFile.getOriginalFilename());
-        File convertedFile = new File(filename);
-
-        try (FileOutputStream fileOutputStream = new FileOutputStream(convertedFile)) {
-            fileOutputStream.write(multipartFile.getBytes());
-        }
-        return convertedFile;
     }
 
     private void removeLocalFile(File targetFile) {

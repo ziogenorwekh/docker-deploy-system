@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import store.shportfolio.deploy.application.dto.DockerCreated;
 import store.shportfolio.deploy.application.dto.ResourceUsage;
+import store.shportfolio.deploy.application.exception.DockerContainerException;
+import store.shportfolio.deploy.application.exception.WebAppException;
 import store.shportfolio.deploy.application.ports.output.docker.DockerConnector;
 import store.shportfolio.deploy.domain.entity.WebApp;
 import store.shportfolio.deploy.domain.valueobject.DockerContainerStatus;
@@ -43,45 +45,64 @@ public class DockerConnectorImpl implements DockerConnector {
         File dockerfile = null;
         String imageId = null;
         String dockerId = null;
+//        try {
+//            log.info("start docker create container");
+        dockerfile = dockerfileCreateHelper.createDockerfile(webApp, storageUrl);
+        imageId = dockerImageCreateHelper.createImage(webApp, dockerfile);
+        dockerId = dockerContainerHelper.runContainer(imageId, webApp);
+        log.info("time wait 15 seconds");
         try {
-            log.info("start docker create container");
-            dockerfile = dockerfileCreateHelper.createDockerfile(webApp, storageUrl);
-            imageId = dockerImageCreateHelper.createImage(webApp, dockerfile);
-            dockerId = dockerContainerHelper.runContainer(imageId, webApp);
-            log.info("time wait 15 seconds");
             Thread.sleep(1000L * 15);
-            if (dockerContainerHelper.isContainerRunning(dockerId)) {
-                return DockerCreated
-                        .builder()
-                        .dockerContainerStatus(DockerContainerStatus.STARTED)
-                        .error("")
-                        .endPointUrl(String.format("%s:%s", endpointUrl, webApp.getServerPort().getValue()))
-                        .dockerImageId(imageId)
-                        .dockerContainerId(dockerId)
-                        .build();
-            } else {
-                return DockerCreated.builder()
-                        .dockerContainerStatus(DockerContainerStatus.ERROR)
-                        .dockerContainerId(dockerId)
-                        .endPointUrl("")
-                        .dockerImageId(imageId)
-                        .error("Container not running. Check Container logs.")
-                        .build();
-            }
+        } catch (InterruptedException e) {
+            throw new WebAppException("Thread interrupted: " + e.getMessage());
         }
-        catch (Exception e) {
-            log.error(e.getMessage(), e);
-            return DockerCreated.builder()
-                    .dockerContainerStatus(DockerContainerStatus.ERROR)
-                    .dockerContainerId(dockerId)
-                    .endPointUrl("")
+        if (dockerContainerHelper.isContainerRunning(dockerId)) {
+            return DockerCreated
+                    .builder()
+                    .dockerContainerStatus(DockerContainerStatus.STARTED)
+                    .error("")
+                    .endPointUrl(String.format("%s:%s", endpointUrl, webApp.getServerPort().getValue()))
                     .dockerImageId(imageId)
-                    .error(e.getMessage())
+                    .dockerContainerId(dockerId)
                     .build();
-        } finally {
-            dockerfileCreateHelper.deleteLocalDockerfile(dockerfile);
         }
+//            else {
+//                return DockerCreated.builder()
+//                        .dockerContainerStatus(DockerContainerStatus.ERROR)
+//                        .dockerContainerId(dockerId)
+//                        .endPointUrl("")
+//                        .dockerImageId(imageId)
+//                        .error("Container not running. Check Container logs.")
+//                        .build();
+//            }
+//        }
+//        catch (Exception e) {
+//            log.error("Error during Docker container creation: {}", e.getMessage());
+//            throw new DockerContainerException("Docker container creation failed: " + e.getMessage());
+//            log.error(e.getMessage(), e);
+//            return DockerCreated.builder()
+//                    .dockerContainerStatus(DockerContainerStatus.ERROR)
+//                    .dockerContainerId(dockerId)
+//                    .endPointUrl("")
+//                    .dockerImageId(imageId)
+//                    .error(e.getMessage())
+//                    .build();
+//        } finally {
+//        }
+        dockerfileCreateHelper.deleteLocalDockerfile(dockerfile);
+//        throw new DockerContainerException(String.format("Docker container creation failed Id: %s",
+//                webApp.getId().getValue()));
+
+        return DockerCreated
+                .builder()
+                .dockerContainerStatus(DockerContainerStatus.ERROR)
+                .error("")
+                .endPointUrl(String.format("%s:%s", endpointUrl, webApp.getServerPort().getValue()))
+                .dockerImageId(imageId)
+                .dockerContainerId(dockerId)
+                .build();
     }
+
 
     @Override
     public ResourceUsage getResourceUsage(String dockerContainerId) {

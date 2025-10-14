@@ -44,7 +44,7 @@ public class S3BucketImpl implements S3Bucket {
     @Override
     public void deleteS3(String storageName) {
         try {
-            if (!amazonS3.doesObjectExist(bucket, storageName)) {
+            if (storageName.isEmpty() ||!amazonS3.doesObjectExist(bucket, storageName)) {
                 log.info("Object does not exist in bucket. Filename: {}", storageName);
                 return;
             }
@@ -52,7 +52,8 @@ public class S3BucketImpl implements S3Bucket {
             // 객체 삭제
             amazonS3.deleteObject(bucket, storageName);
             log.info("Storage removal successful. Filename: {}", storageName);
-        } catch (Exception e) {
+        } catch (S3Exception e) {
+            log.error("Delete object failed: {}", e.getMessage());
             throw new S3Exception("delete failed.", e);
         }
     }
@@ -60,7 +61,7 @@ public class S3BucketImpl implements S3Bucket {
     private void upload(File file) {
         try {
             amazonS3.putObject(new PutObjectRequest(bucket, file.getName(), file));
-        } catch (Exception e) {
+        } catch (S3Exception e) {
             log.error("upload failed: {}", e.getMessage());
             throw new S3Exception("upload failed.");
         }
@@ -69,6 +70,7 @@ public class S3BucketImpl implements S3Bucket {
 
     private void validateFileType(File file) {
         if (file == null || !file.getName().toLowerCase().endsWith(".jar")) {
+            log.error("Invalid file type: {}", file.getName());
             throw new S3Exception("File type not supported");
         }
     }
