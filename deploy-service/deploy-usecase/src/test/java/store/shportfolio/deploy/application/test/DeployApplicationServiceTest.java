@@ -1,4 +1,4 @@
-package store.shportfolio.deploy.domain;
+package store.shportfolio.deploy.application.test;
 
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.*;
@@ -25,6 +25,8 @@ import store.shportfolio.deploy.application.ports.output.s3.S3Bucket;
 import store.shportfolio.deploy.application.dto.DockerCreated;
 import store.shportfolio.deploy.application.dto.ResourceUsage;
 import store.shportfolio.deploy.application.dto.StorageInfo;
+import store.shportfolio.deploy.domain.DeployDomainService;
+import store.shportfolio.deploy.domain.DeployDomainServiceImpl;
 import store.shportfolio.deploy.domain.entity.DockerContainer;
 import store.shportfolio.deploy.domain.entity.Storage;
 import store.shportfolio.deploy.domain.entity.WebApp;
@@ -43,7 +45,6 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 
-@ActiveProfiles("test")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ExtendWith(MockitoExtension.class)
 public class DeployApplicationServiceTest {

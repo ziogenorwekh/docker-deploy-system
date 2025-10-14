@@ -5,10 +5,12 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @NoArgsConstructor
 public class UserUpdateCommand {
 
+    @Setter
     private String userId;
     @NotEmpty(message = "NewPassword must be necessary.")
     @Size(min = 4, message = "Password must be at least than 4 characters.")

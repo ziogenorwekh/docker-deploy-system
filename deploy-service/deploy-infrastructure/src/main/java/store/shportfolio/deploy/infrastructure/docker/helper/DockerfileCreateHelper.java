@@ -22,6 +22,7 @@ public class DockerfileCreateHelper {
         DockerfileCommand dockerfileCommand = new DockerfileCommand(webApp.getJavaVersion().getVersion(), storageUrl
                 , webApp.getApplicationName().getValue(), webApp.getServerPort().getValue());
         log.info("output file: {}", outputFile);
+        log.info("dockerfileCommand: {}", dockerfileCommand);
         File dockerfile = null;
         try {
             dockerfile = new File(outputFile);

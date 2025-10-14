@@ -44,7 +44,7 @@ public class DatabaseUseCaseImpl implements DatabaseUseCase {
     @Override
     @Transactional
     public DatabaseCreateResponse createDatabase(@Valid DatabaseCreateCommand databaseCreateCommand,
-                                                 @NotNull UserGlobal userGlobal) {
+                                                  UserGlobal userGlobal) {
         isExistUsersDatabase(userGlobal);
         Database database = databaseDomainService.createDatabase(userGlobal,
                 databaseCreateCommand.getDatabasePassword());
@@ -67,7 +67,7 @@ public class DatabaseUseCaseImpl implements DatabaseUseCase {
 
     @Override
     @Transactional
-    public void deleteDatabase(@NotNull UserGlobal userGlobal) {
+    public void deleteDatabase(UserGlobal userGlobal) {
         Optional<Database> database = databaseRepositoryPort.findByUserId(userGlobal.getUserId());
         database.ifPresent(databaseRepositoryPort::remove);
     }
@@ -76,7 +76,7 @@ public class DatabaseUseCaseImpl implements DatabaseUseCase {
         databaseRepositoryPort.findByUserId(userGlobal.getUserId())
                 .ifPresent(database -> {
                     throw new DatabaseAlreadyCreatedException(
-                            String.format("User %s already exists", userGlobal.getUsername()));
+                            String.format("User %s already exists database.", userGlobal.getUsername()));
                 });
     }
 }

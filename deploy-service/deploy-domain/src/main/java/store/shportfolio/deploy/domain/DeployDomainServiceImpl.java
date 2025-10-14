@@ -1,23 +1,19 @@
 package store.shportfolio.deploy.domain;
 
-import org.springframework.stereotype.Service;
 import store.shportfolio.common.domain.valueobject.ApplicationId;
 import store.shportfolio.common.domain.valueobject.UserGlobal;
-import store.shportfolio.deploy.application.command.WebAppCreateCommand;
-import store.shportfolio.deploy.application.dto.DockerCreated;
 import store.shportfolio.deploy.domain.entity.DockerContainer;
 import store.shportfolio.deploy.domain.entity.Storage;
 import store.shportfolio.deploy.domain.entity.WebApp;
+import store.shportfolio.deploy.domain.valueobject.DockerContainerStatus;
 import store.shportfolio.deploy.domain.valueobject.StorageName;
 import store.shportfolio.deploy.domain.valueobject.StorageUrl;
 
-@Service
 public class DeployDomainServiceImpl implements DeployDomainService {
 
     @Override
-    public WebApp createWebApp(UserGlobal userGlobal, WebAppCreateCommand webAppCreateCommand) {
-        return WebApp.createWebApp(userGlobal.getUserId(), webAppCreateCommand.getApplicationName(),
-                webAppCreateCommand.getPort(), webAppCreateCommand.getVersion());
+    public WebApp createWebApp(UserGlobal userGlobal,String applicationName, int port, int version ) {
+        return WebApp.createWebApp(userGlobal.getUserId(), applicationName, port, version);
     }
 
     @Override
@@ -26,8 +22,11 @@ public class DeployDomainServiceImpl implements DeployDomainService {
     }
 
     @Override
-    public void successfulCreateDockerContainer(DockerContainer dockerContainer, DockerCreated dockerCreated) {
-        dockerContainer.successfulDockerContainer(dockerCreated);
+    public void successfulCreateDockerContainer(DockerContainer dockerContainer, String dockerContainerId,
+                                                DockerContainerStatus dockerContainerStatus,
+                                                String dockerImageId,
+                                                String endPointUrl) {
+        dockerContainer.successfulDockerContainer(dockerContainerId, dockerContainerStatus, dockerImageId, endPointUrl);
     }
 
     @Override

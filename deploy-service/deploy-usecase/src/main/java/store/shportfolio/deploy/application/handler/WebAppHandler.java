@@ -29,7 +29,8 @@ public class WebAppHandler {
 
 
     public WebApp createWebApp(UserGlobal userGlobal, WebAppCreateCommand webAppCreateCommand) {
-        return deployDomainService.createWebApp(userGlobal, webAppCreateCommand);
+        return deployDomainService.createWebApp(userGlobal, webAppCreateCommand.getApplicationName()
+        , webAppCreateCommand.getPort(), webAppCreateCommand.getVersion());
     }
 
     @Transactional

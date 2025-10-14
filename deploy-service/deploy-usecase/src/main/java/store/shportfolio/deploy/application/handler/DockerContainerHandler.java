@@ -67,7 +67,9 @@ public class DockerContainerHandler {
             throw new DockerContainerException(dockerCreated.getError());
         }
 
-        deployDomainService.successfulCreateDockerContainer(dockerContainer, dockerCreated);
+        deployDomainService.successfulCreateDockerContainer(dockerContainer, dockerCreated.getDockerContainerId(),
+                dockerCreated.getDockerContainerStatus(),dockerCreated.getDockerImageId(),
+                dockerCreated.getEndPointUrl());
         DockerContainer saved = dockerContainerRepository.save(dockerContainer);
 
         log.info("docker container must be STARTED -> {}", saved.getDockerContainerStatus());

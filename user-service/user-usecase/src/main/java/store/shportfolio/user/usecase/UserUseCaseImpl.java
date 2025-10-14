@@ -57,7 +57,7 @@ public class UserUseCaseImpl implements UserUseCase {
         String authenticatedEmail = jwtHandler.getEmailFromToken(new Token(token));
 
         isValidUserNameAndEmail(authenticatedEmail, userCreateCommand.getUsername());
-
+        isValidTokenEmailAndCommandEmail(authenticatedEmail, userCreateCommand.getEmail());
         String encryptedPassword = passwordEncoder.encode(userCreateCommand.getPassword());
         String userId = UUID.randomUUID().toString();
 
@@ -103,5 +103,12 @@ public class UserUseCaseImpl implements UserUseCase {
         userRepository.findByUsername(username).ifPresent(user -> {
             throw new UserDuplicatedException(String.format("User with username %s already exists", username));
         });
+    }
+
+    private void isValidTokenEmailAndCommandEmail(String tokenEmail, String commandEmail) {
+        if (!tokenEmail.equals(commandEmail)) {
+            throw new UserNotFoundException(String.format("Token email %s does not match command email %s",
+                    tokenEmail, commandEmail));
+        }
     }
 }

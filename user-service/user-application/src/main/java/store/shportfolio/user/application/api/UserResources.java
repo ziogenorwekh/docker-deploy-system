@@ -58,9 +58,8 @@ public class UserResources {
                                            @RequestBody UserUpdateCommand userUpdateCommand,
                                            @RequestHeader(name = "X-Authenticated-UserId") String userIdFromToken) {
         validateEqualsRequesterAndBearer(userId, userIdFromToken);
-        userUseCase.updateUser(UserUpdateCommand.builder().userId(userIdFromToken)
-                .newPassword(userUpdateCommand.getNewPassword())
-                .build());
+        userUpdateCommand.setUserId(userIdFromToken);
+        userUseCase.updateUser(userUpdateCommand);
         return ResponseEntity.noContent().build();
     }
 

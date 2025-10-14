@@ -5,7 +5,6 @@ import lombok.Getter;
 import lombok.ToString;
 import store.shportfolio.common.domain.entitiy.BaseEntity;
 import store.shportfolio.common.domain.valueobject.ApplicationId;
-import store.shportfolio.deploy.application.dto.DockerCreated;
 import store.shportfolio.deploy.domain.valueobject.DockerContainerStatus;
 import store.shportfolio.deploy.domain.valueobject.DockerContainerId;
 
@@ -41,11 +40,14 @@ public class DockerContainer extends BaseEntity<ApplicationId> {
                 .build();
     }
 
-    public void successfulDockerContainer(DockerCreated dockerCreated) {
-        this.dockerContainerId = new DockerContainerId(dockerCreated.getDockerContainerId());
-        this.dockerContainerStatus = dockerCreated.getDockerContainerStatus();
-        this.imageId = dockerCreated.getDockerImageId();
-        this.endPointUrl = dockerCreated.getEndPointUrl();
+    public void successfulDockerContainer(String dockerContainerId,
+                                          DockerContainerStatus dockerContainerStatus,
+                                          String dockerImageId,
+                                          String endPointUrl) {
+        this.dockerContainerId = new DockerContainerId(dockerContainerId);
+        this.dockerContainerStatus = dockerContainerStatus;
+        this.imageId = dockerImageId;
+        this.endPointUrl = endPointUrl;
     }
 
     public void startDockerContainer() {

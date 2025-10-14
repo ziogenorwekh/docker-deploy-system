@@ -11,7 +11,7 @@ import store.shportfolio.deploy.domain.valueobject.ApplicationStatus;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
-@Slf4j
+
 @Getter
 @ToString
 public class WebApp extends AggregateRoot<ApplicationId> {
@@ -65,7 +65,7 @@ public class WebApp extends AggregateRoot<ApplicationId> {
 
     public void updateCreatedToContainerizing() {
         if (this.applicationStatus == ApplicationStatus.CREATED) {
-            log.debug("Application status is {}", this.applicationStatus);
+//            log.debug("Application status is {}", this.applicationStatus);
             this.applicationStatus = ApplicationStatus.CONTAINERIZING;
         } else {
             throw new DomainException("Application status is not CREATED");
@@ -74,7 +74,7 @@ public class WebApp extends AggregateRoot<ApplicationId> {
 
     public void updateContainerizingToCompleted() {
         if (this.applicationStatus == ApplicationStatus.CONTAINERIZING) {
-            log.debug("Application status is {}", this.applicationStatus);
+//            log.debug("Application status is {}", this.applicationStatus);
             this.applicationStatus = ApplicationStatus.COMPLETE;
         } else {
             throw new DomainException("The application status is not CONTAINERIZING");

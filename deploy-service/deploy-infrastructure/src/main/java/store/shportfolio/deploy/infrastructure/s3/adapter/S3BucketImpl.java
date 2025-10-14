@@ -35,7 +35,8 @@ public class S3BucketImpl implements S3Bucket {
                 .fildUrl(amazonS3.getUrl(bucket, file.getName()).toString())
                 .storageName(file.getName())
                 .build();
-        log.info("Upload storage info to s3: url-> {} , name-> {}", storageInfo.getFildUrl(), storageInfo.getStorageName());
+        log.info("Upload storage info to s3: url-> {} , name-> {}", storageInfo.getFildUrl(),
+                storageInfo.getStorageName());
 
         return storageInfo;
     }
@@ -58,9 +59,7 @@ public class S3BucketImpl implements S3Bucket {
 
     private void upload(File file) {
         try {
-            amazonS3.putObject(new PutObjectRequest(bucket, file.getName(), file)
-                    .withCannedAcl(CannedAccessControlList.PublicRead));
-
+            amazonS3.putObject(new PutObjectRequest(bucket, file.getName(), file));
         } catch (Exception e) {
             log.error("upload failed: {}", e.getMessage());
             throw new S3Exception("upload failed.");

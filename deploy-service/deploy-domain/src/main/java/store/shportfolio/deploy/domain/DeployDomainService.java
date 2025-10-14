@@ -2,21 +2,24 @@ package store.shportfolio.deploy.domain;
 
 import store.shportfolio.common.domain.valueobject.ApplicationId;
 import store.shportfolio.common.domain.valueobject.UserGlobal;
-import store.shportfolio.deploy.application.command.WebAppCreateCommand;
-import store.shportfolio.deploy.application.dto.DockerCreated;
 import store.shportfolio.deploy.domain.entity.DockerContainer;
 import store.shportfolio.deploy.domain.entity.Storage;
 import store.shportfolio.deploy.domain.entity.WebApp;
+import store.shportfolio.deploy.domain.valueobject.DockerContainerStatus;
 import store.shportfolio.deploy.domain.valueobject.StorageName;
 import store.shportfolio.deploy.domain.valueobject.StorageUrl;
 
 public interface DeployDomainService {
 
-    WebApp createWebApp(UserGlobal userGlobal, WebAppCreateCommand webAppCreateCommand);
+    WebApp createWebApp(UserGlobal userGlobal, String applicationName, int port, int version);
 
     DockerContainer createDockerContainer(ApplicationId applicationId);
 
-    void successfulCreateDockerContainer(DockerContainer dockerContainer, DockerCreated dockerCreated);
+    void successfulCreateDockerContainer(DockerContainer dockerContainer,
+                                         String dockerContainerId,
+                                         DockerContainerStatus dockerContainerStatus,
+                                         String dockerImageId,
+                                         String endPointUrl);
 
     Storage createStorage(ApplicationId applicationId);
 

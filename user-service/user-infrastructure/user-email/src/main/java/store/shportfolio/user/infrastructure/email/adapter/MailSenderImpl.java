@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.MailSendException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import store.shportfolio.user.usecase.exception.AlreadyMailSendException;
 import store.shportfolio.user.infrastructure.email.CustomCacheManager;
@@ -26,6 +27,7 @@ public class MailSenderImpl implements MailSender {
         this.customCacheManager = customCacheManager;
     }
 
+    @Async
     @Override
     public void sendMail(String email) {
         String code = generateRandomCode();
