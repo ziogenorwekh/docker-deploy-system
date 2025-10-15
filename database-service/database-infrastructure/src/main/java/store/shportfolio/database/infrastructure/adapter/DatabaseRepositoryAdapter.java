@@ -9,7 +9,9 @@ import store.shportfolio.database.infrastructure.repository.DatabaseJpaRepositor
 import store.shportfolio.database.infrastructure.repository.DatabaseSchemaManagement;
 import store.shportfolio.database.usecase.ports.output.DatabaseRepositoryPort;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Repository
@@ -31,6 +33,25 @@ public class DatabaseRepositoryAdapter implements DatabaseRepositoryPort {
     public Optional<Database> findByUserId(String userId) {
         return jpaRepository.findByUserId(userId)
                 .map(databaseEntityDataAccessMapper::databaseEntityToDatabase);
+    }
+
+    @Override
+    public Optional<Database> findByDatabaseName(String databaseName) {
+        return jpaRepository.findDatabaseEntityByDatabaseName(databaseName)
+                .map(databaseEntityDataAccessMapper::databaseEntityToDatabase);
+    }
+
+    @Override
+    public Optional<Database> findByUserIdAndDatabaseName(String userId, String databaseName) {
+        return jpaRepository.findDatabaseEntityByUserIdAndDatabaseName(userId, databaseName)
+                .map(databaseEntityDataAccessMapper::databaseEntityToDatabase);
+    }
+
+    @Override
+    public List<Database> findAllByUserId(String userId) {
+        return jpaRepository.findAllByUserId(userId).stream()
+                .map(databaseEntityDataAccessMapper::databaseEntityToDatabase)
+                .collect(Collectors.toList());
     }
 
     @Override

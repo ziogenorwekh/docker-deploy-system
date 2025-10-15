@@ -17,6 +17,8 @@ public interface DeployApplicationService {
 
     void saveJarFile(WebAppFileCreateCommand webAppFileCreateCommand, UserGlobal userGlobal);
 
+    void reDeployJarFile(WebAppFileCreateCommand webAppFileCreateCommand, UserGlobal userGlobal);
+
     WebAppTrackResponse trackQueryWebApp(@Valid WebAppTrackQuery webAppTrackQuery, UserGlobal userGlobal);
 
     List<WebAppTrackResponse> trackQueryAllWebApps(UserGlobal userGlobal);

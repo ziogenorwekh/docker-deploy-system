@@ -36,7 +36,7 @@ public class UserSecurityResources {
 
     @RequestMapping(path = "/login", method = RequestMethod.POST)
     public ResponseEntity<LoginResponse> login(@RequestBody LoginCommand loginCommand) {
-
+        log.info("login email: {}", loginCommand.getEmail());
         LoginResponse loginResponse = userAuthenticationUseCase.login(loginCommand);
         return ResponseEntity.ok(loginResponse);
     }

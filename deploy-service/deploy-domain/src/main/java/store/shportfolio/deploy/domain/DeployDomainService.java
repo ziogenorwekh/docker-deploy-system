@@ -34,4 +34,6 @@ public interface DeployDomainService {
     void startDockerContainer(DockerContainer dockerContainer);
 
     void stopDockerContainer(DockerContainer dockerContainer);
+
+    void reDeployApplication(WebApp webApp);
 }

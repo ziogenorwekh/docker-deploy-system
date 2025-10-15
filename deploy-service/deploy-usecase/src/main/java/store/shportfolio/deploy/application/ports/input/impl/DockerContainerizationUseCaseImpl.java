@@ -31,16 +31,31 @@ public class DockerContainerizationUseCaseImpl implements DockerContainerization
         this.dockerContainerHandler = dockerContainerHandler;
     }
 
-    @Override
     @Async
+    @Override
     public void uploadWebAppFile(WebApp webApp, File file) {
+        handleDeployment(webApp, file, false);
+    }
+
+    @Async
+    @Override
+    public void reUploadWebAppFile(WebApp webApp, File file) {
+        handleDeployment(webApp, file, true);
+    }
+
+    private void handleDeployment(WebApp webApp, File file, boolean isReUpload) {
         Storage storage = null;
-        log.info("Start deploying webapp file asynchronously");
+        log.info("Start {} webapp file asynchronously", isReUpload ? "re-deploying" : "deploying");
 
         try {
+            if (isReUpload) {
+                storageHandler.deleteStorage(webApp.getId().getValue());
+            }
+
             storage = storageHandler.uploadS3(webApp.getId().getValue(), file);
             log.info("Storage saved data URL: {}, Filename: {}", storage.getStorageUrl().getValue(),
                     storage.getStorageName().getValue());
+
             containerization(webApp, storage.getStorageUrl());
 
         } catch (S3Exception | DockerContainerException |
@@ -52,13 +67,7 @@ public class DockerContainerizationUseCaseImpl implements DockerContainerization
             log.error("Unexpected error during deployment: {}", e.getMessage());
             webAppHandler.failedApplication(webApp, "server error");
         } finally {
-            if (file != null && file.exists()) {
-                if (file.delete()) {
-                    log.info("Temporary file deleted successfully: {}", file.getAbsolutePath());
-                } else {
-                    log.warn("Failed to delete temporary file: {}", file.getAbsolutePath());
-                }
-            }
+            deleteTempFile(file);
         }
     }
 
@@ -69,5 +78,15 @@ public class DockerContainerizationUseCaseImpl implements DockerContainerization
         // 성공 상태 업데이트
         webAppHandler.completeContainerizing(webApp);
         log.info("Docker container processed and application completed -> {}", webApp.getApplicationStatus());
+    }
+
+    private void deleteTempFile(File file) {
+        if (file != null && file.exists()) {
+            if (file.delete()) {
+                log.info("Temporary file deleted successfully: {}", file.getAbsolutePath());
+            } else {
+                log.warn("Failed to delete temporary file: {}", file.getAbsolutePath());
+            }
+        }
     }
 }

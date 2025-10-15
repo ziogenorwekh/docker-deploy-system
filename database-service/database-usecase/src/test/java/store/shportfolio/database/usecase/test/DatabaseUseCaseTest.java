@@ -84,7 +84,7 @@ public class DatabaseUseCaseTest {
 
         Mockito.when(databaseRepository.findByUserId(userId)).thenReturn(Optional.of(database));
         // when
-        DatabaseTrackResponse databaseTrackResponse = databaseUseCase.trackQuery(databaseTrackQuery);
+        DatabaseTrackResponse databaseTrackResponse = databaseUseCase.trackDatabase(databaseTrackQuery);
         // then
 
         Assertions.assertNotNull(databaseTrackResponse);

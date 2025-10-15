@@ -9,7 +9,6 @@ import org.springframework.web.multipart.MultipartFile;
 import store.shportfolio.common.domain.valueobject.UserGlobal;
 import store.shportfolio.deploy.application.DeployApplicationService;
 import store.shportfolio.deploy.application.command.*;
-import store.shportfolio.deploy.application.openfeign.UserServiceClient;
 
 import java.util.List;
 import java.util.UUID;
@@ -20,13 +19,10 @@ import java.util.UUID;
 public class DeployResources {
 
     private final DeployApplicationService deployApplicationService;
-    private final UserServiceClient userServiceClient;
 
     @Autowired
-    public DeployResources(DeployApplicationService deployApplicationService,
-                           UserServiceClient userServiceClient) {
+    public DeployResources(DeployApplicationService deployApplicationService) {
         this.deployApplicationService = deployApplicationService;
-        this.userServiceClient = userServiceClient;
     }
 
     @RequestMapping(path = "/apps", method = RequestMethod.POST, produces = "application/json")
@@ -47,6 +43,18 @@ public class DeployResources {
         WebAppFileCreateCommand webAppFileCreateCommand = WebAppFileCreateCommand.builder()
                 .applicationId(applicationId.toString()).file(file).build();
         deployApplicationService.saveJarFile(webAppFileCreateCommand, userInfo);
+        return ResponseEntity.noContent().build();
+    }
+
+    @RequestMapping(path = "/apps/{applicationId}", method = RequestMethod.PATCH)
+    public ResponseEntity<Void> reDeployJarFile(@PathVariable UUID applicationId,
+                                            @RequestPart(value = "file") MultipartFile file,
+                                            @RequestHeader("X-Authenticated-Username") String username,
+                                            @RequestHeader("X-Authenticated-UserId") String userId) {
+        UserGlobal userInfo = UserGlobal.builder().userId(userId).username(username).build();
+        WebAppFileCreateCommand webAppFileCreateCommand = WebAppFileCreateCommand.builder()
+                .applicationId(applicationId.toString()).file(file).build();
+        deployApplicationService.reDeployJarFile(webAppFileCreateCommand, userInfo);
         return ResponseEntity.noContent().build();
     }
 

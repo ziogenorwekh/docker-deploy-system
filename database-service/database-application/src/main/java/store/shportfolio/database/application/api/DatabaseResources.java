@@ -11,6 +11,8 @@ import store.shportfolio.database.usecase.command.DatabaseCreateResponse;
 import store.shportfolio.database.usecase.command.DatabaseTrackQuery;
 import store.shportfolio.database.usecase.command.DatabaseTrackResponse;
 
+import java.util.List;
+
 @Slf4j
 @RestController
 @RequestMapping(path = "/api")
@@ -36,13 +38,25 @@ public class DatabaseResources {
                 .body(databaseCreateResponse);
     }
 
-    @RequestMapping(path = "/databases", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(path = "/databases/{databaseName}", method = RequestMethod.GET, produces = "application/json")
     public ResponseEntity<DatabaseTrackResponse> retrieveDatabase(@RequestHeader("X-Authenticated-Username") String username,
-                                                                   @RequestHeader("X-Authenticated-UserId") String userId) {
+                                                                  @RequestHeader("X-Authenticated-UserId") String userId,
+                                                                  @PathVariable String databaseName) {
         UserGlobal userInfo = UserGlobal.builder().userId(userId).username(username).build();
-        DatabaseTrackQuery databaseTrackQuery = DatabaseTrackQuery.builder().userId(userInfo.getUserId()).build();
-        DatabaseTrackResponse databaseTrackResponse = databaseUseCase.trackQuery(databaseTrackQuery);
+        DatabaseTrackQuery databaseTrackQuery = DatabaseTrackQuery.builder().userId(userInfo.getUserId())
+                .databaseName(databaseName).build();
+        DatabaseTrackResponse databaseTrackResponse = databaseUseCase.trackDatabase(databaseTrackQuery);
         return ResponseEntity.status(HttpStatus.OK).body(databaseTrackResponse);
+    }
+
+    @RequestMapping(path = "/databases", method = RequestMethod.GET, produces = "application/json")
+    public ResponseEntity<List<DatabaseTrackResponse>> retrieveDatabases(@RequestHeader("X-Authenticated-Username") String username,
+                                                                         @RequestHeader("X-Authenticated-UserId") String userId) {
+        UserGlobal userInfo = UserGlobal.builder().userId(userId).username(username).build();
+        DatabaseTrackQuery databaseTrackQuery = DatabaseTrackQuery.builder().userId(userInfo.getUserId())
+                .build();
+        List<DatabaseTrackResponse> databaseTrackResponses = databaseUseCase.trackDatabases(databaseTrackQuery);
+        return ResponseEntity.status(HttpStatus.OK).body(databaseTrackResponses);
     }
 
     @RequestMapping(path = "/databases", method = RequestMethod.DELETE, produces = "application/json")

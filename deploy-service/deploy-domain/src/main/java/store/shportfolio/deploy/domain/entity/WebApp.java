@@ -65,7 +65,6 @@ public class WebApp extends AggregateRoot<ApplicationId> {
 
     public void updateCreatedToContainerizing() {
         if (this.applicationStatus == ApplicationStatus.CREATED) {
-//            log.debug("Application status is {}", this.applicationStatus);
             this.applicationStatus = ApplicationStatus.CONTAINERIZING;
         } else {
             throw new DomainException("Application status is not CREATED");
@@ -84,6 +83,10 @@ public class WebApp extends AggregateRoot<ApplicationId> {
     public void failedApplication(String errorMessages) {
         this.applicationStatus = ApplicationStatus.FAILED;
         this.errorMessages = errorMessages;
+    }
+
+    public void reDeployApplicationStatus() {
+        this.applicationStatus = ApplicationStatus.CONTAINERIZING;
     }
 
 

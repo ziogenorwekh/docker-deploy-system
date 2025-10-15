@@ -90,7 +90,7 @@ public class DatabaseResourcesTest {
                 .databaseUsername("databaseUsername")
                 .accessUrl("accessUrl")
                 .build();
-        Mockito.when(databaseUseCase.trackQuery(Mockito.any(DatabaseTrackQuery.class)))
+        Mockito.when(databaseUseCase.trackDatabase(Mockito.any(DatabaseTrackQuery.class)))
                 .thenReturn(databaseTrackResponse);
 
         // when, then

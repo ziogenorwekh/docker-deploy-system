@@ -18,9 +18,9 @@ public class DatabaseEntity {
     @Id
     @Column(name = "DATABASE_ID", unique = true, nullable = false)
     private String databaseId;
-    @Column(name = "USER_ID", nullable = false, unique = true)
+    @Column(name = "USER_ID", nullable = false)
     private String userId;
-    @Column(name = "DATABASE_NAME", nullable = false)
+    @Column(name = "DATABASE_NAME", nullable = false, unique = true)
     private String databaseName;
     @Column(name = "DATABASE_USERNAME", nullable = false)
     private String databaseUsername;

@@ -1,7 +1,6 @@
 package store.shportfolio.database.usecase;
 
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,12 +13,13 @@ import store.shportfolio.database.usecase.command.DatabaseCreateResponse;
 import store.shportfolio.database.usecase.command.DatabaseTrackQuery;
 import store.shportfolio.database.usecase.command.DatabaseTrackResponse;
 import store.shportfolio.database.usecase.config.DatabaseEndpointConfigData;
-import store.shportfolio.database.usecase.exception.DatabaseAlreadyCreatedException;
 import store.shportfolio.database.usecase.exception.DatabaseNotFoundException;
 import store.shportfolio.database.usecase.mapper.DatabaseDataMapper;
 import store.shportfolio.database.usecase.ports.output.DatabaseRepositoryPort;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -44,10 +44,12 @@ public class DatabaseUseCaseImpl implements DatabaseUseCase {
     @Override
     @Transactional
     public DatabaseCreateResponse createDatabase(@Valid DatabaseCreateCommand databaseCreateCommand,
-                                                  UserGlobal userGlobal) {
-        isExistUsersDatabase(userGlobal);
-        Database database = databaseDomainService.createDatabase(userGlobal,
-                databaseCreateCommand.getDatabasePassword());
+                                                 UserGlobal userGlobal) {
+        Database database;
+        do {
+            database = databaseDomainService.createDatabase(userGlobal,
+                    databaseCreateCommand.getDatabasePassword());
+        } while (isExistDatabaseName(database.getDatabaseName().getValue()));
 
         String databaseAccessUrl = databaseEndpointConfigData.getEndpointUrl();
         databaseDomainService.settingAccessUrl(database, databaseAccessUrl);
@@ -59,11 +61,24 @@ public class DatabaseUseCaseImpl implements DatabaseUseCase {
 
     @Override
     @Transactional(readOnly = true)
-    public DatabaseTrackResponse trackQuery(@Valid DatabaseTrackQuery trackQuery) {
-        Database database = databaseRepositoryPort.findByUserId(trackQuery.getUserId())
+    public DatabaseTrackResponse trackDatabase(@Valid DatabaseTrackQuery trackQuery) {
+        Database database = databaseRepositoryPort.findByUserIdAndDatabaseName(trackQuery.getUserId(),
+                        trackQuery.getDatabaseName())
                 .orElseThrow(() -> new DatabaseNotFoundException("User not register user's database"));
         return databaseDataMapper.databaseToDatabaseTrackResponse(database);
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<DatabaseTrackResponse> trackDatabases(@Valid DatabaseTrackQuery trackQuery) {
+        List<Database> databases = databaseRepositoryPort.findAllByUserId(trackQuery.getUserId());
+        if (databases.isEmpty()) {
+            throw new DatabaseNotFoundException("User not register user's database");
+        }
+        return databases.stream().map(databaseDataMapper::databaseToDatabaseTrackResponse)
+                .collect(Collectors.toList());
+    }
+
 
     @Override
     @Transactional
@@ -72,11 +87,7 @@ public class DatabaseUseCaseImpl implements DatabaseUseCase {
         database.ifPresent(databaseRepositoryPort::remove);
     }
 
-    private void isExistUsersDatabase(UserGlobal userGlobal) {
-        databaseRepositoryPort.findByUserId(userGlobal.getUserId())
-                .ifPresent(database -> {
-                    throw new DatabaseAlreadyCreatedException(
-                            String.format("User %s already exists database.", userGlobal.getUsername()));
-                });
+    private boolean isExistDatabaseName(String databaseName) {
+        return databaseRepositoryPort.findByDatabaseName(databaseName).isPresent();
     }
 }

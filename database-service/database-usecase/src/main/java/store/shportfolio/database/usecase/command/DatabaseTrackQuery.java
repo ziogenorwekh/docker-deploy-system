@@ -12,6 +12,9 @@ import lombok.NoArgsConstructor;
 @Getter
 public class DatabaseTrackQuery {
 
-    @NotNull
+    @NotNull(message = "User ID is required")
     private String userId;
+
+    @NotNull(message = "Database name is required")
+    private String databaseName;
 }

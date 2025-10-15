@@ -63,4 +63,9 @@ public class DeployDomainServiceImpl implements DeployDomainService {
     public void stopDockerContainer(DockerContainer dockerContainer) {
         dockerContainer.stopDockerContainer();
     }
+
+    @Override
+    public void reDeployApplication(WebApp webApp) {
+        webApp.reDeployApplicationStatus();
+    }
 }

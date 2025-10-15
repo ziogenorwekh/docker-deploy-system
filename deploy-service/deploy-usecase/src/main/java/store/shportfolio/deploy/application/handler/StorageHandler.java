@@ -42,6 +42,7 @@ public class StorageHandler {
         storageRepository.save(storage);
     }
 
+    @Transactional
     public Storage uploadS3(UUID applicationId, File file) {
         Storage storage = storageRepository.findByApplicationId(applicationId).orElseThrow(() ->
                 new StorageNotFoundException("storage not found by id: " + applicationId));
@@ -58,6 +59,7 @@ public class StorageHandler {
         return saved;
     }
 
+    @Transactional
     public void deleteStorage(UUID applicationId) {
         Storage storage = storageRepository.findByApplicationId(applicationId).orElseThrow(() ->
                 new StorageNotFoundException("storage not found by id: " + applicationId));

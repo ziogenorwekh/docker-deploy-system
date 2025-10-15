@@ -102,7 +102,7 @@ public class DeployExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(ContainerAccessException.class)
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<ExceptionResponse> handleContainerAccessException(ContainerAccessException ex) {
         ExceptionResponse exceptionResponse = ExceptionResponse
                 .builder()
@@ -110,7 +110,7 @@ public class DeployExceptionHandler extends ResponseEntityExceptionHandler {
                 .timestamp(LocalDateTime.now())
                 .build();
 
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(exceptionResponse);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
     }
 
     @ExceptionHandler(DockerContainerException.class)
@@ -174,7 +174,7 @@ public class DeployExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(WebAppUserNotMatchException.class)
-    @ResponseStatus(HttpStatus.CONFLICT)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
     public ResponseEntity<ExceptionResponse> handleWebAppUserNotMatchException(WebAppUserNotMatchException ex) {
         ExceptionResponse exceptionResponse = ExceptionResponse
                 .builder()
@@ -182,7 +182,7 @@ public class DeployExceptionHandler extends ResponseEntityExceptionHandler {
                 .timestamp(LocalDateTime.now())
                 .build();
 
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(exceptionResponse);
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(exceptionResponse);
     }
 
     @ExceptionHandler(S3Exception.class)

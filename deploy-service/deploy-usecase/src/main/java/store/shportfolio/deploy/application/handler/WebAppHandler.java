@@ -40,6 +40,11 @@ public class WebAppHandler {
     }
 
     @Transactional
+    public void reDeployApplication(WebApp webApp) {
+        deployDomainService.reDeployApplication(webApp);
+    }
+
+    @Transactional
     public void completeContainerizing(WebApp webApp) {
         deployDomainService.containerizingToComplete(webApp);
         this.saveWebApp(webApp);
