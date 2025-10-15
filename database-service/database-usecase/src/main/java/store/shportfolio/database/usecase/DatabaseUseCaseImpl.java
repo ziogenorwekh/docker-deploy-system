@@ -8,10 +8,7 @@ import org.springframework.validation.annotation.Validated;
 import store.shportfolio.common.domain.valueobject.UserGlobal;
 import store.shportfolio.database.domain.DatabaseDomainService;
 import store.shportfolio.database.domain.entity.Database;
-import store.shportfolio.database.usecase.command.DatabaseCreateCommand;
-import store.shportfolio.database.usecase.command.DatabaseCreateResponse;
-import store.shportfolio.database.usecase.command.DatabaseTrackQuery;
-import store.shportfolio.database.usecase.command.DatabaseTrackResponse;
+import store.shportfolio.database.usecase.command.*;
 import store.shportfolio.database.usecase.config.DatabaseEndpointConfigData;
 import store.shportfolio.database.usecase.exception.DatabaseNotFoundException;
 import store.shportfolio.database.usecase.mapper.DatabaseDataMapper;
@@ -61,7 +58,7 @@ public class DatabaseUseCaseImpl implements DatabaseUseCase {
 
     @Override
     @Transactional(readOnly = true)
-    public DatabaseTrackResponse trackDatabase(@Valid DatabaseTrackQuery trackQuery) {
+    public DatabaseTrackResponse trackDatabase(@Valid DatabaseOneTrackQuery trackQuery) {
         Database database = databaseRepositoryPort.findByUserIdAndDatabaseName(trackQuery.getUserId(),
                         trackQuery.getDatabaseName())
                 .orElseThrow(() -> new DatabaseNotFoundException("User not register user's database"));
@@ -70,21 +67,27 @@ public class DatabaseUseCaseImpl implements DatabaseUseCase {
 
     @Override
     @Transactional(readOnly = true)
-    public List<DatabaseTrackResponse> trackDatabases(@Valid DatabaseTrackQuery trackQuery) {
+    public List<DatabaseTrackResponse> trackDatabases(@Valid DatabaseAllTrackQuery trackQuery) {
         List<Database> databases = databaseRepositoryPort.findAllByUserId(trackQuery.getUserId());
-        if (databases.isEmpty()) {
-            throw new DatabaseNotFoundException("User not register user's database");
-        }
         return databases.stream().map(databaseDataMapper::databaseToDatabaseTrackResponse)
                 .collect(Collectors.toList());
     }
 
 
+
+
     @Override
     @Transactional
-    public void deleteDatabase(UserGlobal userGlobal) {
-        Optional<Database> database = databaseRepositoryPort.findByUserId(userGlobal.getUserId());
+    public void deleteDatabase(UserGlobal userGlobal,DatabaseDeleteCommand databaseDeleteCommand) {
+        Optional<Database> database = databaseRepositoryPort.findByUserIdAndDatabaseName(userGlobal.getUserId()
+        , databaseDeleteCommand.getDatabaseName());
         database.ifPresent(databaseRepositoryPort::remove);
+    }
+
+    @Override
+    @Transactional
+    public void deleteAllDatabases(UserGlobal userGlobal) {
+        databaseRepositoryPort.removeAllByUserId(userGlobal.getUserId());
     }
 
     private boolean isExistDatabaseName(String databaseName) {

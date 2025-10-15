@@ -18,4 +18,6 @@ public interface DatabaseRepositoryPort {
     Database save(Database database);
 
     void remove(Database database);
+
+    void removeAllByUserId(String userId);
 }

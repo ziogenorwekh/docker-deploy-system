@@ -16,4 +16,7 @@ public interface DatabaseJpaRepository extends JpaRepository<DatabaseEntity, Str
     Optional<DatabaseEntity> findDatabaseEntityByUserIdAndDatabaseName(String userId, String databaseName);
 
     List<DatabaseEntity> findAllByUserId(String userId);
+
+    void deleteAllByUserId(String userId);
+
 }

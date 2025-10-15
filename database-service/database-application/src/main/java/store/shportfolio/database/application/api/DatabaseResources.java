@@ -6,10 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import store.shportfolio.common.domain.valueobject.UserGlobal;
 import store.shportfolio.database.usecase.DatabaseUseCase;
-import store.shportfolio.database.usecase.command.DatabaseCreateCommand;
-import store.shportfolio.database.usecase.command.DatabaseCreateResponse;
-import store.shportfolio.database.usecase.command.DatabaseTrackQuery;
-import store.shportfolio.database.usecase.command.DatabaseTrackResponse;
+import store.shportfolio.database.usecase.command.*;
 
 import java.util.List;
 
@@ -43,9 +40,9 @@ public class DatabaseResources {
                                                                   @RequestHeader("X-Authenticated-UserId") String userId,
                                                                   @PathVariable String databaseName) {
         UserGlobal userInfo = UserGlobal.builder().userId(userId).username(username).build();
-        DatabaseTrackQuery databaseTrackQuery = DatabaseTrackQuery.builder().userId(userInfo.getUserId())
+        DatabaseOneTrackQuery databaseOneTrackQuery = DatabaseOneTrackQuery.builder().userId(userInfo.getUserId())
                 .databaseName(databaseName).build();
-        DatabaseTrackResponse databaseTrackResponse = databaseUseCase.trackDatabase(databaseTrackQuery);
+        DatabaseTrackResponse databaseTrackResponse = databaseUseCase.trackDatabase(databaseOneTrackQuery);
         return ResponseEntity.status(HttpStatus.OK).body(databaseTrackResponse);
     }
 
@@ -53,17 +50,28 @@ public class DatabaseResources {
     public ResponseEntity<List<DatabaseTrackResponse>> retrieveDatabases(@RequestHeader("X-Authenticated-Username") String username,
                                                                          @RequestHeader("X-Authenticated-UserId") String userId) {
         UserGlobal userInfo = UserGlobal.builder().userId(userId).username(username).build();
-        DatabaseTrackQuery databaseTrackQuery = DatabaseTrackQuery.builder().userId(userInfo.getUserId())
+        DatabaseAllTrackQuery query = DatabaseAllTrackQuery.builder().userId(userInfo.getUserId())
                 .build();
-        List<DatabaseTrackResponse> databaseTrackResponses = databaseUseCase.trackDatabases(databaseTrackQuery);
+        List<DatabaseTrackResponse> databaseTrackResponses = databaseUseCase.trackDatabases(query);
         return ResponseEntity.status(HttpStatus.OK).body(databaseTrackResponses);
     }
 
-    @RequestMapping(path = "/databases", method = RequestMethod.DELETE, produces = "application/json")
+    @RequestMapping(path = "/databases/{databaseName}", method = RequestMethod.DELETE, produces = "application/json")
     public ResponseEntity<Void> deleteDatabases(@RequestHeader("X-Authenticated-Username") String username,
+                                                @RequestHeader("X-Authenticated-UserId") String userId,
+                                                @PathVariable String databaseName) {
+        UserGlobal userInfo = UserGlobal.builder().userId(userId).username(username).build();
+        DatabaseDeleteCommand build = DatabaseDeleteCommand.builder()
+                .databaseName(databaseName).build();
+        databaseUseCase.deleteDatabase(userInfo, build);
+        return ResponseEntity.noContent().build();
+    }
+
+    @RequestMapping(path = "/databases",method = RequestMethod.DELETE, produces = "application/json")
+    public ResponseEntity<Void> deleteAllDatabases(@RequestHeader("X-Authenticated-Username") String username,
                                                 @RequestHeader("X-Authenticated-UserId") String userId) {
         UserGlobal userInfo = UserGlobal.builder().userId(userId).username(username).build();
-        databaseUseCase.deleteDatabase(userInfo);
+        databaseUseCase.deleteAllDatabases(userInfo);
         return ResponseEntity.noContent().build();
     }
 

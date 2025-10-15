@@ -3,18 +3,15 @@ package store.shportfolio.database.usecase.command;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@NoArgsConstructor
-@AllArgsConstructor
+@Data
 @Builder
-@Getter
-public class DatabaseTrackQuery {
+@AllArgsConstructor
+@NoArgsConstructor
+public class DatabaseDeleteCommand {
 
-    @NotNull(message = "User ID is required")
-    private String userId;
-
-    @NotNull(message = "Database name is required")
+    @NotNull(message = "databaseName is required")
     private String databaseName;
 }

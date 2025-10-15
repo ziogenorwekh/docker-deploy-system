@@ -75,4 +75,9 @@ public class DatabaseRepositoryAdapter implements DatabaseRepositoryPort {
         log.info("removing database {}", database.getDatabaseName().getValue());
         jpaRepository.deleteById(database.getId().getValue().toString());
     }
+
+    @Override
+    public void removeAllByUserId(String userId) {
+        jpaRepository.deleteAllByUserId(userId);
+    }
 }

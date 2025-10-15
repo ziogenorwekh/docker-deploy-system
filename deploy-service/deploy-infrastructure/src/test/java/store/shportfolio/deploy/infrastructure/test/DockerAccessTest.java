@@ -1,6 +1,7 @@
 package store.shportfolio.deploy.infrastructure.test;
 
 import com.github.dockerjava.api.DockerClient;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -13,6 +14,7 @@ import store.shportfolio.deploy.infrastructure.docker.helper.DockerImageCreateHe
 import store.shportfolio.deploy.infrastructure.docker.helper.DockerResourceHelper;
 import store.shportfolio.deploy.infrastructure.docker.helper.DockerfileCreateHelper;
 
+@Disabled("Requires Docker environment")
 @ActiveProfiles("docker")
 @ContextConfiguration(classes = {DockerConfig.class})
 @SpringBootTest(useMainMethod = SpringBootTest.UseMainMethod.NEVER,
