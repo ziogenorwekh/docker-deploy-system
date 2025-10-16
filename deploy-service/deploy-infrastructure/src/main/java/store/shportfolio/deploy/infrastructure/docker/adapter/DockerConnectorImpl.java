@@ -66,44 +66,17 @@ public class DockerConnectorImpl implements DockerConnector {
                     .dockerContainerId(dockerId)
                     .build();
         }
-//            else {
-//                return DockerCreated.builder()
-//                        .dockerContainerStatus(DockerContainerStatus.ERROR)
-//                        .dockerContainerId(dockerId)
-//                        .endPointUrl("")
-//                        .dockerImageId(imageId)
-//                        .error("Container not running. Check Container logs.")
-//                        .build();
-//            }
-//        }
-//        catch (Exception e) {
-//            log.error("Error during Docker container creation: {}", e.getMessage());
-//            throw new DockerContainerException("Docker container creation failed: " + e.getMessage());
-//            log.error(e.getMessage(), e);
-//            return DockerCreated.builder()
-//                    .dockerContainerStatus(DockerContainerStatus.ERROR)
-//                    .dockerContainerId(dockerId)
-//                    .endPointUrl("")
-//                    .dockerImageId(imageId)
-//                    .error(e.getMessage())
-//                    .build();
-//        } finally {
-//        }
+        String tracked = dockerContainerHelper.trackLogContainer(dockerId);
         dockerfileCreateHelper.deleteLocalDockerfile(dockerfile);
-//        throw new DockerContainerException(String.format("Docker container creation failed Id: %s",
-//                webApp.getId().getValue()));
-
         return DockerCreated
                 .builder()
                 .dockerContainerStatus(DockerContainerStatus.ERROR)
-                .error("")
+                .error(tracked)
                 .endPointUrl(String.format("%s:%s", endpointUrl, webApp.getServerPort().getValue()))
                 .dockerImageId(imageId)
                 .dockerContainerId(dockerId)
                 .build();
     }
-
-
     @Override
     public ResourceUsage getResourceUsage(String dockerContainerId) {
         return dockerResourceHelper.getContainerResources(dockerContainerId);
