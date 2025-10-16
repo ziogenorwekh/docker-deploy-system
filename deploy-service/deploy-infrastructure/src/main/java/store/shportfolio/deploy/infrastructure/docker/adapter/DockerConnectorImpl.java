@@ -45,37 +45,40 @@ public class DockerConnectorImpl implements DockerConnector {
         File dockerfile = null;
         String imageId = null;
         String dockerId = null;
-//        try {
-//            log.info("start docker create container");
         dockerfile = dockerfileCreateHelper.createDockerfile(webApp, storageUrl);
         imageId = dockerImageCreateHelper.createImage(webApp, dockerfile);
         dockerId = dockerContainerHelper.runContainer(imageId, webApp);
-        log.info("time wait 15 seconds");
+        log.info("time wait 8 seconds");
         try {
-            Thread.sleep(1000L * 15);
+            Thread.sleep(1000L * 8);
         } catch (InterruptedException e) {
             throw new WebAppException("Thread interrupted: " + e.getMessage());
         }
-        if (dockerContainerHelper.isContainerRunning(dockerId)) {
+        try {
+            if (dockerContainerHelper.isContainerRunning(dockerId)) {
+                return DockerCreated
+                        .builder()
+                        .dockerContainerStatus(DockerContainerStatus.STARTED)
+                        .error("")
+                        .endPointUrl(String.format("%s:%s", endpointUrl, webApp.getServerPort().getValue()))
+                        .dockerImageId(imageId)
+                        .dockerContainerId(dockerId)
+                        .build();
+            }
+        } catch (Exception e) {
+            String tracked = dockerContainerHelper.trackLogContainer(dockerId);
             return DockerCreated
                     .builder()
-                    .dockerContainerStatus(DockerContainerStatus.STARTED)
-                    .error("")
+                    .dockerContainerStatus(DockerContainerStatus.ERROR)
+                    .error(tracked)
                     .endPointUrl(String.format("%s:%s", endpointUrl, webApp.getServerPort().getValue()))
                     .dockerImageId(imageId)
                     .dockerContainerId(dockerId)
                     .build();
+        } finally {
+            dockerfileCreateHelper.deleteLocalDockerfile(dockerfile);
         }
-        String tracked = dockerContainerHelper.trackLogContainer(dockerId);
-        dockerfileCreateHelper.deleteLocalDockerfile(dockerfile);
-        return DockerCreated
-                .builder()
-                .dockerContainerStatus(DockerContainerStatus.ERROR)
-                .error(tracked)
-                .endPointUrl(String.format("%s:%s", endpointUrl, webApp.getServerPort().getValue()))
-                .dockerImageId(imageId)
-                .dockerContainerId(dockerId)
-                .build();
+        return null;
     }
     @Override
     public ResourceUsage getResourceUsage(String dockerContainerId) {

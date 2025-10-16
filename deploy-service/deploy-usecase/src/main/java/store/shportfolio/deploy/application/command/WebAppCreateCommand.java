@@ -25,6 +25,6 @@ public class WebAppCreateCommand {
     private Integer version;
 
     @NotNull(message = "Port number must not be null")
-    @Min(value = 8000, message = "Port number must be at least 10000")
+    @Min(value = 10000, message = "Port number must be at least 10000")
     private Integer port;
 }

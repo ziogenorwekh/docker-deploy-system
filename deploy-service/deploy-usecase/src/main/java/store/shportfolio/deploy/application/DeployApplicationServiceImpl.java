@@ -176,6 +176,11 @@ public class DeployApplicationServiceImpl implements DeployApplicationService {
         log.info("query webApp id is {}", applicationId);
         WebApp webApp = this.getWebApp(userGlobal, applicationId);
         DockerContainer dockerContainer = dockerContainerHandler.getDockerContainer(applicationId);
+        if (webApp.getApplicationStatus() == ApplicationStatus.FAILED) {
+            String containerLogs = dockerContainerHandler.getContainerLogs(dockerContainer);
+            return deployDataMapper.webAppToWebAppContainerResponse(webApp, null, containerLogs,
+                    dockerContainer.getDockerContainerStatus());
+        }
         ResourceUsage resourceUsage = dockerContainerHandler.getContainerUsage(dockerContainer);
         String containerLogs = dockerContainerHandler.getContainerLogs(dockerContainer);
 
