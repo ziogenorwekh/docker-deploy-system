@@ -66,7 +66,7 @@ public class DeployApplicationServiceImpl implements DeployApplicationService {
         WebApp saved = webAppHandler.saveWebApp(webApp);
         storageHandler.saveStorage(storage);
         dockerContainerHandler.saveDockerContainer(dockerContainer);
-        log.info("WebApp created: {}", saved.getApplicationName());
+        log.info("WebApp created: {}", saved.getApplicationName().getValue());
 
         return deployDataMapper.webAppToWebAppCreateResponse(saved);
     }

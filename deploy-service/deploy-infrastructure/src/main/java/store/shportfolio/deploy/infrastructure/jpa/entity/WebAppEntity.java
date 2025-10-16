@@ -20,16 +20,16 @@ public class WebAppEntity {
     @Column(name = "APPLICATION_ID", unique = true, nullable = false)
     private String applicationId;
 
-    @Column(name = "USER_ID", nullable = false, unique = true)
+    @Column(name = "USER_ID", nullable = false)
     private String userId;
 
     @Column(name = "APPLICATION_NAME", nullable = false, unique = true)
     private String applicationName;
 
-    @Column(nullable = false, name = "SERVER_PORT")
+    @Column(nullable = false, name = "SERVER_PORT", unique = true)
     private int serverPort;
 
-    @Column(nullable = false, name = "JAVA_VERSION")
+    @Column(nullable = false, name = "JAVA_VERSION",unique = true)
     private int javaVersion;
 
     @Enumerated(EnumType.STRING)
