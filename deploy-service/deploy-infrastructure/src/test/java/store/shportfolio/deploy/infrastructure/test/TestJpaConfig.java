@@ -1,5 +1,6 @@
 package store.shportfolio.deploy.infrastructure.test;
 
+import jakarta.persistence.EntityManager;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,8 +23,9 @@ import store.shportfolio.deploy.infrastructure.jpa.repository.WebAppJpaRepositor
 public class TestJpaConfig {
 
     @Bean
-    public StorageRepositoryImpl storageRepository(StorageJpaRepository storageJpaRepository) {
-        return new StorageRepositoryImpl(storageJpaRepository, deployDataAccessMapper());
+    public StorageRepositoryImpl storageRepository(StorageJpaRepository storageJpaRepository
+    , EntityManager entityManager) {
+        return new StorageRepositoryImpl(storageJpaRepository, deployDataAccessMapper(),entityManager);
     }
 
     @Bean
@@ -35,8 +37,9 @@ public class TestJpaConfig {
 
     @Bean
     public DockerContainerRepositoryImpl dockerContainerRepository(
-            DockerContainerJpaRepository dockerContainerJpaRepository) {
-        return new DockerContainerRepositoryImpl(dockerContainerJpaRepository, deployDataAccessMapper());
+            DockerContainerJpaRepository dockerContainerJpaRepository, EntityManager entityManager) {
+        return new DockerContainerRepositoryImpl(dockerContainerJpaRepository, deployDataAccessMapper()
+        , entityManager);
     }
 
     @Bean

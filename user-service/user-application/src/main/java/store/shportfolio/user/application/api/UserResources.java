@@ -66,17 +66,23 @@ public class UserResources {
     @CircuitBreaker(name = "user-service", fallbackMethod = "fallbackDeleteUser")
     @RequestMapping(path = "/users/{userId}", method = RequestMethod.DELETE)
     public ResponseEntity<Void> deleteUser(@PathVariable String userId,
-                                           @RequestHeader(name = "X-Authenticated-UserId") String userIdFromToken) {
+                                           @RequestHeader(name = "X-Authenticated-UserId") String userIdFromToken,
+                                           @RequestHeader(name = "X-Authenticated-Username") String username,
+                                           @RequestHeader(name = "Authorization") String token) {
         validateEqualsRequesterAndBearer(userId, userIdFromToken);
         try {
-            databaseServiceClient.deleteUserDatabase(userIdFromToken);
+            databaseServiceClient.deleteUserDatabase(userIdFromToken,username,token);
         } catch (FeignException fe) {
+            log.error("error message: {}", fe.getMessage());
+            log.error("Deploy service unavailable");
             throw new CustomServiceUnavailableException("Database service unavailable");
         }
 
         try {
-            deployServiceClient.deleteAllUserApplication(userIdFromToken);
+            deployServiceClient.deleteAllUserApplication(userIdFromToken,username,token);
         } catch (FeignException fe) {
+            log.error("error message: {}", fe.getMessage());
+            log.error("Deploy service unavailable");
             throw new CustomServiceUnavailableException("Deploy service unavailable");
         }
 

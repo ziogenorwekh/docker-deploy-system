@@ -16,7 +16,9 @@ public interface DatabaseServiceClient {
     @CircuitBreaker(name = "database-service", fallbackMethod = "fallbackDeleteUserDatabase")
     @RequestMapping(path = "/api/databases", method = RequestMethod.DELETE,
             produces = "application/json")
-    ResponseEntity<Void> deleteUserDatabase(@RequestHeader("Authorization") String token);
+    ResponseEntity<Void> deleteUserDatabase(@RequestHeader(name = "X-Authenticated-UserId") String userIdFromToken,
+                                            @RequestHeader(name = "X-Authenticated-Username") String username,
+                                            @RequestHeader(name = "Authorization") String token);
 
     default ResponseEntity<Void> fallbackDeleteUserDatabase(String token, Throwable t) {
         System.err.println("Database deletion failed: " + t.getMessage());

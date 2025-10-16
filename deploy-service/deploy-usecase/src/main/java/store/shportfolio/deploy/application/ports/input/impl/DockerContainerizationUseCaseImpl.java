@@ -44,20 +44,16 @@ public class DockerContainerizationUseCaseImpl implements DockerContainerization
     }
 
     private void handleDeployment(WebApp webApp, File file, boolean isReUpload) {
-        Storage storage = null;
         log.info("Start {} webapp file asynchronously", isReUpload ? "re-deploying" : "deploying");
-
         try {
+            Storage storage;
             if (isReUpload) {
-                storageHandler.deleteStorage(webApp.getId().getValue());
+                storageHandler.deleteStorageAndReInitializeStorage(webApp.getId().getValue());
             }
-
             storage = storageHandler.uploadS3(webApp.getId().getValue(), file);
             log.info("Storage saved data URL: {}, Filename: {}", storage.getStorageUrl().getValue(),
                     storage.getStorageName().getValue());
-
-            containerization(webApp, storage.getStorageUrl());
-
+            containerization(webApp, storage.getStorageUrl(), isReUpload);
         } catch (S3Exception | DockerContainerException |
                  ContainerAccessException | DockerContainerCreatingFailedException |
                  DockerContainerRunException | DockerImageCreationException e) {
@@ -71,8 +67,12 @@ public class DockerContainerizationUseCaseImpl implements DockerContainerization
         }
     }
 
-    private void containerization(WebApp webApp, StorageUrl storageUrl) {
-        dockerContainerHandler.createDockerImageAndRun(webApp, storageUrl.getValue());
+    private void containerization(WebApp webApp, StorageUrl storageUrl, Boolean isReUpload) {
+        if (isReUpload) {
+            dockerContainerHandler.reCreateDockerImageAndRun(webApp, storageUrl.getValue());
+        } else {
+            dockerContainerHandler.createDockerImageAndRun(webApp, storageUrl.getValue());
+        }
         log.info("Docker container status is {}", webApp.getApplicationStatus());
 
         // 성공 상태 업데이트

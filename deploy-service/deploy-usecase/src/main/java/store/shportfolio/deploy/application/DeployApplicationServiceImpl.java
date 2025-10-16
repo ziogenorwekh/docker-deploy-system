@@ -19,6 +19,7 @@ import store.shportfolio.deploy.domain.entity.DockerContainer;
 import store.shportfolio.deploy.domain.entity.Storage;
 import store.shportfolio.deploy.domain.entity.WebApp;
 import store.shportfolio.deploy.domain.valueobject.ApplicationStatus;
+import store.shportfolio.deploy.domain.valueobject.DockerContainerStatus;
 
 import java.io.File;
 import java.io.IOException;
@@ -89,6 +90,7 @@ public class DeployApplicationServiceImpl implements DeployApplicationService {
     public void reDeployJarFile(WebAppFileCreateCommand webAppFileCreateCommand, UserGlobal userGlobal) {
         WebApp webApp = this.getWebApp(userGlobal,UUID.fromString(webAppFileCreateCommand.getApplicationId()));
         webAppHandler.reDeployApplication(webApp);
+        webAppHandler.startContainerizing(webApp);
         log.info("Containerizing started -> {}", webApp.getApplicationStatus());
         File file;
         try {
@@ -149,10 +151,6 @@ public class DeployApplicationServiceImpl implements DeployApplicationService {
         UUID applicationId = webAppDeleteCommand.getApplicationId();
         log.info("delete webApp id is {}", applicationId);
         WebApp webApp = this.getWebApp(userGlobal, applicationId);
-        if (webApp.getApplicationStatus().equals(ApplicationStatus.CREATED)) {
-            webAppHandler.deleteWebApp(webApp);
-            return;
-        }
         webAppHandler.deleteWebApp(webApp);
         storageHandler.deleteStorage(webApp.getId().getValue());
         dockerContainerHandler.deleteDockerContainer(webApp.getId().getValue());

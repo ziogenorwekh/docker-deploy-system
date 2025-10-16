@@ -1,5 +1,6 @@
 package store.shportfolio.deploy.infrastructure.jpa.adapter;
 
+import jakarta.persistence.EntityManager;
 import org.springframework.stereotype.Repository;
 import store.shportfolio.deploy.application.ports.output.repository.StorageRepository;
 import store.shportfolio.deploy.domain.entity.Storage;
@@ -15,11 +16,12 @@ public class StorageRepositoryImpl implements StorageRepository {
 
     private final StorageJpaRepository storageJpaRepository;
     private final DeployDataAccessMapper deployDataAccessMapper;
-
+    private final EntityManager entityManager;
     public StorageRepositoryImpl(StorageJpaRepository storageJpaRepository,
-                                 DeployDataAccessMapper deployDataAccessMapper) {
+                                 DeployDataAccessMapper deployDataAccessMapper, EntityManager entityManager) {
         this.storageJpaRepository = storageJpaRepository;
         this.deployDataAccessMapper = deployDataAccessMapper;
+        this.entityManager = entityManager;
     }
 
     @Override
@@ -45,5 +47,15 @@ public class StorageRepositoryImpl implements StorageRepository {
     @Override
     public void removeByApplicationId(UUID applicationId) {
         storageJpaRepository.removeByApplicationId(applicationId.toString());
+    }
+
+    @Override
+    public void flush() {
+        storageJpaRepository.flush();
+    }
+
+    @Override
+    public void clear() {
+        entityManager.clear();
     }
 }

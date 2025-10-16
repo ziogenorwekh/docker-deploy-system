@@ -86,7 +86,7 @@ public class WebApp extends AggregateRoot<ApplicationId> {
     }
 
     public void reDeployApplicationStatus() {
-        this.applicationStatus = ApplicationStatus.CONTAINERIZING;
+        this.applicationStatus = ApplicationStatus.CREATED;
     }
 
 

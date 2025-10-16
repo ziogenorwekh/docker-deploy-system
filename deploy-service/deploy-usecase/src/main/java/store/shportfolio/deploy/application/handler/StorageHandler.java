@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import store.shportfolio.common.domain.valueobject.ApplicationId;
 import store.shportfolio.deploy.application.dto.StorageInfo;
 import store.shportfolio.deploy.application.exception.StorageNotFoundException;
 import store.shportfolio.deploy.application.ports.output.repository.StorageRepository;
@@ -65,6 +66,16 @@ public class StorageHandler {
                 new StorageNotFoundException("storage not found by id: " + applicationId));
         s3Bucket.deleteS3(storage.getStorageName().getValue());
         storageRepository.removeByApplicationId(applicationId);
+    }
+
+    @Transactional
+    public void deleteStorageAndReInitializeStorage(UUID applicationId) {
+        storageRepository.removeByApplicationId(applicationId);
+        storageRepository.flush();
+        storageRepository.clear();
+        Storage storage = deployDomainService.createStorage(new ApplicationId(applicationId));
+        storageRepository.save(storage);
+        log.info("Re-initialize storage for applicationId: {}", applicationId);
     }
 
     private void removeLocalFile(File targetFile) {

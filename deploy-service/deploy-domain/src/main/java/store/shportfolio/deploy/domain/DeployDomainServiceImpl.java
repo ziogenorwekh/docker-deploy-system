@@ -68,4 +68,9 @@ public class DeployDomainServiceImpl implements DeployDomainService {
     public void reDeployApplication(WebApp webApp) {
         webApp.reDeployApplicationStatus();
     }
+
+    @Override
+    public void reInitializeDockerContainer(DockerContainer dockerContainer) {
+        dockerContainer.reInitializeDockerContainer();
+    }
 }

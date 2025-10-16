@@ -9,7 +9,6 @@ import store.shportfolio.deploy.domain.valueobject.DockerContainerStatus;
 import store.shportfolio.deploy.domain.valueobject.DockerContainerId;
 
 @Getter
-@ToString
 public class DockerContainer extends BaseEntity<ApplicationId> {
 
     private DockerContainerId dockerContainerId;
@@ -40,6 +39,13 @@ public class DockerContainer extends BaseEntity<ApplicationId> {
                 .build();
     }
 
+    public void reInitializeDockerContainer() {
+        this.dockerContainerId = new DockerContainerId("");
+        this.dockerContainerStatus = DockerContainerStatus.INITIALIZED;
+        this.endPointUrl = "";
+        this.imageId = "";
+    }
+
     public void successfulDockerContainer(String dockerContainerId,
                                           DockerContainerStatus dockerContainerStatus,
                                           String dockerImageId,
@@ -61,5 +67,15 @@ public class DockerContainer extends BaseEntity<ApplicationId> {
         if (this.dockerContainerStatus == DockerContainerStatus.STARTED) {
             this.dockerContainerStatus = DockerContainerStatus.STOPPED;
         }
+    }
+
+    @Override
+    public String toString() {
+        return "DockerContainer{" +
+                "dockerContainerId=" + dockerContainerId.getValue() +
+                ", endPointUrl='" + endPointUrl.toString() + '\'' +
+                ", dockerContainerStatus=" + dockerContainerStatus +
+                ", imageId='" + imageId + '\'' +
+                '}';
     }
 }

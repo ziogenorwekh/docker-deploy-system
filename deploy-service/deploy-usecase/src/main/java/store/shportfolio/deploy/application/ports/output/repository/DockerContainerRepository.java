@@ -16,4 +16,8 @@ public interface DockerContainerRepository {
     void remove(DockerContainer dockerContainer);
 
     void removeByApplicationId(UUID applicationId);
+
+    void flush();
+
+    void clear();
 }

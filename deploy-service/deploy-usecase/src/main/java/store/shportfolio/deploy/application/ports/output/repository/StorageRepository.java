@@ -14,4 +14,8 @@ public interface StorageRepository {
     void remove(Storage storage);
 
     void removeByApplicationId(UUID applicationId);
+
+    void flush();
+
+    void clear();
 }

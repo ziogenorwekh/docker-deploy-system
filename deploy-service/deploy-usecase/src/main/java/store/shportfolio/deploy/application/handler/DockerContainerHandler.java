@@ -49,27 +49,12 @@ public class DockerContainerHandler {
 
     @Transactional
     public DockerContainer createDockerImageAndRun(WebApp webApp, String storageUrl) {
-        DockerContainer dockerContainer = this.getDockerContainer(webApp.getId().getValue());
-        log.info("Create docker container: " + dockerContainer);
+        return handleDockerContainerCreation(webApp, storageUrl,false);
+    }
 
-        if (!(dockerContainer.getDockerContainerStatus() == DockerContainerStatus.INITIALIZED)) {
-            throw new ContainerAccessException("Docker container is not initialized");
-        }
-
-        log.info("docker container must be INITIALIZED -> {}", dockerContainer.getDockerContainerStatus());
-
-        DockerCreated dockerCreated = dockerConnector.createContainer(webApp, storageUrl);
-        if (dockerCreated.getDockerContainerStatus() == DockerContainerStatus.ERROR) {
-            throw new DockerContainerException(dockerCreated.getError());
-        }
-
-        deployDomainService.successfulCreateDockerContainer(dockerContainer, dockerCreated.getDockerContainerId(),
-                dockerCreated.getDockerContainerStatus(),dockerCreated.getDockerImageId(),
-                dockerCreated.getEndPointUrl());
-        DockerContainer saved = dockerContainerRepository.save(dockerContainer);
-
-        log.info("docker container must be STARTED -> {}", saved.getDockerContainerStatus());
-        return saved;
+    @Transactional
+    public DockerContainer reCreateDockerImageAndRun(WebApp webApp, String storageUrl) {
+        return handleDockerContainerCreation(webApp, storageUrl, true);
     }
 
 
@@ -127,5 +112,38 @@ public class DockerContainerHandler {
             log.error("Error dropping docker container, message is {}", e.getMessage());
         }
         dockerContainerRepository.removeByApplicationId(applicationId);
+    }
+
+    private DockerContainer handleDockerContainerCreation(WebApp webApp,String storageUrl, boolean isReCreate) {
+        DockerContainer dockerContainer;
+        if (isReCreate) {
+            this.deleteDockerContainer(webApp.getId().getValue());
+
+            dockerContainerRepository.flush();
+            dockerContainerRepository.clear();
+            dockerContainer = deployDomainService.createDockerContainer(webApp.getId());
+            log.info("Re-create docker container initialized -> {}", dockerContainer.getDockerContainerStatus());
+        } else {
+            dockerContainer = this.getDockerContainer(webApp.getId().getValue());
+            if (dockerContainer.getDockerContainerStatus() != DockerContainerStatus.INITIALIZED) {
+                throw new ContainerAccessException("Docker container is not initialized");
+            }
+            log.info("Create docker container, must be INITIALIZED -> {}", dockerContainer.getDockerContainerStatus());
+        }
+
+        DockerCreated dockerCreated = dockerConnector.createContainer(webApp, storageUrl);
+        if (dockerCreated.getDockerContainerStatus() == DockerContainerStatus.ERROR) {
+            throw new DockerContainerException(dockerCreated.getError());
+        }
+        deployDomainService.successfulCreateDockerContainer(
+                dockerContainer,
+                dockerCreated.getDockerContainerId(),
+                dockerCreated.getDockerContainerStatus(),
+                dockerCreated.getDockerImageId(),
+                dockerCreated.getEndPointUrl()
+        );
+        DockerContainer saved = dockerContainerRepository.save(dockerContainer);
+        log.info("Docker container must be STARTED -> {}", saved.getDockerContainerStatus());
+        return saved;
     }
 }

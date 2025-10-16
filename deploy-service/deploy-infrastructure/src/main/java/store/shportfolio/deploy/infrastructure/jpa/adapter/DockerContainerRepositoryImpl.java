@@ -1,5 +1,6 @@
 package store.shportfolio.deploy.infrastructure.jpa.adapter;
 
+import jakarta.persistence.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import store.shportfolio.deploy.application.ports.output.repository.DockerContainerRepository;
@@ -16,11 +17,14 @@ public class DockerContainerRepositoryImpl implements DockerContainerRepository 
 
     private final DockerContainerJpaRepository dockerContainerJpaRepository;
     private final DeployDataAccessMapper deployDataAccessMapper;
+    private final EntityManager entityManager;
     @Autowired
     public DockerContainerRepositoryImpl(DockerContainerJpaRepository dockerContainerJpaRepository,
-                                         DeployDataAccessMapper deployDataAccessMapper) {
+                                         DeployDataAccessMapper deployDataAccessMapper,
+                                         EntityManager entityManager) {
         this.dockerContainerJpaRepository = dockerContainerJpaRepository;
         this.deployDataAccessMapper = deployDataAccessMapper;
+        this.entityManager = entityManager;
     }
 
     @Override
@@ -54,5 +58,15 @@ public class DockerContainerRepositoryImpl implements DockerContainerRepository 
     @Override
     public void removeByApplicationId(UUID applicationId) {
         dockerContainerJpaRepository.removeByApplicationId(applicationId.toString());
+    }
+
+    @Override
+    public void flush() {
+        dockerContainerJpaRepository.flush();
+    }
+
+    @Override
+    public void clear() {
+        entityManager.clear();
     }
 }

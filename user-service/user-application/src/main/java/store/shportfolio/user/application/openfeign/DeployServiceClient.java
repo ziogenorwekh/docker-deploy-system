@@ -16,7 +16,9 @@ public interface DeployServiceClient {
     @CircuitBreaker(name = "deploy-service", fallbackMethod = "fallbackDeleteAllUserApplication")
     @RequestMapping(path = "/api/apps", method = RequestMethod.DELETE,
             produces = "application/json")
-    ResponseEntity<Void> deleteAllUserApplication(@RequestHeader("Authorization") String token);
+    ResponseEntity<Void> deleteAllUserApplication(@RequestHeader(name = "X-Authenticated-UserId") String userIdFromToken,
+                                                  @RequestHeader(name = "X-Authenticated-Username") String username,
+                                                  @RequestHeader(name = "Authorization") String token);
 
     default ResponseEntity<Void> fallbackDeleteAllUserApplication(String token, Throwable t) {
         System.err.println("User application deletion failed: " + t.getMessage());

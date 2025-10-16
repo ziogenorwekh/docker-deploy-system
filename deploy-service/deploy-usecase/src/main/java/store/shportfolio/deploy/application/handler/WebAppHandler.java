@@ -42,6 +42,7 @@ public class WebAppHandler {
     @Transactional
     public void reDeployApplication(WebApp webApp) {
         deployDomainService.reDeployApplication(webApp);
+        this.saveWebApp(webApp);
     }
 
     @Transactional
