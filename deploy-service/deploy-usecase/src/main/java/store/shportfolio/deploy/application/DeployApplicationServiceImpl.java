@@ -1,5 +1,6 @@
 package store.shportfolio.deploy.application;
 
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -116,6 +117,7 @@ public class DeployApplicationServiceImpl implements DeployApplicationService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<WebAppTrackResponse> trackQueryAllWebApps(UserGlobal userGlobal) {
         List<WebApp> webApps = webAppHandler.findAll(userGlobal.getUserId());
         Stream<WebAppTrackResponse> webAppTrackResponseStream = webApps.stream().map(webApp -> {
