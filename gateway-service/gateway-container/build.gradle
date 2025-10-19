@@ -37,6 +37,12 @@ jar {
 jib {
     from {
         image = 'openjdk:17-slim'
+        platforms {
+            platform {
+                architecture = 'arm64'
+                os = 'linux'
+            }
+        }
     }
     to {
         image = 'gateway-service'
