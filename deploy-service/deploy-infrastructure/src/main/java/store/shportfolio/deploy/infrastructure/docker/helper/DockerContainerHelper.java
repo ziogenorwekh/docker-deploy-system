@@ -156,8 +156,10 @@ public class DockerContainerHelper {
     public boolean isContainerRunning(String containerId) {
         try {
             InspectContainerResponse exec = dockerClient.inspectContainerCmd(containerId).exec();
+            log.info("Container {} running status: {}", containerId, exec.getState().getRunning());
             return Boolean.TRUE.equals(exec.getState().getRunning());
         } catch (Exception e) {
+            log.error("DockerContainerHelper isContainerRunning: {}", e.getMessage());
             throw new DockerContainerException("Error checking container status: " + e.getMessage());
         }
     }

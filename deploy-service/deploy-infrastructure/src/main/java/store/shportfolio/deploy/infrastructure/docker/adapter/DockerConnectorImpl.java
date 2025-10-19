@@ -64,21 +64,31 @@ public class DockerConnectorImpl implements DockerConnector {
                         .dockerImageId(imageId)
                         .dockerContainerId(dockerId)
                         .build();
+            } else {
+                String tracked = dockerContainerHelper.trackLogContainer(dockerId);
+                log.error("Docker container not running: {}", tracked);
+                return DockerCreated
+                        .builder()
+                        .dockerContainerStatus(DockerContainerStatus.ERROR)
+                        .error(tracked)
+                        .endPointUrl(String.format("%s:%s", endpointUrl, webApp.getServerPort().getValue()))
+                        .dockerImageId(imageId)
+                        .dockerContainerId(dockerId)
+                        .build();
             }
         } catch (Exception e) {
-            String tracked = dockerContainerHelper.trackLogContainer(dockerId);
-            return DockerCreated
+                return DockerCreated
                     .builder()
                     .dockerContainerStatus(DockerContainerStatus.ERROR)
-                    .error(tracked)
+                    .error("Docker container run error: " + e.getMessage())
                     .endPointUrl(String.format("%s:%s", endpointUrl, webApp.getServerPort().getValue()))
                     .dockerImageId(imageId)
                     .dockerContainerId(dockerId)
                     .build();
         } finally {
+            log.info("finally delete dockerfile");
             dockerfileCreateHelper.deleteLocalDockerfile(dockerfile);
         }
-        return null;
     }
     @Override
     public ResourceUsage getResourceUsage(String dockerContainerId) {

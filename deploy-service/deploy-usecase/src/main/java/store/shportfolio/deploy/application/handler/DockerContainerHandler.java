@@ -132,9 +132,7 @@ public class DockerContainerHandler {
         }
 
         DockerCreated dockerCreated = dockerConnector.createContainer(webApp, storageUrl);
-        if (dockerCreated.getDockerContainerStatus() == DockerContainerStatus.ERROR) {
-            throw new DockerContainerException(dockerCreated.getError());
-        }
+        log.info("Docker container created -> {}", dockerCreated.getDockerContainerStatus());
         deployDomainService.successfulCreateDockerContainer(
                 dockerContainer,
                 dockerCreated.getDockerContainerId(),

@@ -22,4 +22,15 @@ public class DockerCreated {
         this.error = error;
         this.endPointUrl = endPointUrl;
     }
+
+    @Override
+    public String toString() {
+        return "DockerCreated{" +
+                "dockerContainerId='" + dockerContainerId + '\'' +
+                ", dockerContainerStatus=" + dockerContainerStatus +
+                ", error='" + error + '\'' +
+                ", dockerImageId='" + dockerImageId + '\'' +
+                ", endPointUrl='" + endPointUrl + '\'' +
+                '}';
+    }
 }
