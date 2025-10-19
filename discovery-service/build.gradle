@@ -7,7 +7,7 @@ plugins {
 
 
 group = 'store.shportfolio'
-version = '1.0-SNAPSHOT'
+version = '1.0.0'
 
 repositories {
     mavenCentral()
@@ -43,7 +43,7 @@ jib {
     }
     to {
         image = 'discovery-service'
-        tags = ['latest']
+        tags = ['1.0.0']
     }
     container {
         mainClass = 'store.shportfolio.discovery.DiscoveryApplication'
