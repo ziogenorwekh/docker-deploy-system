@@ -9,8 +9,10 @@ import store.shportfolio.deploy.infrastructure.jpa.entity.DockerContainerEntity;
 import store.shportfolio.deploy.infrastructure.jpa.mapper.DeployDataAccessMapper;
 import store.shportfolio.deploy.infrastructure.jpa.repository.DockerContainerJpaRepository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Repository
 public class DockerContainerRepositoryImpl implements DockerContainerRepository {
@@ -53,6 +55,13 @@ public class DockerContainerRepositoryImpl implements DockerContainerRepository 
     public void remove(DockerContainer dockerContainer) {
         dockerContainerJpaRepository.findByApplicationId(dockerContainer.getId().getValue().toString())
                 .ifPresent(dockerContainerJpaRepository::delete);
+    }
+
+    @Override
+    public List<DockerContainer> findAll() {
+        return dockerContainerJpaRepository.findAll()
+                .stream().map(deployDataAccessMapper::dockerContainerEntityToDockerContainer)
+                .collect(Collectors.toList());
     }
 
     @Override

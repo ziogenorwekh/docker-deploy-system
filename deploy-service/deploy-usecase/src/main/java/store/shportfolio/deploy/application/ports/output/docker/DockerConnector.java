@@ -19,4 +19,5 @@ public interface DockerConnector {
     void dropContainer(String dockerContainerId);
 
     void removeImage(String imageId);
+
 }

@@ -38,4 +38,6 @@ public interface DeployDomainService {
     void reDeployApplication(WebApp webApp);
 
     void reInitializeDockerContainer(DockerContainer dockerContainer);
+
+    void stoppedUnKnownReasonDockerContainer(DockerContainer dockerContainer);
 }

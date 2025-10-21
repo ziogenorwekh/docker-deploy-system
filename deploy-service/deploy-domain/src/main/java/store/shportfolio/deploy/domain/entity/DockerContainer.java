@@ -69,6 +69,10 @@ public class DockerContainer extends BaseEntity<ApplicationId> {
         }
     }
 
+    public void stoppedDockerContainer() {
+        this.dockerContainerStatus = DockerContainerStatus.STOPPED;
+    }
+
     @Override
     public String toString() {
         return "DockerContainer{" +

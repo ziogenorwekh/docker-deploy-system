@@ -73,4 +73,9 @@ public class DeployDomainServiceImpl implements DeployDomainService {
     public void reInitializeDockerContainer(DockerContainer dockerContainer) {
         dockerContainer.reInitializeDockerContainer();
     }
+
+    @Override
+    public void stoppedUnKnownReasonDockerContainer(DockerContainer dockerContainer) {
+        dockerContainer.stoppedDockerContainer();
+    }
 }

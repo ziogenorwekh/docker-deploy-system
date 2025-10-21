@@ -65,16 +65,7 @@ public class DockerConnectorImpl implements DockerConnector {
                         .dockerContainerId(dockerId)
                         .build();
             } else {
-                String tracked = dockerContainerHelper.trackLogContainer(dockerId);
-                log.error("Docker container not running: {}", tracked);
-                return DockerCreated
-                        .builder()
-                        .dockerContainerStatus(DockerContainerStatus.ERROR)
-                        .error(tracked)
-                        .endPointUrl(String.format("%s:%s", endpointUrl, webApp.getServerPort().getValue()))
-                        .dockerImageId(imageId)
-                        .dockerContainerId(dockerId)
-                        .build();
+                throw new DockerContainerException("Docker container is not running");
             }
         } catch (Exception e) {
                 return DockerCreated
